@@ -26,8 +26,9 @@
         "amphp/http-server": "^v3.0",
         "amphp/http-server-router": "^v2.0",
         "symfony/console": "^v6.2",
-        "symfony/finder": "*",
-        "monolog/monolog": "*"
+        "symfony/finder": "^6.3",
+        "monolog/monolog": "^3.3",
+        "guzzlehttp/guzzle": "^7.5"
     },
     "bin": [
         "mock-server"

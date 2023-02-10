@@ -1,6 +1,6 @@
 <?php
 
-namespace lav45\MockServer;
+namespace lav45\MockServer\mock;
 
 /**
  * Class DTObject

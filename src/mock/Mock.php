@@ -1,6 +1,6 @@
 <?php
 
-namespace lav45\MockServer;
+namespace lav45\MockServer\mock;
 
 /**
  * Class Mock
@@ -12,6 +12,8 @@ class Mock extends DTObject
     private $request;
     /** @var ResponseMock */
     private $response;
+    /** @var WebhookMock */
+    private $webhook;
 
     /**
      * @return RequestMock
@@ -43,5 +45,21 @@ class Mock extends DTObject
     public function setResponse(array $response)
     {
         $this->response = new ResponseMock($response);
+    }
+
+    /**
+     * @return WebhookMock
+     */
+    public function getWebhook(): WebhookMock
+    {
+        return $this->webhook ??= new WebhookMock();
+    }
+
+    /**
+     * @param array $webhook
+     */
+    public function setWebhook($webhook)
+    {
+        $this->webhook = new WebhookMock($webhook);
     }
 }
