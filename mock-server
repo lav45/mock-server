@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+use lav45\MockServer\Command;
+use Symfony\Component\Console\Application;
+
+require __DIR__ . '/vendor/autoload.php';
+
+$application = new Application('mock-server');
+$application->add(new Command());
+$application->setDefaultCommand('start');
+$application->run();

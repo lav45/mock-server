@@ -1,0 +1,50 @@
+{
+    "name": "lav45/mock-server",
+    "type": "library",
+    "description": "HTTP mocking application for testing",
+    "keywords": [
+        "testing",
+        "mock",
+        "php",
+        "http",
+        "mock-server",
+        "stubbing"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aleksey Loban",
+            "email": "lav451@gmail.com",
+            "role": "lead"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-pcntl": "*",
+        "amphp/amp": "^v3.0",
+        "amphp/log": "^v2.0",
+        "amphp/http-server": "^v3.0",
+        "amphp/http-server-router": "^v2.0",
+        "symfony/console": "^v6.2",
+        "symfony/finder": "*",
+        "monolog/monolog": "*"
+    },
+    "bin": [
+        "mock-server"
+    ],
+    "autoload": {
+        "psr-4": {
+            "lav45\\MockServer\\": "src"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    }
+}
