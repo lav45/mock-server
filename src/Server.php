@@ -17,7 +17,7 @@ use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 /**
- * Class MockServer
+ * Class Server
  * @package lav45\MockServer
  */
 class Server
@@ -52,7 +52,7 @@ class Server
 
             $router->addRoute(
                 $mockRequest->method,
-                $mockRequest->path,
+                $mockRequest->url,
                 $responseHandler,
                 $webhookMiddleware,
             );

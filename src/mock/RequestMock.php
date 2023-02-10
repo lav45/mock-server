@@ -11,7 +11,7 @@ class RequestMock extends DTObject
     /** @var string */
     public string $method = 'GET';
     /** @var string */
-    public string $path = '/';
+    public string $url = '/';
     /** @var array */
-    public array $headers = ['content-type' => 'application/json'];
+    public array $headers = [];
 }

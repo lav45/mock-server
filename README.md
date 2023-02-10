@@ -7,7 +7,11 @@ run docker image
 
 ```shell
 ~$ docker pull lav45/mock-server:latest
-~$ docker run --rm -i -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest --host=0.0.0.0 --port=8080 --mocks=/app/mocks
+~$ docker run --rm -i \
+    -v $(pwd)/mocks:/app/mocks \
+    -p 8080:8080 \
+    --name mock-server \
+    lav45/mock-server:latest --host=0.0.0.0 --port=8080 --mocks=/app/mocks
 ```
 
 ## Examples
@@ -33,7 +37,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
 [{
     "request": {
         "method": "POST",
-        "path": "/user"
+        "url": "/user"
     },
     "response": {
         "status": 200,
@@ -57,7 +61,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
 }, {
     "request": {
         "method": "PUT",
-        "path": "/user"
+        "url": "/user"
     },
     "response": {
         "status": 200,
@@ -86,7 +90,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
     {
         "request": {
             "method": "GET",
-            "path": "/user",
+            "url": "/user",
             "headers": {
                 "content-type": "application/json"
             }
@@ -105,7 +109,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
     {
         "request": {
             "method": "POST",
-            "path": "/user",
+            "url": "/user",
             "headers": {
                 "content-type": "application/json"
             }
@@ -127,13 +131,13 @@ Open: GET http://0.0.0.0:8080/user
 Open: POST http://0.0.0.0:8080/user
 
 ### With routing params
-`request.path`: "/user/{id}" rewrite in `response.body.method`: "GET /user/{id}"
+`request.url`: "/user/{id}" rewrite in `response.body.method`: "GET /user/{id}" and `response.body.id`: "{id}"
 ```json
 [
     {
         "request": {
             "method": "GET",
-            "path": "/user/{id}",
+            "url": "/user/{id}",
             "headers": {
                 "content-type": "application/json"
             }
