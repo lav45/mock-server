@@ -3,28 +3,20 @@
 HTTP mocking application for testing
 
 ## Installing
+run docker image
 
 ```shell
-# Build it into you project
-~$ composer require lav45/mock-server
-~$ php vendor/bin/mock-server --host=0.0.0.0 --port=8080 --mocks=./mocks
-
-# OR just pul docker image
 ~$ docker pull lav45/mock-server:latest
 ~$ docker run --rm -i -v $(pwd)/mocks:/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
-## Example
-
-Create json file in the `/mocks` folder
-
-### Minimal:
-```json
-[{}]
-```
-Open: http://0.0.0.0:8080/
+## Examples
+Create json file in the `./mocks` folder
 
 ### Hello world!
+```shell
+~$ cat ./mocks/test.json
+```
 ```json
 [{
     "response": {
@@ -98,6 +90,7 @@ Open: POST http://0.0.0.0:8080/user
                 "content-type": "application/json"
             },
             "body": {
+                "id": "{id}",
                 "method": "GET /user/{id}",
                 "status": "OK"
             }

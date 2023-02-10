@@ -15,7 +15,7 @@ class ResponseMock extends DTObject
     /** @var array */
     public array $headers = ['content-type' => 'application/json'];
     /** @var string|array */
-    private $body;
+    private $body = '';
 
     /**
      * @return string
