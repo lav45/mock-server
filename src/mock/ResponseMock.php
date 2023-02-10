@@ -14,6 +14,10 @@ class ResponseMock extends DTObject
     public int $status = HttpStatus::OK;
     /** @var array */
     public array $headers = [];
+    /** @var string */
+    public $proxyUrl;
+    /** @var array */
+    public array $options = [];
     /** @var string|array */
     private $body = '';
 

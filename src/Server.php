@@ -12,6 +12,7 @@ use Amp\Log\StreamHandler;
 use Amp\Socket;
 use lav45\MockServer\mock\Mock;
 use lav45\MockServer\mock\MockResponseHandler;
+use lav45\MockServer\mock\MockResponseProxyMiddleware;
 use lav45\MockServer\mock\WebhookMiddleware;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -47,14 +48,13 @@ class Server
         foreach ($this->mocks as $item) {
             $mock = new Mock($item);
             $mockRequest = $mock->getRequest();
-            $responseHandler = new MockResponseHandler($mock->getResponse());
-            $webhookMiddleware = new WebhookMiddleware($mock->getWebhook());
 
             $router->addRoute(
                 $mockRequest->method,
                 $mockRequest->url,
-                $responseHandler,
-                $webhookMiddleware,
+                new MockResponseHandler($mock->getResponse()),
+                new WebhookMiddleware($mock->getWebhook()),
+                new MockResponseProxyMiddleware($mock->getResponse()),
             );
         }
 

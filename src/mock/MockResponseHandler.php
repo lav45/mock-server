@@ -5,7 +5,6 @@ namespace lav45\MockServer\mock;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
-use Amp\Http\Server\Router;
 
 /**
  * Class MockResponseHandler
@@ -32,26 +31,10 @@ class MockResponseHandler implements RequestHandler
         $response->setStatus($this->mockResponse->status);
         $response->setHeaders($this->mockResponse->headers);
 
-        $body = $this->renderBodyParams(
-            $this->mockResponse->getBody(),
-            $request->getAttribute(Router::class)
-        );
+        $body = RequestHelper::replaceAttributes($request, $this->mockResponse->getBody());
 
         $response->setBody($body);
 
         return $response;
-    }
-
-    /**
-     * @param string $body
-     * @param array $args
-     * @return string
-     */
-    protected function renderBodyParams(string $body, array $args)
-    {
-        foreach ($args as $key => $value) {
-            $body = str_replace("{{$key}}", $value, $body);
-        }
-        return $body;
     }
 }
