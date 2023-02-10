@@ -21,7 +21,7 @@ class Command extends \Symfony\Component\Console\Command\Command
             ->setName('start')
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, "Host", '0.0.0.0')
             ->addOption('port', null, InputOption::VALUE_OPTIONAL, "Port", 8080)
-            ->addOption('mocks', null, InputOption::VALUE_OPTIONAL, "Mocks path", '/mocks');
+            ->addOption('mocks', null, InputOption::VALUE_OPTIONAL, "Mocks path", '/app/mocks');
     }
 
     /**

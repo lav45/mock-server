@@ -7,7 +7,7 @@ run docker image
 
 ```shell
 ~$ docker pull lav45/mock-server:latest
-~$ docker run --rm -i -v $(pwd)/mocks:/mocks -p 8080:8080 lav45/mock-server:latest
+~$ docker run --rm -i -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest --host=0.0.0.0 --port=8080 --mocks=/app/mocks
 ```
 
 ## Examples
