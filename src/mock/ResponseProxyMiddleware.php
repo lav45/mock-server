@@ -11,10 +11,10 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\RequestOptions;
 
 /**
- * Class MockResponseProxyMiddleware
+ * Class ResponseProxyMiddleware
  * @package lav45\MockServer\mock
  */
-class MockResponseProxyMiddleware implements Middleware
+class ResponseProxyMiddleware implements Middleware
 {
     /**
      * @param ResponseMock $mockResponse

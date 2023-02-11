@@ -11,8 +11,8 @@ use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
 use lav45\MockServer\mock\Mock;
-use lav45\MockServer\mock\MockResponseHandler;
-use lav45\MockServer\mock\MockResponseProxyMiddleware;
+use lav45\MockServer\mock\ResponseHandler;
+use lav45\MockServer\mock\ResponseProxyMiddleware;
 use lav45\MockServer\mock\WebhookMiddleware;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -52,9 +52,9 @@ class Server
             $router->addRoute(
                 $mockRequest->method,
                 $mockRequest->url,
-                new MockResponseHandler($mock->getResponse()),
+                new ResponseHandler($mock->getResponse()),
                 new WebhookMiddleware($mock->getWebhook()),
-                new MockResponseProxyMiddleware($mock->getResponse()),
+                new ResponseProxyMiddleware($mock->getResponse()),
             );
         }
 

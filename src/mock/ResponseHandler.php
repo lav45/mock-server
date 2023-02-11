@@ -7,10 +7,10 @@ use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 
 /**
- * Class MockResponseHandler
+ * Class ResponseHandler
  * @package lav45\MockServer
  */
-class MockResponseHandler implements RequestHandler
+class ResponseHandler implements RequestHandler
 {
     /**
      * @param ResponseMock $mockResponse
