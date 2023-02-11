@@ -1,12 +1,15 @@
 #!/usr/bin/env php
 <?php
 
-use lav45\MockServer\Command;
-use Symfony\Component\Console\Application;
+use lav45\MockServer\Scanner;
+use lav45\MockServer\Server;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$application = new Application('mock-server');
-$application->add(new Command());
-$application->setDefaultCommand('start');
-$application->run();
+$scanner = new Scanner(getenv('MOCKS_PATH'));
+
+(new Server())
+    ->setHost(getenv('HOST'))
+    ->setPort(getenv('PORT'))
+    ->setMocks($scanner->get())
+    ->start();
