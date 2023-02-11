@@ -1,26 +1,11 @@
-# Mock-Server
+# Mock Server
 
-HTTP mocking application for testing
+HTTP mocking application for testing and fast prototyping
 
-## Installing
-run docker image
+## Quick start
 
-```shell
-~$ docker pull lav45/mock-server:latest
-~$ docker run --rm -i \
-    -v $(pwd)/mocks:/app/mocks \
-    -p 8080:8080 \
-    --name mock-server \
-    lav45/mock-server:latest --host=0.0.0.0 --port=8080 --mocks=/app/mocks
-```
+Create mock file `./mocks/test.json` and put the content in it
 
-## Examples
-Create json file in the `./mocks` folder
-
-### Hello world!
-```shell
-~$ cat ./mocks/test.json
-```
 ```json
 [{
     "response": {
@@ -28,144 +13,23 @@ Create json file in the `./mocks` folder
     }
 }]
 ```
-Open: http://0.0.0.0:8080/
 
-### Proxy
-response.options - see [guzzle request options](https://docs.guzzlephp.org/en/stable/request-options.html)
+Starting the server
 
-```json
-[{
-    "request": {
-        "method": "GET",
-        "url": "/proxy/{path:.+}"
-    },
-    "response": {
-        "proxyUrl": "https://api.site.com/v1/{path}",
-        "options": {
-            "verify": false,
-            "headers": {
-                "Authorization": "Bearer JWT.token"
-            }
-        }
-    }
-}]
+```shell
+~$ docker run --rm -i -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
-### WebHook
-webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/stable/request-options.html)
+Checking
 
-```json
-[{
-    "request": {
-        "method": "POST",
-        "url": "/user"
-    },
-    "response": {
-        "status": 200,
-        "body": "OK"
-    },
-    "webhook": {
-        "delay": 1,
-        "method": "POST",
-        "url": "https://api.site.com/webhook",
-        "options": {
-            "verify": false,
-            "http_errors": false,
-            "headers": {
-                "X-API-Token": "e71ad173-dacf-493c-be55-643074fdf41c"
-            },
-            "form_params": {
-                "status": "OK"
-            }
-        }
-    }
-}, {
-    "request": {
-        "method": "PUT",
-        "url": "/user"
-    },
-    "response": {
-        "status": 200,
-        "body": "OK"
-    },
-    "webhook": {
-        "delay": 1,
-        "method": "POST",
-        "url": "https://api.site.com/webhook",
-        "options": {
-            "verify": false,
-            "http_errors": false,
-            "auth": ["login", "password"],
-            "json": {
-                "type": "user.create",
-                "data": {"id": 100}
-            }
-        }
-    }
-}]
+```shell
+~$ curl http://0.0.0.0:8080/
+Hello world!
 ```
 
-### Resource method
-```json
-[
-    {
-        "request": {
-            "method": "GET",
-            "url": "/user"
-        },
-        "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "method": "GET /user",
-                "status": "OK"
-            }
-        }
-    },
-    {
-        "request": {
-            "method": "POST",
-            "url": "/user"
-        },
-        "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "method": "POST /user",
-                "status": "OK"
-            }
-        }
-    }
-]
-```
-Open: GET http://0.0.0.0:8080/user
-Open: POST http://0.0.0.0:8080/user
+## Features
 
-### With routing params
-`request.url`: "/user/{id}" rewrite in `response.body.method`: "GET /user/{id}" and `response.body.id`: "{id}"
-```json
-[
-    {
-        "request": {
-            "method": "GET",
-            "url": "/user/{id}"
-        },
-        "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "id": "{id}",
-                "method": "GET /user/{id}",
-                "status": "OK"
-            }
-        }
-    }
-]
-```
-Open: GET http://0.0.0.0:8080/user/5
+- [Routing](./docs/routing.md)
+- [WebHook](./docs/webhook.md)
+- [Proxy](./docs/proxy.md)
+- Recursive scanning target folder `/app/mocks/**.json`
