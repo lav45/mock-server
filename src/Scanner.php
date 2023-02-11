@@ -2,23 +2,18 @@
 
 namespace lav45\MockServer;
 
-use Symfony\Component\Finder\Finder;
-
 /**
  * Class Scanner
  * @package lav45\MockServer
  */
 class Scanner
 {
-    private Finder $finder;
-
     /**
-     * MockFinder constructor.
+     * Scanner constructor.
      * @param string $path
      */
-    public function __construct(string $path)
+    public function __construct(private readonly string $path)
     {
-        $this->finder = $this->createFinder($path);
     }
 
     /**
@@ -27,31 +22,23 @@ class Scanner
      */
     public function get()
     {
-        foreach ($this->getFinder() as $file) {
-            $content = file_get_contents($file->getPathname());
+        foreach ($this->getFiles($this->path, 'json') as $file) {
+            $content = file_get_contents($file);
             yield from json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         }
     }
 
     /**
-     * @param string $path
-     * @return Finder
+     * @return \Generator
      */
-    protected function createFinder($path)
+    protected function getFiles(string $path, string $extension)
     {
-        return (new Finder())
-            ->in($path)
-            ->files()
-            ->ignoreDotFiles(true)
-            ->followLinks()
-            ->name("*.json");
-    }
-
-    /**
-     * @return Finder
-     */
-    public function getFinder(): Finder
-    {
-        return $this->finder;
+        foreach (glob($path . '/*') as $item) {
+            if (is_dir($item)) {
+                yield from $this->getFiles($item, $extension);
+            } elseif (is_file($item) && pathinfo($item)['extension'] === $extension) {
+                yield $item;
+            }
+        }
     }
 }
