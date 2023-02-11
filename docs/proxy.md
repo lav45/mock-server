@@ -20,6 +20,21 @@ response.options - see [guzzle request options](https://docs.guzzlephp.org/en/st
                 }
             }
         }
+    },
+    {
+        "request": {
+            "method": "GET",
+            "url": "/proxy/{version}/{path:.+}"
+        },
+        "response": {
+            "proxyUrl": "https://{version}.api.site.com/{path}",
+            "options": {
+                "verify": false,
+                "headers": {
+                    "Authorization": "Bearer JWT.token"
+                }
+            }
+        }
     }
 ]
 ```
