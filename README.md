@@ -4,11 +4,12 @@ HTTP mocking application for testing and fast prototyping
 
 ## Features
 
-- [Request routing](./docs/request.md)
-- [Response delay](./docs/response.md)
+- [Request](./docs/request.md)
+  - [routing](./docs/request.md#routing)
+- [Response](./docs/response.md) 
+  - [delay](./docs/response.md#delay)
+  - [proxy](./docs/response.md#delay)
 - [WebHook](./docs/webhook.md)
-- [Proxy](./docs/proxy.md)
-- Recursive scanning target folder `/app/mocks/**.json`
 
 ## Quick start
 
