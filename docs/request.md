@@ -71,3 +71,34 @@ Open: GET http://0.0.0.0:8080/user/5
 
 Open: GET http://0.0.0.0:8080/user
 Open: POST http://0.0.0.0:8080/user
+
+### Array of methods for accessing the resource
+
+```json
+[
+    {
+        "request": {
+            "method": [
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "url": "/company"
+        },
+        "response": {
+            "status": 200,
+            "body": "OK"
+        }
+    },
+    {
+        "request": {
+            "method": "GET",
+            "url": "/company"
+        },
+        "response": {
+            "status": 200,
+            "body": []
+        }
+    }
+]
+```

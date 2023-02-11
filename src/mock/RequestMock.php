@@ -8,8 +8,8 @@ namespace lav45\MockServer\mock;
  */
 class RequestMock extends DTObject
 {
-    /** @var string */
-    public string $method = 'GET';
+    /** @var string|array */
+    public $method = 'GET';
     /** @var string */
     public string $url = '/';
 }

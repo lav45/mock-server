@@ -47,15 +47,17 @@ class Server
 
         foreach ($this->mocks as $item) {
             $mock = new Mock($item);
-            $mockRequest = $mock->getRequest();
+            $request = $mock->getRequest();
+            $response = $mock->getResponse();
+            $webhook = $mock->getWebhook();
 
-            $router->addRoute(
-                $mockRequest->method,
-                $mockRequest->url,
-                new ResponseHandler($mock->getResponse()),
-                new WebhookMiddleware($mock->getWebhook()),
-                new ResponseProxyMiddleware($mock->getResponse()),
-            );
+            foreach ((array)$request->method as $method) {
+                $router->addRoute($method, $request->url,
+                    new ResponseHandler($response),
+                    new WebhookMiddleware($webhook),
+                    new ResponseProxyMiddleware($response),
+                );
+            }
         }
 
         $server->start($router, $errorHandler);
