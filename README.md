@@ -29,7 +29,8 @@ Hello world!
 
 ## Features
 
-- [Routing](./docs/routing.md)
+- [Request routing](./docs/request.md)
+- [Response delay](./docs/response.md)
 - [WebHook](./docs/webhook.md)
 - [Proxy](./docs/proxy.md)
 - Recursive scanning target folder `/app/mocks/**.json`

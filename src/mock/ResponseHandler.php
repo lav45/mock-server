@@ -2,6 +2,7 @@
 
 namespace lav45\MockServer\mock;
 
+use Amp;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
@@ -27,6 +28,10 @@ class ResponseHandler implements RequestHandler
      */
     public function handleRequest(Request $request): Response
     {
+        if ($this->mockResponse->delay) {
+            Amp\delay($this->mockResponse->delay);
+        }
+
         $response = new Response();
         $response->setStatus($this->mockResponse->status);
         $response->setHeaders($this->mockResponse->headers);

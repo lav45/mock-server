@@ -18,6 +18,8 @@ class ResponseMock extends DTObject
     public $proxyUrl;
     /** @var array */
     public array $options = [];
+    /** @var float Number of seconds to wait. */
+    public float $delay = 0;
     /** @var string|array */
     private $body = '';
 
