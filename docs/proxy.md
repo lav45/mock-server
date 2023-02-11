@@ -9,10 +9,10 @@ response.options - see [guzzle request options](https://docs.guzzlephp.org/en/st
     {
         "request": {
             "method": "GET",
-            "url": "/proxy/{path:.+}"
+            "url": "/proxy/{version}/{path:.+}"
         },
         "response": {
-            "proxyUrl": "https://api.site.com/v1/{path}",
+            "proxyUrl": "https://{version}.api.site.com/{path}",
             "options": {
                 "verify": false,
                 "headers": {
@@ -24,10 +24,10 @@ response.options - see [guzzle request options](https://docs.guzzlephp.org/en/st
     {
         "request": {
             "method": "GET",
-            "url": "/proxy/{version}/{path:.+}"
+            "url": "/proxy/{path:.+}"
         },
         "response": {
-            "proxyUrl": "https://{version}.api.site.com/{path}",
+            "proxyUrl": "https://api.site.com/v1/{path}",
             "options": {
                 "verify": false,
                 "headers": {
