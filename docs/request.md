@@ -6,6 +6,8 @@
 
 `request.url`: "/user/{id}" rewrite in `response.body.method`: "GET /user/{id}" and `response.body.id`: "{id}"
 
+You can get acquainted with the syntax in detail [nikic/fast-route](https://github.com/nikic/FastRoute#defining-routes)
+
 ```json
 [
     {

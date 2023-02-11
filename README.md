@@ -8,7 +8,7 @@ HTTP mocking application for testing and fast prototyping
   - [routing](./docs/request.md#routing)
 - [Response](./docs/response.md) 
   - [delay](./docs/response.md#delay)
-  - [proxy](./docs/response.md#delay)
+  - [proxy](./docs/response.md#proxy)
 - [WebHook](./docs/webhook.md)
 
 ## Quick start
