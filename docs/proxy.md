@@ -2,6 +2,8 @@
 
 response.options - see [guzzle request options](https://docs.guzzlephp.org/en/stable/request-options.html)
 
+{path} from `request.url` will be overwritten in `response.proxyUrl`
+
 ```json
 [
     {
