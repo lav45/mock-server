@@ -8,8 +8,8 @@ namespace lav45\MockServer\mock;
  */
 class WebhookMock extends DTObject
 {
-    /** @var int Number of seconds to wait. */
-    public int $delay = 0;
+    /** @var float Number of seconds to wait. */
+    public float $delay = 0;
     /** @var string */
     public string $method = 'POST';
     /** @var string */

@@ -111,10 +111,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
     {
         "request": {
             "method": "GET",
-            "url": "/user",
-            "headers": {
-                "content-type": "application/json"
-            }
+            "url": "/user"
         },
         "response": {
             "status": 200,
@@ -130,10 +127,7 @@ webhook.options - see [guzzle request options](https://docs.guzzlephp.org/en/sta
     {
         "request": {
             "method": "POST",
-            "url": "/user",
-            "headers": {
-                "content-type": "application/json"
-            }
+            "url": "/user"
         },
         "response": {
             "status": 200,
@@ -158,10 +152,7 @@ Open: POST http://0.0.0.0:8080/user
     {
         "request": {
             "method": "GET",
-            "url": "/user/{id}",
-            "headers": {
-                "content-type": "application/json"
-            }
+            "url": "/user/{id}"
         },
         "response": {
             "status": 200,
