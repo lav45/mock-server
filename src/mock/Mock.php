@@ -2,25 +2,27 @@
 
 namespace lav45\MockServer\mock;
 
+use lav45\MockServer\components\DTObject;
+
 /**
  * Class Mock
- * @package lav45\MockServer
+ * @package lav45\MockServer\mock
  */
 class Mock extends DTObject
 {
-    /** @var RequestMock */
+    /** @var MockRequest */
     private $request;
-    /** @var ResponseMock */
+    /** @var MockResponse */
     private $response;
-    /** @var WebhookMock */
+    /** @var MockWebhook */
     private $webhook;
 
     /**
-     * @return RequestMock
+     * @return MockRequest
      */
-    public function getRequest(): RequestMock
+    public function getRequest(): MockRequest
     {
-        return $this->request ??= new RequestMock();
+        return $this->request ??= new MockRequest();
     }
 
     /**
@@ -28,15 +30,15 @@ class Mock extends DTObject
      */
     public function setRequest(array $request)
     {
-        $this->request = new RequestMock($request);
+        $this->request = new MockRequest($request);
     }
 
     /**
-     * @return ResponseMock
+     * @return MockResponse
      */
-    public function getResponse(): ResponseMock
+    public function getResponse(): MockResponse
     {
-        return $this->response ??= new ResponseMock();
+        return $this->response ??= new MockResponse();
     }
 
     /**
@@ -44,22 +46,22 @@ class Mock extends DTObject
      */
     public function setResponse(array $response)
     {
-        $this->response = new ResponseMock($response);
+        $this->response = new MockResponse($response);
     }
 
     /**
-     * @return WebhookMock
+     * @return MockWebhook
      */
-    public function getWebhook(): WebhookMock
+    public function getWebhook(): MockWebhook
     {
-        return $this->webhook ??= new WebhookMock();
+        return $this->webhook ??= new MockWebhook();
     }
 
     /**
      * @param array $webhook
      */
-    public function setWebhook($webhook)
+    public function setWebhook(array $webhook)
     {
-        $this->webhook = new WebhookMock($webhook);
+        $this->webhook = new MockWebhook($webhook);
     }
 }

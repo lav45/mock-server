@@ -1,6 +1,18 @@
 # Response
 
-## Delay
+The HTTP response you expect to receive from the remote server
+
+## `response.delay`
+
+### Summary
+
+Number of seconds to wait
+
+| Types | Default |
+|-------|---------|
+| float | `0`     |
+
+### Example
 
 ```json
 [
@@ -12,42 +24,164 @@
 ]
 ```
 
-Open: GET http://0.0.0.0:8080/
+## `response.content.status`
 
-## Proxy
+### Summary
 
-response.options - see [guzzle request options](https://docs.guzzlephp.org/en/stable/request-options.html)
+Response HTTP status code
 
-{path} from `request.url` will be overwritten in `response.proxyUrl`
+| Types   | Default |
+|---------|---------|
+| integer | `200`   |
+
+### Example
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "status": 200
+            }
+        }
+    }
+]
+```
+
+## `response.content.headers`
+
+### Summary
+
+Response HTTP headers
+
+| Types  | Default |
+|--------|---------|
+| object | `[]`    |
+
+### Example
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
+        }
+    }
+]
+```
+
+## `response.content.text`
+
+### Summary
+
+Response text content
+
+| Types  | Default |
+|--------|---------|
+| string | `''`    |
+
+### Example
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "text": "<html><body><h1>Hello world!</h1></body></html>"
+            }
+        }
+    }
+]
+```
+
+## `response.content.json`
+
+Response content in json format
+
+| Types         | Default |
+|---------------|---------|
+| array, object | `null`  |
+
+### Example
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "json": {
+                    "status": "OK"
+                }
+            }
+        }
+    }
+]
+```
+
+## `response.proxy.url`
+
+Redirects your [request](request.md) to the `proxy.url` and returns its response to you.
+
+The parse param `{path}` from [request.url](request.md#requesturl) will be overwritten in `response.proxy.url`
+
+For convenience, you can specify all the [request.method](request.md#requestmethod) used 
+
+| Types  | Default |
+|--------|---------|
+| string | `null`  |
+
+### Example
 
 ```json
 [
     {
         "request": {
-            "method": "GET",
-            "url": "/proxy/{version}/{path:.+}"
-        },
-        "response": {
-            "proxyUrl": "https://{version}.api.site.com/{path}",
-            "options": {
-                "verify": false,
-                "headers": {
-                    "Authorization": "Bearer JWT.token"
-                }
-            }
-        }
-    },
-    {
-        "request": {
-            "method": "GET",
+            "method": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+            ],
             "url": "/proxy/{path:.+}"
         },
         "response": {
-            "proxyUrl": "https://api.site.com/v1/{path}",
-            "options": {
-                "verify": false,
-                "headers": {
-                    "Authorization": "Bearer JWT.token"
+            "proxy": {
+                "url": "https://api.site.com/{path}"
+            }
+        }
+    }
+]
+```
+
+## `response.proxy.options`
+
+Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-options.html) http client
+
+| Types  | Default |
+|--------|---------|
+| object | `[]`    |
+
+### Example
+
+```json
+[
+    {
+        "request": {
+            "url": "/proxy/{path:.+}"
+        },
+        "response": {
+            "proxy": {
+                "url": "https://api.site.com/{path}",
+                "options": {
+                    "verify": false,
+                    "headers": {
+                        "Authorization": "Bearer JWT.token"
+                    }
                 }
             }
         }

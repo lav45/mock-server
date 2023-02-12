@@ -10,10 +10,10 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
+use lav45\MockServer\middlewares\ResponseDelayMiddleware;
+use lav45\MockServer\middlewares\ResponseProxyMiddleware;
+use lav45\MockServer\middlewares\WebhookMiddleware;
 use lav45\MockServer\mock\Mock;
-use lav45\MockServer\mock\ResponseHandler;
-use lav45\MockServer\mock\ResponseProxyMiddleware;
-use lav45\MockServer\mock\WebhookMiddleware;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
@@ -53,9 +53,10 @@ class Server
 
             foreach ((array)$request->method as $method) {
                 $router->addRoute($method, $request->url,
-                    new ResponseHandler($response),
+                    new ResponseHandler($response->getContent()),
+                    new ResponseDelayMiddleware($response),
+                    new ResponseProxyMiddleware($response->getProxy()),
                     new WebhookMiddleware($webhook),
-                    new ResponseProxyMiddleware($response),
                 );
             }
         }

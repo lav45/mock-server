@@ -1,13 +1,13 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\components;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Router;
 
 /**
  * Class RequestHelper
- * @package lav45\MockServer\mock
+ * @package lav45\MockServer\components
  */
 class RequestHelper
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\components;
 
 /**
  * Class DTObject
- * @package lav45\MockServer
+ * @package lav45\MockServer\components
  */
 class DTObject
 {
@@ -13,7 +13,7 @@ class DTObject
      */
     public function __construct(array $config = [])
     {
-        DTObjectHelper::configure($this, $config);
+        configure($this, $config);
     }
 
     /**
@@ -48,5 +48,12 @@ class DTObject
             return $this->$getter() !== null;
         }
         return false;
+    }
+}
+
+function configure(object $object, array $properties)
+{
+    foreach ($properties as $name => $value) {
+        $object->$name = $value;
     }
 }

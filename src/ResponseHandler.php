@@ -1,11 +1,12 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer;
 
-use Amp;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
+use lav45\MockServer\components\RequestHelper;
+use lav45\MockServer\mock\MockResponseContent;
 
 /**
  * Class ResponseHandler
@@ -14,9 +15,9 @@ use Amp\Http\Server\Response;
 class ResponseHandler implements RequestHandler
 {
     /**
-     * @param ResponseMock $mockResponse
+     * @param MockResponseContent $mockResponseContent
      */
-    public function __construct(private readonly ResponseMock $mockResponse)
+    public function __construct(private readonly MockResponseContent $mockResponseContent)
     {
     }
 
@@ -28,15 +29,11 @@ class ResponseHandler implements RequestHandler
      */
     public function handleRequest(Request $request): Response
     {
-        if ($this->mockResponse->delay) {
-            Amp\delay($this->mockResponse->delay);
-        }
-
         $response = new Response();
-        $response->setStatus($this->mockResponse->status);
-        $response->setHeaders($this->mockResponse->headers);
+        $response->setStatus($this->mockResponseContent->status);
+        $response->setHeaders($this->mockResponseContent->headers);
 
-        $body = RequestHelper::replaceAttributes($request, $this->mockResponse->getBody());
+        $body = RequestHelper::replaceAttributes($request, $this->mockResponseContent->text);
 
         $response->setBody($body);
 

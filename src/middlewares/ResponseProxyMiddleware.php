@@ -1,6 +1,6 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\middlewares;
 
 use Amp\ByteStream\BufferException;
 use Amp\ByteStream\StreamException;
@@ -12,17 +12,19 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use lav45\MockServer\components\RequestHelper;
+use lav45\MockServer\mock\MockResponseProxy;
 
 /**
  * Class ResponseProxyMiddleware
- * @package lav45\MockServer\mock
+ * @package lav45\MockServer\middlewares
  */
 class ResponseProxyMiddleware implements Middleware
 {
     /**
-     * @param ResponseMock $mockResponse
+     * @param MockResponseProxy $mockResponseProxy
      */
-    public function __construct(private readonly ResponseMock $mockResponse)
+    public function __construct(private readonly MockResponseProxy $mockResponseProxy)
     {
     }
 
@@ -37,17 +39,19 @@ class ResponseProxyMiddleware implements Middleware
      */
     public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
-        if (empty($this->mockResponse->proxyUrl)) {
+        if (empty($this->mockResponseProxy->url)) {
             return $requestHandler->handleRequest($request);
         }
 
-        $proxyUrl = RequestHelper::replaceAttributes($request, $this->mockResponse->proxyUrl);
+        $method = $request->getMethod();
+        $url = RequestHelper::replaceAttributes($request, $this->mockResponseProxy->url);
 
-        $options = $this->mockResponse->options;
+        $options = $this->mockResponseProxy->options;
         $options[RequestOptions::QUERY] = $request->getUri()->getQuery();
-        $options[RequestOptions::HEADERS] = $this->getHeaders($request->getHeaders());
+        $options[RequestOptions::HEADERS] ??= [];
+        $options[RequestOptions::HEADERS] += $this->getHeaders($request->getHeaders());
 
-        if ($request->getMethod() === 'POST') {
+        if ($method === 'POST') {
             $contentType = $request->getHeader('content-type') ?? '';
             $buffer = $request->getBody()->buffer();
             [$formData, $body] = $this->parseBodyParams($contentType, $buffer);
@@ -59,7 +63,7 @@ class ResponseProxyMiddleware implements Middleware
         }
 
         try {
-            $response = (new Client())->request($request->getMethod(), $proxyUrl, $options);
+            $response = (new Client())->request($method, $url, $options);
         } catch (ClientException $exception) {
             $response = $exception->getResponse();
         }

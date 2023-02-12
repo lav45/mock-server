@@ -1,105 +1,66 @@
 # Request
 
-## Routing
+Parameters for finding the [response](response.md) to your request
 
-### Url params
+## `request.url`
 
-`request.url`: "/user/{id}" rewrite in `response.body.method`: "GET /user/{id}" and `response.body.id`: "{id}"
+### Summary
+
+Mockserver keep track of this `request.url`, if they match, the [response.content.json.request](response.md#responsecontentjson) is returned to you.
+
+`request.url`: "/user/{id}" rewrite "{id}" in `response.content.json.request`: "GET /user/{id}".
 
 You can get acquainted with the syntax in detail [nikic/fast-route](https://github.com/nikic/FastRoute#defining-routes)
 
+| Types  | Default |
+|--------|---------|
+| string | `/`     |
+
+### Example
+
 ```json
 [
     {
         "request": {
-            "method": "GET",
             "url": "/user/{id}"
         },
         "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "id": "{id}",
-                "method": "GET /user/{id}",
-                "status": "OK"
+            "content": {
+                "json": {
+                    "request": "GET /user/{id}"
+                }
             }
         }
     }
 ]
 ```
 
-Open: GET http://0.0.0.0:8080/user/5
+## `request.method`
 
-### Resource method
+### Summary
+
+HTTP Methods for accessing the resource
+
+| Types         | Default   |
+|---------------|-----------|
+| string, array | `['GET']` |
+
+### Example
 
 ```json
 [
     {
         "request": {
-            "method": "GET",
-            "url": "/user"
-        },
-        "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "method": "GET /user",
-                "status": "OK"
-            }
+            "method": "GET"
         }
     },
-    {
-        "request": {
-            "method": "POST",
-            "url": "/user"
-        },
-        "response": {
-            "status": 200,
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": {
-                "method": "POST /user",
-                "status": "OK"
-            }
-        }
-    }
-]
-```
-
-Open: GET http://0.0.0.0:8080/user
-Open: POST http://0.0.0.0:8080/user
-
-### Array of methods for accessing the resource
-
-```json
-[
     {
         "request": {
             "method": [
                 "POST",
                 "PUT",
                 "DELETE"
-            ],
-            "url": "/company"
-        },
-        "response": {
-            "status": 200,
-            "body": "OK"
-        }
-    },
-    {
-        "request": {
-            "method": "GET",
-            "url": "/company"
-        },
-        "response": {
-            "status": 200,
-            "body": []
+            ]
         }
     }
 ]
