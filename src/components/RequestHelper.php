@@ -3,7 +3,7 @@
 namespace lav45\MockServer\components;
 
 use Amp\Http\Server\Request;
-use Amp\Http\Server\Router;
+use lav45\MockServer\Router;
 
 /**
  * Class RequestHelper

@@ -3,16 +3,15 @@
 namespace lav45\MockServer;
 
 use Amp\Http\Server\Request;
-use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\components\RequestHelper;
 use lav45\MockServer\mock\MockResponseContent;
 
 /**
- * Class ResponseHandler
+ * Class RequestHandler
  * @package lav45\MockServer
  */
-class ResponseHandler implements RequestHandler
+class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     /**
      * @param MockResponseContent $mockResponseContent

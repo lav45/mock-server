@@ -5,10 +5,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN docker-php-ext-install pcntl
 RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 
-ENV MOCKS_PATH=/app/mocks
-ENV HOST=0.0.0.0
-ENV PORT=8080
-
 RUN mkdir /app
 WORKDIR /app
 COPY mock-server /app

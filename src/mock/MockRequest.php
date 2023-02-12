@@ -10,8 +10,24 @@ use lav45\MockServer\components\DTObject;
  */
 class MockRequest extends DTObject
 {
-    /** @var string|array */
-    public $method = ['GET'];
+    /** @var array */
+    private array $method = ['GET'];
     /** @var string */
     public string $url = '/';
+
+    /**
+     * @return array
+     */
+    public function getMethod(): array
+    {
+        return $this->method;
+    }
+
+    /**
+     * @param array|string $method
+     */
+    public function setMethod($method)
+    {
+        $this->method = (array)$method;
+    }
 }

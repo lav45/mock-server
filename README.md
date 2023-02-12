@@ -11,10 +11,11 @@ HTTP mocking application for testing and fast prototyping
   - [content.json](./docs/response.md#responsecontentjson)
   - [proxy](./docs/response.md#responseproxyurl)
 - [WebHook](./docs/webhook.md)
+- Load a new mock file without restarting the server
 
 ## Quick start
 
-Create mock file `./mocks/test.json` and put the content in it
+Create mock file `./mocks/index.json` and put the content in it
 
 ```json
 [{
@@ -29,7 +30,7 @@ Create mock file `./mocks/test.json` and put the content in it
 Starting the Mock Server
 
 ```shell
-docker run --rm -i -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
+docker run --rm -i --tty -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
 Checking

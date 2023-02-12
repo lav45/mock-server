@@ -1,15 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-use lav45\MockServer\Scanner;
-use lav45\MockServer\Server;
-
 require __DIR__ . '/vendor/autoload.php';
 
-$scanner = new Scanner(getenv('MOCKS_PATH'));
-
-(new Server())
-    ->setHost(getenv('HOST'))
+(new lav45\MockServer\Server())
     ->setPort(getenv('PORT'))
-    ->setMocks($scanner->get())
+    ->setMocksPath(getenv('MOCKS_PATH'))
     ->start();
