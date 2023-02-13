@@ -92,8 +92,6 @@ class Router implements RequestHandlerInterface
 
         if ($uri === '/') {
             $file = '/index';
-        } elseif (is_dir("{$this->mocksPath}{$uri}")) {
-            $file = "{$uri}/index";
         } else {
             $file = $uri;
         }
