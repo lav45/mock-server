@@ -31,7 +31,7 @@ class ResponseHandler implements RequestHandler
     {
         $response = new Response();
         $response->setStatus($this->mockResponseContent->status);
-        $response->setHeaders($this->mockResponseContent->headers);
+        $response->setHeaders($this->mockResponseContent->getHeaders());
 
         $body = RequestHelper::replaceAttributes($request, $this->mockResponseContent->text);
 

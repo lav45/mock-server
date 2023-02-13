@@ -2,7 +2,6 @@
 
 namespace lav45\MockServer\mock;
 
-use Amp\Http\HttpStatus;
 use lav45\MockServer\components\DTObject;
 
 /**
@@ -12,11 +11,11 @@ use lav45\MockServer\components\DTObject;
 class MockResponseContent extends DTObject
 {
     /** @var int */
-    public int $status = HttpStatus::OK;
+    public int $status = 200;
     /** @var array */
-    public array $headers = [];
+    private array $headers = [];
     /** @var string */
-    public $text = '';
+    public string $text = '';
 
     /**
      * @param array $data
@@ -28,6 +27,25 @@ class MockResponseContent extends DTObject
         if ($this->text) {
             throw new InvalidConfigException("You can't use `text` and `json` at the same time");
         }
+        $this->setHeaders(['content-type' => 'application/json']);
         $this->text = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param array $headers
+     */
+    public function setHeaders(array $headers)
+    {
+        foreach ($headers as $key => $value) {
+            $this->headers[strtolower($key)] = strtolower($value);
+        }
     }
 }
