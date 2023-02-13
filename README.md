@@ -10,7 +10,7 @@ HTTP mocking application for testing and fast prototyping
   - [delay](./docs/response.md#responsedelay)
   - [content.json](./docs/response.md#responsecontentjson)
   - [proxy](./docs/response.md#responseproxyurl)
-- [WebHook](./docs/webhook.md)
+- [WebHooks](./docs/webhooks.md)
 - Load a new mock file without restarting the server
 
 ## Quick start

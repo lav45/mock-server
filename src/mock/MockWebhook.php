@@ -15,7 +15,7 @@ class MockWebhook extends DTObject
     /** @var string */
     public string $method = 'POST';
     /** @var string */
-    public $url;
+    public string $url;
     /**
      * @var array - guzzle request options
      * @see https://docs.guzzlephp.org/en/stable/request-options.html

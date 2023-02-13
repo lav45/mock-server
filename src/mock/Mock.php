@@ -14,8 +14,8 @@ class Mock extends DTObject
     private $request;
     /** @var MockResponse */
     private $response;
-    /** @var MockWebhook */
-    private $webhook;
+    /** @var MockWebhook[] */
+    private array $webhooks = [];
 
     /**
      * @return MockRequest
@@ -50,18 +50,21 @@ class Mock extends DTObject
     }
 
     /**
-     * @return MockWebhook
+     * @return array
      */
-    public function getWebhook(): MockWebhook
+    public function getWebhooks()
     {
-        return $this->webhook ??= new MockWebhook();
+        return $this->webhooks;
     }
 
     /**
-     * @param array $webhook
+     * @param array $webhooks
      */
-    public function setWebhook(array $webhook)
+    public function setWebhooks(array $webhooks)
     {
-        $this->webhook = new MockWebhook($webhook);
+        $this->webhooks = [];
+        foreach ($webhooks as $webhook) {
+            $this->webhooks[] = new MockWebhook($webhook);
+        }
     }
 }

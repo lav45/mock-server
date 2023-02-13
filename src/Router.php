@@ -12,7 +12,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use lav45\MockServer\middlewares\ResponseDelayMiddleware;
 use lav45\MockServer\middlewares\ResponseProxyMiddleware;
-use lav45\MockServer\middlewares\WebhookMiddleware;
+use lav45\MockServer\middlewares\WebhooksMiddleware;
 use lav45\MockServer\mock\Mock;
 use function FastRoute\simpleDispatcher;
 
@@ -118,13 +118,13 @@ class Router implements RequestHandlerInterface
         $mock = new Mock($item);
         $request = $mock->getRequest();
         $response = $mock->getResponse();
-        $webhook = $mock->getWebhook();
+        $webhooks = $mock->getWebhooks();
 
         $requestHandler = Middleware\stack(
             new RequestHandler($response->getContent()),
             new ResponseDelayMiddleware($response),
             new ResponseProxyMiddleware($response->getProxy()),
-            new WebhookMiddleware($webhook),
+            new WebhooksMiddleware($webhooks),
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);

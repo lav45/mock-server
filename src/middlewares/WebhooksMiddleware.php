@@ -11,15 +11,15 @@ use GuzzleHttp\Client;
 use lav45\MockServer\mock\MockWebhook;
 
 /**
- * Class WebhookMiddleware
+ * Class WebhooksMiddleware
  * @package lav45\MockServer\middlewares
  */
-class WebhookMiddleware implements Middleware
+class WebhooksMiddleware implements Middleware
 {
     /**
-     * @param MockWebhook $mockWebhook
+     * @param MockWebhook[] $mockWebhooks
      */
-    public function __construct(private readonly MockWebhook $mockWebhook)
+    public function __construct(private readonly array $mockWebhooks)
     {
     }
 
@@ -30,24 +30,24 @@ class WebhookMiddleware implements Middleware
      */
     public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
-        if ($this->mockWebhook->url) {
-            Amp\async(fn() => $this->internalHandler());
-        }
+        Amp\async(fn() => $this->internalHandler($this->mockWebhooks));
         return $requestHandler->handleRequest($request);
     }
 
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function internalHandler()
+    protected function internalHandler(array $mockWebhooks)
     {
-        if ($this->mockWebhook->delay) {
-            Amp\delay($this->mockWebhook->delay);
+        foreach ($mockWebhooks as $mockWebhook) {
+            if ($mockWebhook->delay) {
+                Amp\delay($mockWebhook->delay);
+            }
+            (new Client())->request(
+                $mockWebhook->method,
+                $mockWebhook->url,
+                $mockWebhook->options
+            );
         }
-        (new Client())->request(
-            $this->mockWebhook->method,
-            $this->mockWebhook->url,
-            $this->mockWebhook->options
-        );
     }
 }
