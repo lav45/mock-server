@@ -2,9 +2,6 @@
 
 namespace lav45\MockServer\components;
 
-use Amp\Http\Server\Request;
-use lav45\MockServer\Router;
-
 /**
  * Class RequestHelper
  * @package lav45\MockServer\components
@@ -12,16 +9,35 @@ use lav45\MockServer\Router;
 class RequestHelper
 {
     /**
-     * @param Request $request
+     * @param array $args
      * @param string $text
+     * @param string|null $prefix
      * @return string
      */
-    public static function replaceAttributes(Request $request, string $text)
+    public static function replaceAttributes(array $args, string $text, string $prefix = null)
     {
-        $args = $request->getAttribute(Router::class);
         foreach ($args as $key => $value) {
+            if ($prefix) {
+                $key = "{$prefix}.{$key}";
+            }
             $text = str_replace("{{$key}}", $value, $text);
         }
         return $text;
+    }
+
+    /**
+     * @param array $vars
+     * @param string $value
+     * @param string $prefix
+     * @return bool
+     */
+    public static function parceAttribute(array $vars, string &$value, string $prefix)
+    {
+        preg_match("/{{\s?{$prefix}\.(\w+)\s?}}/u", $value, $matches);
+        if (empty($matches)) {
+            return false;
+        }
+        $value = $vars[$matches[1]];
+        return true;
     }
 }

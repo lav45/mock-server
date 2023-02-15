@@ -8,7 +8,10 @@ use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\TransferException;
 use lav45\MockServer\mock\MockWebhook;
+use Monolog\Logger;
 
 /**
  * Class WebhooksMiddleware
@@ -17,9 +20,12 @@ use lav45\MockServer\mock\MockWebhook;
 class WebhooksMiddleware implements Middleware
 {
     /**
-     * @param MockWebhook[] $mockWebhooks
+     * @param MockWebhook[] $webhooks
      */
-    public function __construct(private readonly array $mockWebhooks)
+    public function __construct(
+        private readonly array  $webhooks,
+        private readonly Logger $logger
+    )
     {
     }
 
@@ -30,24 +36,26 @@ class WebhooksMiddleware implements Middleware
      */
     public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
-        Amp\async(fn() => $this->internalHandler($this->mockWebhooks));
+        Amp\async(fn() => $this->internalHandler($this->webhooks));
         return $requestHandler->handleRequest($request);
     }
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param array $webhooks
+     * @throws GuzzleException
      */
-    protected function internalHandler(array $mockWebhooks)
+    protected function internalHandler(array $webhooks)
     {
-        foreach ($mockWebhooks as $mockWebhook) {
-            if ($mockWebhook->delay) {
-                Amp\delay($mockWebhook->delay);
+        foreach ($webhooks as $webhook) {
+            if ($webhook->delay) {
+                Amp\delay($webhook->delay);
             }
-            (new Client())->request(
-                $mockWebhook->method,
-                $mockWebhook->url,
-                $mockWebhook->options
-            );
+            try {
+                (new Client())->request($webhook->method, $webhook->url, $webhook->options);
+                $this->logger->info("Webhook: {$webhook->method} {$webhook->url}");
+            } catch (TransferException $exception) {
+                $this->logger->error($exception->getMessage());
+            }
         }
     }
 }

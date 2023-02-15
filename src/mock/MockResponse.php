@@ -3,6 +3,7 @@
 namespace lav45\MockServer\mock;
 
 use lav45\MockServer\components\DTObject;
+use lav45\MockServer\InvalidConfigException;
 
 /**
  * Class MockResponse

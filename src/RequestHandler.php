@@ -14,28 +14,28 @@ use lav45\MockServer\mock\MockResponseContent;
 class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     /**
-     * @param MockResponseContent $mockResponseContent
+     * @param MockResponseContent $content
      */
-    public function __construct(private readonly MockResponseContent $mockResponseContent)
+    public function __construct(private readonly MockResponseContent $content)
     {
     }
 
     /**
      * @param Request $request
      * @return Response
-     * @throws \JsonException
      * @throws \Throwable
      */
     public function handleRequest(Request $request): Response
     {
-        $response = new Response();
-        $response->setStatus($this->mockResponseContent->status);
-        $response->setHeaders($this->mockResponseContent->getHeaders());
+        $body = RequestHelper::replaceAttributes(
+            $request->getAttribute(Router::class),
+            $this->content->text
+        );
 
-        $body = RequestHelper::replaceAttributes($request, $this->mockResponseContent->text);
-
-        $response->setBody($body);
-
-        return $response;
+        return new Response(
+            $this->content->status,
+            $this->content->getHeaders(),
+            $body,
+        );
     }
 }

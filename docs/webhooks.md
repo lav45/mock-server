@@ -108,3 +108,33 @@ Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-option
     }
 ]
 ```
+
+## Faker
+
+You can use [Faker](https://fakerphp.github.io) to generate random data
+
+```json
+[
+    {
+        "webhooks": [
+            {
+                "url": "https://api.site.com/webhook",
+                "options": {
+                    "json": {
+                        "id": "{{faker.uuid}}",
+                        "createdAt": "{{faker.unixTime}}"
+                    }
+                }
+            }
+        ]
+    }
+]
+```
+
+Webhook will send the data:
+```json
+{
+    "id": "ea6143fe-bf40-3f1a-90d3-e6872204888d",
+    "createdAt": 1043055018
+}
+```

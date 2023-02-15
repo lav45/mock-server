@@ -10,6 +10,8 @@ use lav45\MockServer\components\DTObject;
  */
 class Mock extends DTObject
 {
+    /** @var array */
+    public array $env = [];
     /** @var MockRequest */
     private $request;
     /** @var MockResponse */
@@ -50,7 +52,7 @@ class Mock extends DTObject
     }
 
     /**
-     * @return array
+     * @return MockWebhook[]
      */
     public function getWebhooks()
     {

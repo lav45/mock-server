@@ -14,6 +14,7 @@ use lav45\MockServer\middlewares\ResponseDelayMiddleware;
 use lav45\MockServer\middlewares\ResponseProxyMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use lav45\MockServer\mock\Mock;
+use Monolog\Logger;
 use function FastRoute\simpleDispatcher;
 
 /**
@@ -27,7 +28,9 @@ class Router implements RequestHandlerInterface
 
     public function __construct(
         string                        $mocksPath,
-        private readonly ErrorHandler $errorHandler
+        private readonly ErrorHandler $errorHandler,
+        private readonly FakerParser  $faker,
+        private readonly Logger       $logger
     )
     {
         $this->mocksPath = rtrim($mocksPath, '/');
@@ -60,6 +63,11 @@ class Router implements RequestHandlerInterface
         return $this->dispatch($match, $request);
     }
 
+    /**
+     * @param array $match
+     * @param Request $request
+     * @return Response
+     */
     private function dispatch(array $match, Request $request)
     {
         switch ($match[0]) {
@@ -70,7 +78,7 @@ class Router implements RequestHandlerInterface
                  */
                 [, $requestHandler, $routeArgs] = $match;
                 $request->setAttribute(self::class, $routeArgs);
-
+                $this->logger->info('Request: ' . $request->getMethod() . ' ' . $request->getUri()->getPath());
                 return $requestHandler->handleRequest($request);
 
             case Dispatcher::NOT_FOUND:
@@ -84,6 +92,10 @@ class Router implements RequestHandlerInterface
         }
     }
 
+    /**
+     * @param string $uri
+     * @return string|null
+     */
     private function getFile(string $uri): ?string
     {
         if (str_contains($uri, '?')) {
@@ -107,12 +119,23 @@ class Router implements RequestHandlerInterface
         return $file;
     }
 
+    /**
+     * @param string $file
+     * @return array
+     * @throws \JsonException
+     */
     private function getItems(string $file): array
     {
         $content = file_get_contents($file);
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @param RouteCollector $rc
+     * @param array $item
+     * @throws InvalidConfigException
+     * @throws \JsonException
+     */
     private function addRoute(RouteCollector $rc, array $item)
     {
         $mock = new Mock($item);
@@ -120,11 +143,20 @@ class Router implements RequestHandlerInterface
         $response = $mock->getResponse();
         $webhooks = $mock->getWebhooks();
 
+        $parser = new EnvParser($mock->env, $this->faker);
+        foreach ($webhooks as $webhook) {
+            $webhook->options = $parser->replace($webhook->options);
+        }
+        if ($json = $response->getContent()->getJson()) {
+            $json = $parser->replace($json);
+            $response->getContent()->setAsText($json);
+        }
+
         $requestHandler = Middleware\stack(
             new RequestHandler($response->getContent()),
-            new ResponseDelayMiddleware($response),
+            new ResponseDelayMiddleware($response->delay),
             new ResponseProxyMiddleware($response->getProxy()),
-            new WebhooksMiddleware($webhooks),
+            new WebhooksMiddleware($webhooks, $this->logger),
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);

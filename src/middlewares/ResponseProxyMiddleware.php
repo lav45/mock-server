@@ -4,16 +4,19 @@ namespace lav45\MockServer\middlewares;
 
 use Amp\ByteStream\BufferException;
 use Amp\ByteStream\StreamException;
+use Amp\Http\HttpStatus;
+use Amp\Http\Server\ClientException;
 use Amp\Http\Server\Middleware;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use lav45\MockServer\components\RequestHelper;
 use lav45\MockServer\mock\MockResponseProxy;
+use lav45\MockServer\Router;
 
 /**
  * Class ResponseProxyMiddleware
@@ -22,9 +25,9 @@ use lav45\MockServer\mock\MockResponseProxy;
 class ResponseProxyMiddleware implements Middleware
 {
     /**
-     * @param MockResponseProxy $mockResponseProxy
+     * @param MockResponseProxy $proxy
      */
-    public function __construct(private readonly MockResponseProxy $mockResponseProxy)
+    public function __construct(private readonly MockResponseProxy $proxy)
     {
     }
 
@@ -34,22 +37,24 @@ class ResponseProxyMiddleware implements Middleware
      * @return Response
      * @throws BufferException
      * @throws StreamException
-     * @throws \Amp\Http\Server\ClientException
      * @throws GuzzleException
+     * @throws ClientException
      */
     public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
-        if (empty($this->mockResponseProxy->url)) {
+        if (empty($this->proxy->url)) {
             return $requestHandler->handleRequest($request);
         }
 
         $method = $request->getMethod();
-        $url = RequestHelper::replaceAttributes($request, $this->mockResponseProxy->url);
+        $args = $request->getAttribute(Router::class);
+        $url = RequestHelper::replaceAttributes($args, $this->proxy->url);
 
-        $options = $this->mockResponseProxy->options;
+        $options = $this->proxy->options;
         $options[RequestOptions::QUERY] = $request->getUri()->getQuery();
         $options[RequestOptions::HEADERS] ??= [];
         $options[RequestOptions::HEADERS] += $this->getHeaders($request->getHeaders());
+        $options[RequestOptions::HTTP_ERRORS] = false;
 
         if ($method === 'POST') {
             $contentType = $request->getHeader('content-type') ?? '';
@@ -64,8 +69,11 @@ class ResponseProxyMiddleware implements Middleware
 
         try {
             $response = (new Client())->request($method, $url, $options);
-        } catch (ClientException $exception) {
-            $response = $exception->getResponse();
+        } catch (ConnectException $exception) {
+            return new Response(
+                status: HttpStatus::INTERNAL_SERVER_ERROR,
+                body: $exception->getMessage()
+            );
         }
 
         return new Response(

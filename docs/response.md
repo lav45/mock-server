@@ -188,3 +188,45 @@ Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-option
     }
 ]
 ```
+
+## Faker
+
+You can use [Faker](https://fakerphp.github.io) to generate random data
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "json": {
+                    "id": "{{faker.uuid}}",
+                    "iban": "{{faker.iban('LV')}}",
+                    "time": "{{faker.dateTimeBetween('-1 week', '+1 week').getTimestamp()}}",
+                    "dateTime": "{{faker.dateTimeBetween('-1 week', '+1 week').format('d.m.Y H:i:s')}}",
+                    "flag": "{{faker.boolean}}",
+                    "location": "{{faker.localCoordinates()}}",
+                    "el": "{{faker.randomElements(['a', 'b', 'c'], 1, false)}}"
+                }
+            }
+        }
+    }
+]
+```
+
+Response:
+```json
+{
+    "id": "ea6143fe-bf40-3f1a-90d3-e6872204888d",
+    "iban": "LV89ORDR6OQ6J4G22N0T3",
+    "time": 1676696670,
+    "dateTime": "14.02.2023 08:20:34",
+    "flag": true,
+    "location": {
+        "latitude": -39.658608,
+        "longitude": 76.24428
+    },
+    "el": [
+        "c"
+    ]
+}
+```
