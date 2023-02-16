@@ -19,6 +19,8 @@ use Monolog\Processor\PsrLogMessageProcessor;
  */
 class Server
 {
+    /** @var string */
+    private $host = '0.0.0.0';
     /** @var int */
     private int $port = 8080;
     /** @var string */
@@ -39,7 +41,7 @@ class Server
         $logger->pushHandler($logHandler);
 
         $server = new SocketHttpServer($logger);
-        $server->expose(new Socket\InternetAddress('0.0.0.0', $this->port));
+        $server->expose(new Socket\InternetAddress($this->host, $this->port));
 
         $router = new Router(
             $this->mocksPath,
@@ -51,6 +53,18 @@ class Server
         $server->start($router, $errorHandler);
         $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop();
+    }
+
+    /**
+     * @param string $host
+     * @return static
+     */
+    public function setHost(string $host)
+    {
+        if ($host) {
+            $this->host = $host;
+        }
+        return $this;
     }
 
     /**
