@@ -37,6 +37,9 @@ class MockResponseContent extends DTObject
         if ($this->text) {
             throw new InvalidConfigException("You can't use `text` and `json` at the same time");
         }
+        if (empty($data)) {
+            $this->setAsText($data);
+        }
         $this->json = $data;
         $this->addHeader('content-type', 'application/json');
     }
