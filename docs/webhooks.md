@@ -6,15 +6,11 @@ All requests are executed one after the other.
 
 ## `webhooks[0].delay`
 
-### Summary
-
 Number of seconds to wait
 
 | Types | Default |
 |-------|---------|
 | float | `0`     |
-
-### Example
 
 ```json
 [
@@ -31,15 +27,11 @@ Number of seconds to wait
 
 ## `webhooks[0].method`
 
-### Summary
-
 HTTP Methods for accessing the resource
 
 | Types  | Default |
 |--------|---------|
 | string | `POST`  |
-
-### Example
 
 ```json
 [
@@ -56,15 +48,11 @@ HTTP Methods for accessing the resource
 
 ## `webhooks[0].url`
 
-### Summary
-
 URL to a remote server
 
 | Types  | Default |
 |--------|---------|
 | string | `null`  |
-
-### Example
 
 ```json
 [
@@ -85,8 +73,6 @@ Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-option
 | Types  | Default |
 |--------|---------|
 | object | `[]`    |
-
-### Example
 
 ```json
 [
@@ -132,6 +118,7 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
 ```
 
 Webhook will send the data:
+
 ```json
 {
     "id": "ea6143fe-bf40-3f1a-90d3-e6872204888d",

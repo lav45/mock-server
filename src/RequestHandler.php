@@ -4,8 +4,11 @@ namespace lav45\MockServer;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
-use lav45\MockServer\components\RequestHelper;
-use lav45\MockServer\mock\MockResponseContent;
+use lav45\MockServer\Mock\Response as MockResponse;
+use lav45\MockServer\RequestHandler\ContentHandler;
+use lav45\MockServer\RequestHandler\DataHandler;
+use lav45\MockServer\RequestHandler\ProxyHandler;
+use function Amp\delay;
 
 /**
  * Class RequestHandler
@@ -14,9 +17,13 @@ use lav45\MockServer\mock\MockResponseContent;
 class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     /**
-     * @param MockResponseContent $content
+     * @param MockResponse $response
+     * @param EnvParser $parser
      */
-    public function __construct(private readonly MockResponseContent $content)
+    public function __construct(
+        private readonly MockResponse $response,
+        private readonly EnvParser    $parser,
+    )
     {
     }
 
@@ -27,15 +34,16 @@ class RequestHandler implements \Amp\Http\Server\RequestHandler
      */
     public function handleRequest(Request $request): Response
     {
-        $body = RequestHelper::replaceAttributes(
-            $request->getAttribute(Router::class),
-            $this->content->text
-        );
+        if ($this->response->delay) {
+            delay($this->response->delay);
+        }
 
-        return new Response(
-            $this->content->status,
-            $this->content->getHeaders(),
-            $body,
-        );
+        $handler = match ($this->response->getType()) {
+            MockResponse::TYPE_DATA => new DataHandler($this->response->getData(), $this->parser),
+            MockResponse::TYPE_PROXY => new ProxyHandler($this->response->getProxy(), $this->parser),
+            default => new ContentHandler($this->response->getContent(), $this->parser)
+        };
+
+        return $handler->handleRequest($request);
     }
 }

@@ -10,10 +10,8 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use lav45\MockServer\middlewares\ResponseDelayMiddleware;
-use lav45\MockServer\middlewares\ResponseProxyMiddleware;
+use lav45\MockServer\middlewares\RequestParamsMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
-use lav45\MockServer\mock\Mock;
 use Monolog\Logger;
 use function FastRoute\simpleDispatcher;
 
@@ -103,12 +101,10 @@ class Router implements RequestHandlerInterface
         }
 
         if ($uri === '/') {
-            $file = '/index';
-        } else {
-            $file = $uri;
+            $uri = '/index';
         }
 
-        $file = "{$this->mocksPath}{$file}.json";
+        $file = "{$this->mocksPath}{$uri}.json";
         if (file_exists($file) === false) {
             $uri = dirname($uri);
             if ($uri === "/") {
@@ -134,7 +130,6 @@ class Router implements RequestHandlerInterface
      * @param RouteCollector $rc
      * @param array $item
      * @throws InvalidConfigException
-     * @throws \JsonException
      */
     private function addRoute(RouteCollector $rc, array $item)
     {
@@ -143,20 +138,15 @@ class Router implements RequestHandlerInterface
         $response = $mock->getResponse();
         $webhooks = $mock->getWebhooks();
 
-        $parser = new EnvParser($mock->env, $this->faker);
-        foreach ($webhooks as $webhook) {
-            $webhook->options = $parser->replace($webhook->options);
-        }
-        if ($json = $response->getContent()->getJson()) {
-            $json = $parser->replace($json);
-            $response->getContent()->setAsText($json);
-        }
+        $parser = new EnvParser($this->faker);
+        $parser->addData([
+            'env' => $parser->replaceFaker($mock->env)
+        ]);
 
         $requestHandler = Middleware\stack(
-            new RequestHandler($response->getContent()),
-            new ResponseDelayMiddleware($response->delay),
-            new ResponseProxyMiddleware($response->getProxy()),
-            new WebhooksMiddleware($webhooks, $this->logger),
+            new RequestHandler($response, $parser),
+            new WebhooksMiddleware($webhooks, $this->logger, $parser),
+            new RequestParamsMiddleware($parser)
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);

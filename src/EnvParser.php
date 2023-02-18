@@ -2,80 +2,105 @@
 
 namespace lav45\MockServer;
 
-use lav45\MockServer\components\RequestHelper;
+use Closure;
+use Yiisoft\Arrays\ArrayHelper;
 
 /**
- * Class ParamParser
+ * Class EnvParser
  * @package lav45\MockServer
  */
 class EnvParser
 {
     /** @var array */
-    private array $env;
+    private array $data = [];
 
     /**
-     * @param array $env
      * @param FakerParser $faker
      * @throws InvalidConfigException
      */
-    public function __construct(
-        array                        $env,
-        private readonly FakerParser $faker
-    )
+    public function __construct(private readonly FakerParser $faker)
     {
-        $this->env = $this->replaceFaker($env);
     }
 
     /**
      * @param array $data
+     */
+    public function addData(array $data)
+    {
+        $this->data = array_merge_recursive($this->data, $data);
+    }
+
+    /**
+     * @param array|\Generator $data
      * @return array
      * @throws InvalidConfigException
      */
-    public function replace(array $data)
+    public function replace($data)
     {
         $data = $this->replaceFaker($data);
-        return $this->replaceEnv($data);
+        return $this->replaceKey($data);
     }
 
     /**
-     * @param array $data
+     * @param array|\Generator $data
      * @return array
      */
-    private function replaceEnv(array $data)
+    public function replaceKey($data)
     {
-        $result = [];
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                $result[$key] = $this->replaceEnv($value);
-            } elseif (is_string($value)) {
-                if (RequestHelper::parceAttribute($this->env, $value, 'env') === false) {
-                    $value = RequestHelper::replaceAttributes($this->env, $value, 'env');
-                }
-                $result[$key] = $value;
-            } else {
-                $result[$key] = $value;
-            }
-        }
-        return $result;
+        return $this->recursiveMap($data, function ($value) {
+            return $this->replaceAttribute($value);
+        });
     }
 
     /**
-     * @param array $data
+     * @param array|\Generator $data
      * @return array
      * @throws InvalidConfigException
      */
-    private function replaceFaker(array $data)
+    public function replaceFaker($data)
+    {
+        return $this->recursiveMap($data, function ($value) {
+            return $this->faker->parse($value);
+        });
+    }
+
+    /**
+     * @param array|\Generator $data
+     * @param Closure $func
+     * @return array
+     */
+    protected function recursiveMap($data, Closure $func)
     {
         $result = [];
         foreach ($data as $key => $value) {
             if (is_array($value)) {
-                $result[$key] = $this->replaceFaker($value);
+                $result[$key] = $this->recursiveMap($value, $func);
             } elseif (is_string($value)) {
-                $result[$key] = $this->faker->parse($value);
+                $result[$key] = $func($value);
             } else {
                 $result[$key] = $value;
             }
         }
         return $result;
+    }
+
+    /**
+     * @param string $value
+     * @return string|mixed
+     */
+    public function replaceAttribute($value)
+    {
+        $callback = function ($matches) {
+            $key = trim($matches[1], '{} ');
+            $key = explode('.', $key);
+            return ArrayHelper::getValue($this->data, $key);
+        };
+
+        preg_match('/({{\s?[.\w]+\s?}})/u', $value, $matches);
+        if ($matches) {
+            return $callback($matches);
+        }
+
+        return preg_replace_callback('/({\s?[.\w]+\s?})/u', $callback, $value);
     }
 }

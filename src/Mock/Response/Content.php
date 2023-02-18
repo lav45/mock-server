@@ -1,22 +1,28 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\Mock\Response;
 
 use lav45\MockServer\components\DTObject;
 use lav45\MockServer\InvalidConfigException;
+use lav45\MockServer\Mock\DataTypeTrait;
 
 /**
- * Class MockResponseContent
- * @package lav45\MockServer\mock
+ * Class Content
+ * @package lav45\MockServer\Mock\Response
  */
-class MockResponseContent extends DTObject
+class Content extends DTObject
 {
+    use DataTypeTrait;
+
+    public const TYPE_JSON = 'json';
+    public const TYPE_TEXT = 'text';
+
     /** @var int */
     public int $status = 200;
     /** @var array */
     private array $headers = [];
     /** @var string */
-    public string $text = '';
+    private string $text = '';
     /** @var array */
     private array $json = [];
 
@@ -34,14 +40,9 @@ class MockResponseContent extends DTObject
      */
     public function setJson(array $data)
     {
-        if ($this->text) {
-            throw new InvalidConfigException("You can't use `text` and `json` at the same time");
-        }
-        if (empty($data)) {
-            $this->setAsText($data);
-        }
-        $this->json = $data;
+        $this->setType(self::TYPE_JSON);
         $this->addHeader('content-type', 'application/json');
+        $this->json = $data;
     }
 
     /**
@@ -66,7 +67,6 @@ class MockResponseContent extends DTObject
      */
     public function setHeaders(array $headers)
     {
-        $this->headers = [];
         foreach ($headers as $key => $value) {
             $this->addHeader($key, $value);
         }
@@ -79,5 +79,23 @@ class MockResponseContent extends DTObject
     protected function addHeader($key, $value)
     {
         $this->headers[strtolower($key)] = strtolower($value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
+    /**
+     * @param string $text
+     * @throws InvalidConfigException
+     */
+    public function setText(string $text)
+    {
+        $this->setType(self::TYPE_TEXT);
+        $this->text = $text;
     }
 }

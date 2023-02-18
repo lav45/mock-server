@@ -9,9 +9,11 @@ HTTP mocking application for testing and fast prototyping
   - [routing](./docs/request.md#requesturl)
 - [Response](./docs/response.md)
   - [delay](./docs/response.md#responsedelay)
-  - [content.json](./docs/response.md#responsecontentjson)
-  - [proxy](./docs/response.md#responseproxyurl)
+  - [content](./docs/response.md#content)
+  - [proxy](./docs/response.md#proxy)
   - [faker](./docs/response.md#faker) - generate random data
+  - [data provider](./docs/response.md#data-provider)
+  - [request parameters](./docs/response.md#request-parameters) - You can get data from your request and use it in the response
 - [WebHooks](./docs/webhooks.md)
   - [faker](./docs/webhooks.md#faker) - generate random data
 - Load a new mock file without restarting the server

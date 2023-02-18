@@ -1,30 +1,33 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer;
 
 use lav45\MockServer\components\DTObject;
+use lav45\MockServer\Mock\Request;
+use lav45\MockServer\Mock\Response;
+use lav45\MockServer\Mock\Webhook;
 
 /**
  * Class Mock
- * @package lav45\MockServer\mock
+ * @package lav45\MockServer
  */
 class Mock extends DTObject
 {
     /** @var array */
     public array $env = [];
-    /** @var MockRequest */
-    private $request;
-    /** @var MockResponse */
-    private $response;
-    /** @var MockWebhook[] */
+    /** @var Request */
+    private Request $request;
+    /** @var Response */
+    private Response $response;
+    /** @var Webhook[] */
     private array $webhooks = [];
 
     /**
-     * @return MockRequest
+     * @return Request
      */
-    public function getRequest(): MockRequest
+    public function getRequest(): Request
     {
-        return $this->request ??= new MockRequest();
+        return $this->request ??= new Request();
     }
 
     /**
@@ -32,15 +35,15 @@ class Mock extends DTObject
      */
     public function setRequest(array $request)
     {
-        $this->request = new MockRequest($request);
+        $this->request = new Request($request);
     }
 
     /**
-     * @return MockResponse
+     * @return Response
      */
-    public function getResponse(): MockResponse
+    public function getResponse(): Response
     {
-        return $this->response ??= new MockResponse();
+        return $this->response ??= new Response();
     }
 
     /**
@@ -48,11 +51,11 @@ class Mock extends DTObject
      */
     public function setResponse(array $response)
     {
-        $this->response = new MockResponse($response);
+        $this->response = new Response($response);
     }
 
     /**
-     * @return MockWebhook[]
+     * @return Webhook[]
      */
     public function getWebhooks()
     {
@@ -66,7 +69,7 @@ class Mock extends DTObject
     {
         $this->webhooks = [];
         foreach ($webhooks as $webhook) {
-            $this->webhooks[] = new MockWebhook($webhook);
+            $this->webhooks[] = new Webhook($webhook);
         }
     }
 }

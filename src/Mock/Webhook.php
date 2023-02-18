@@ -1,14 +1,14 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\Mock;
 
 use lav45\MockServer\components\DTObject;
 
 /**
- * Class MockWebhook
- * @package lav45\MockServer\mock
+ * Class Webhook
+ * @package lav45\MockServer\Mock
  */
-class MockWebhook extends DTObject
+class Webhook extends DTObject
 {
     /** @var float Number of seconds to wait. */
     public float $delay = 0;

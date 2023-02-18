@@ -1,14 +1,14 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\Mock\Response;
 
 use lav45\MockServer\components\DTObject;
 
 /**
- * Class MockResponseProxy
- * @package lav45\MockServer\mock
+ * Class Proxy
+ * @package lav45\MockServer\Mock\Response
  */
-class MockResponseProxy extends DTObject
+class Proxy extends DTObject
 {
     /** @var string */
     public $url;

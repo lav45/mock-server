@@ -9,9 +9,11 @@ use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\TransferException;
-use lav45\MockServer\mock\MockWebhook;
+use lav45\MockServer\EnvParser;
+use lav45\MockServer\InvalidConfigException;
+use lav45\MockServer\Mock\Webhook;
 use Monolog\Logger;
+use RuntimeException;
 
 /**
  * Class WebhooksMiddleware
@@ -20,11 +22,14 @@ use Monolog\Logger;
 class WebhooksMiddleware implements Middleware
 {
     /**
-     * @param MockWebhook[] $webhooks
+     * @param Webhook[] $webhooks
+     * @param Logger $logger
+     * @param EnvParser $parser
      */
     public function __construct(
-        private readonly array  $webhooks,
-        private readonly Logger $logger
+        private readonly array     $webhooks,
+        private readonly Logger    $logger,
+        private readonly EnvParser $parser,
     )
     {
     }
@@ -41,8 +46,9 @@ class WebhooksMiddleware implements Middleware
     }
 
     /**
-     * @param array $webhooks
+     * @param Webhook[] $webhooks
      * @throws GuzzleException
+     * @throws InvalidConfigException
      */
     protected function internalHandler(array $webhooks)
     {
@@ -51,9 +57,10 @@ class WebhooksMiddleware implements Middleware
                 Amp\delay($webhook->delay);
             }
             try {
-                (new Client())->request($webhook->method, $webhook->url, $webhook->options);
+                $options = $this->parser->replace($webhook->options);
+                (new Client())->request($webhook->method, $webhook->url, $options);
                 $this->logger->info("Webhook: {$webhook->method} {$webhook->url}");
-            } catch (TransferException $exception) {
+            } catch (RuntimeException $exception) {
                 $this->logger->error($exception->getMessage());
             }
         }

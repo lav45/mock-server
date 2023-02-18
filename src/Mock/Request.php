@@ -1,14 +1,14 @@
 <?php
 
-namespace lav45\MockServer\mock;
+namespace lav45\MockServer\Mock;
 
 use lav45\MockServer\components\DTObject;
 
 /**
- * Class MockRequest
- * @package lav45\MockServer\mock
+ * Class Request
+ * @package lav45\MockServer\Mock
  */
-class MockRequest extends DTObject
+class Request extends DTObject
 {
     /** @var array */
     private array $method = ['GET'];

@@ -6,6 +6,6 @@ namespace lav45\MockServer;
  * Class InvalidConfigException
  * @package lav45\MockServer
  */
-class InvalidConfigException extends \Exception
+class InvalidConfigException extends \RuntimeException
 {
 }
