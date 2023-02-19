@@ -2,7 +2,6 @@
 
 namespace lav45\MockServer\RequestHandler;
 
-use Amp\Http\HttpStatus;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
@@ -48,21 +47,35 @@ class DataHandler implements RequestHandler
             ->withCurrentPage($currentPage);
 
         try {
-            $data = $this->parser->replace($dataProvider->read());
-        } catch (PaginatorException $exception) {
-            return new Response(
-                status: HttpStatus::NOT_FOUND,
-                body: $exception->getMessage()
-            );
+            $items = $this->parser->replace($dataProvider->read());
+            $items = array_values($items);
+        } catch (PaginatorException $e) {
+            $items = [];
         }
 
-        $data = array_values($data);
+        $this->parser->addData([
+            'response' => [
+                'data' => [
+                    'items' => $items,
+                    'pagination' => [
+                        'totalItems' => $dataProvider->getTotalItems(),
+                        'currentPage' => $dataProvider->getCurrentPage(),
+                        'totalPages' => $dataProvider->getTotalPages(),
+                        'pageSize' => $dataProvider->getCurrentPageSize(),
+                    ]
+                ]
+            ]
+        ]);
+
+        if (is_array($this->data->result)) {
+            $data = $this->parser->replace($this->data->result);
+        } else {
+            $data = $this->parser->replaceAttribute($this->data->result);
+        }
+
+        $headers = $this->parser->replace($this->data->getHeaders());
         $body = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        return new Response(
-            $this->data->status,
-            $this->data->getHeaders(),
-            $body,
-        );
+        return new Response($this->data->status, $headers, $body);
     }
 }

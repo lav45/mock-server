@@ -329,6 +329,104 @@ The file contains a data set as from the example `response.data.json`
 ]
 ```
 
+### Information parameters of pagination
+
+- `response.data.pagination.totalItems` - containing the information about total number of data items.
+- `response.data.pagination.currentPage` - containing the information about the current page number (1-based).
+- `response.data.pagination.totalPages` - containing the information about total number of pages of data.
+- `response.data.pagination.pageSize` - containing the information about the number of data items in each page.
+
+### `response.data.result`
+
+| Types  | Default                     |
+|--------|-----------------------------|
+| string | `"{{response.data.items}}"` |
+
+#### Examples:
+
+1) Pagination information in the headers
+
+**Attention!** Only string values can be used in headers, so when specifying the path to a variable, use `{`
+
+```json
+[{
+    "response": {
+        "data": {
+            "headers": {
+                "X-Pagination-Total-Count": "{response.data.pagination.totalItems}",
+                "X-Pagination-Current-Page": "{response.data.pagination.currentPage}",
+                "X-Pagination-Page-Count": "{response.data.pagination.totalPages}",
+                "X-Pagination-Per-Page": "{response.data.pagination.pageSize}"
+            },
+            "file": "/app/mocks/__data/file.json",
+            "result": "{{response.data.items}}"
+        }
+    }
+}]
+```
+
+Response headers:
+```
+content-type: application/json
+x-pagination-current-page: 2
+x-pagination-page-count: 16
+x-pagination-per-page: 2
+x-pagination-total-count: 32
+```
+
+Response body:
+```json
+[
+    {
+        "id": "27b803dc-ceda-36f7-af87-5fbe2055ec0f",
+        "name": "Danielle Lebsack"
+    },
+    {
+        "id": "ee6e4d31-f6b2-3aad-a636-6e941ffbaa94",
+        "name": "Dr. Verona Satterfield"
+    }
+]
+```
+
+2) Pagination information in the response data
+
+```json
+[{
+    "response": {
+        "data": {
+            "result": {
+                "file": "/app/mocks/__data/file.json",
+                "data": "{{response.data.items}}",
+                "pagination": "{{response.data.pagination}}"
+            }
+        }
+    }
+}]
+```
+
+Response body:
+```json
+{
+    "data": [
+        {
+            "id": "27b803dc-ceda-36f7-af87-5fbe2055ec0f",
+            "name": "Danielle Lebsack"
+        },
+        {
+            "id": "ee6e4d31-f6b2-3aad-a636-6e941ffbaa94",
+            "name": "Dr. Verona Satterfield"
+        }
+    ],
+    "pagination": {
+        "totalItems": 32,
+        "currentPage": 2,
+        "totalPages": 16,
+        "pageSize": 2
+    }
+}
+```
+
+
 ## Request parameters
 
 You can get data from your request and use it in the response

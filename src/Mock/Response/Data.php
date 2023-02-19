@@ -26,6 +26,8 @@ class Data extends DTObject
     private array $json = [];
     /** @var Pagination */
     private Pagination $pagination;
+    /** @var string|array */
+    public $result = '{{response.data.items}}';
 
     /**
      * @return Pagination
@@ -57,17 +59,8 @@ class Data extends DTObject
     public function setHeaders(array $headers)
     {
         foreach ($headers as $key => $value) {
-            $this->addHeader($key, $value);
+            $this->headers[$key] = $value;
         }
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    protected function addHeader($key, $value)
-    {
-        $this->headers[strtolower($key)] = strtolower($value);
     }
 
     /**

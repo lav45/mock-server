@@ -78,7 +78,7 @@ class Content extends DTObject
      */
     protected function addHeader($key, $value)
     {
-        $this->headers[strtolower($key)] = strtolower($value);
+        $this->headers[$key] = $value;
     }
 
     /**
