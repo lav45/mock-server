@@ -331,10 +331,10 @@ The file contains a data set as from the example `response.data.json`
 
 ### Information parameters of pagination
 
-- `response.data.pagination.totalItems` - containing the information about total number of data items.
-- `response.data.pagination.currentPage` - containing the information about the current page number (1-based).
-- `response.data.pagination.totalPages` - containing the information about total number of pages of data.
-- `response.data.pagination.pageSize` - containing the information about the number of data items in each page.
+- `response.data.pagination.totalItems` - total number of data items.
+- `response.data.pagination.currentPage` - current page number (1-based).
+- `response.data.pagination.totalPages` - total number of pages of data.
+- `response.data.pagination.pageSize` - number of data items in each page.
 
 ### `response.data.result`
 
