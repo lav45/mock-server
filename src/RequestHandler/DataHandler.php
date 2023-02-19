@@ -61,7 +61,7 @@ class DataHandler implements RequestHandler
                         'totalItems' => $dataProvider->getTotalItems(),
                         'currentPage' => $dataProvider->getCurrentPage(),
                         'totalPages' => $dataProvider->getTotalPages(),
-                        'pageSize' => $dataProvider->getCurrentPageSize(),
+                        'pageSize' => $items ? $dataProvider->getCurrentPageSize() : 0,
                     ]
                 ]
             ]
