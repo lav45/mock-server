@@ -346,17 +346,15 @@ The file contains a data set as from the example `response.data.json`
 
 1) Pagination information in the headers
 
-**Attention!** Only string values can be used in headers, so when specifying the path to a variable, use `{`
-
 ```json
 [{
     "response": {
         "data": {
             "headers": {
-                "X-Pagination-Total-Count": "{response.data.pagination.totalItems}",
-                "X-Pagination-Current-Page": "{response.data.pagination.currentPage}",
-                "X-Pagination-Page-Count": "{response.data.pagination.totalPages}",
-                "X-Pagination-Per-Page": "{response.data.pagination.pageSize}"
+                "X-Pagination-Total-Count": "{{response.data.pagination.totalItems}}",
+                "X-Pagination-Current-Page": "{{response.data.pagination.currentPage}}",
+                "X-Pagination-Page-Count": "{{response.data.pagination.totalPages}}",
+                "X-Pagination-Per-Page": "{{response.data.pagination.pageSize}}"
             },
             "file": "/app/mocks/__data/file.json",
             "result": "{{response.data.items}}"
