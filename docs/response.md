@@ -392,8 +392,8 @@ Response body:
 [{
     "response": {
         "data": {
+            "file": "/app/mocks/__data/file.json",
             "result": {
-                "file": "/app/mocks/__data/file.json",
                 "data": "{{response.data.items}}",
                 "pagination": "{{response.data.pagination}}"
             }
