@@ -1,21 +1,32 @@
-FROM php:8.1-cli-alpine
+FROM alpine:3.17
 
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN apk update --no-cache
+RUN apk upgrade --no-cache --available
 
-RUN docker-php-ext-install pcntl
-RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
-RUN apk add git
+RUN apk add --no-cache  \
+    php81 \
+    php81-pcntl \
+    php81-openssl \
+    php81-intl \
+    php81-fileinfo \
+    php81-ctype \
+    php81-curl \
+    php81-dom \
+    php81-iconv \
+    php81-mbstring \
+    php81-gmp \
+    composer
 
 RUN mkdir /app
 WORKDIR /app
 
 COPY composer.json /app
-RUN env COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-progress --prefer-dist
-RUN rm -rf /var/cache/apk/* /tmp/* ~/.composer
-
-COPY mock-server.php /app
-COPY src /app/src
+COPY composer.lock /app
+RUN composer install --no-dev --optimize-autoloader --no-progress --prefer-dist --no-cache
 
 EXPOSE 8080
 ENTRYPOINT ["php"]
 CMD ["mock-server.php"]
+
+COPY mock-server.php /app
+COPY src /app/src
