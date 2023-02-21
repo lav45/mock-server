@@ -53,13 +53,20 @@ class WebhooksMiddleware implements Middleware
     protected function internalHandler(array $webhooks)
     {
         foreach ($webhooks as $webhook) {
-            if ($webhook->delay) {
-                Amp\delay($webhook->delay);
+            if (is_string($webhook->delay)) {
+                $delay = $this->parser->replaceAttribute($webhook->delay);
+            } else {
+                $delay = $webhook->delay;
+            }
+            if ($delay) {
+                Amp\delay($delay);
             }
             try {
+                $method = $this->parser->replaceAttribute($webhook->method);
+                $url = $this->parser->replaceAttribute($webhook->url);
                 $options = $this->parser->replace($webhook->options);
-                (new Client())->request($webhook->method, $webhook->url, $options);
-                $this->logger->info("Webhook: {$webhook->method} {$webhook->url}");
+                (new Client())->request($method, $url, $options);
+                $this->logger->info("Webhook: {$method} {$url}");
             } catch (RuntimeException $exception) {
                 $this->logger->error($exception->getMessage());
             }

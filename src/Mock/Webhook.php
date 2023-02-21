@@ -10,8 +10,8 @@ use lav45\MockServer\components\DTObject;
  */
 class Webhook extends DTObject
 {
-    /** @var float Number of seconds to wait. */
-    public float $delay = 0;
+    /** @var float|string Number of seconds to wait. */
+    public $delay = 0;
     /** @var string */
     public string $method = 'POST';
     /** @var string */
