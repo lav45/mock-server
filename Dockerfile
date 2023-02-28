@@ -1,8 +1,6 @@
 FROM alpine:3.17
 
-RUN apk update --no-cache
 RUN apk upgrade --no-cache --available
-
 RUN apk add --no-cache  \
     php81 \
     php81-pcntl \

@@ -102,12 +102,14 @@ class Router implements RequestHandlerInterface
 
         if ($uri === '/') {
             $uri = '/index';
+        } else {
+            $uri = rtrim($uri, '/');
         }
 
         $file = "{$this->mocksPath}{$uri}.json";
         if (file_exists($file) === false) {
             $uri = dirname($uri);
-            if ($uri === "/") {
+            if ($uri === '/') {
                 return null;
             }
             return $this->getFile($uri);
