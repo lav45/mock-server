@@ -11,14 +11,50 @@ use Amp\Http\Server\Request;
  */
 class RequestHelper
 {
+    /** @var string */
+    protected const REQUEST_ID_KEY = 'requestId';
+
+    /** @var Request */
+    private $request;
     /** @var array */
     private $get;
+    /** @var string */
+    private $body;
+    /** @var array */
+    private $formValues;
+    /** @var self[] */
+    private static array $instances = [];
+
+    /**
+     * @param Request $request
+     * @return RequestHelper
+     * @throws \Exception
+     */
+    public static function getInstance(Request $request)
+    {
+        $requestId = self::getRequestId($request);
+        return self::$instances[$requestId] ??= new self($request);
+    }
+
+    /**
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
+    protected static function getRequestId(Request $request): string
+    {
+        if ($request->hasAttribute(self::REQUEST_ID_KEY) === false) {
+            $request->setAttribute(self::REQUEST_ID_KEY, bin2hex(random_bytes(32)));
+        }
+        return $request->getAttribute(self::REQUEST_ID_KEY);
+    }
 
     /**
      * @param Request $request
      */
-    public function __construct(private Request $request)
+    public function __construct(Request $request)
     {
+        $this->request = clone $request;
     }
 
     /**
@@ -53,7 +89,7 @@ class RequestHelper
     {
         return $this->isFormData() ?
             $this->parseForm() :
-            $this->parceBody();
+            $this->parseBody();
     }
 
     /**
@@ -62,7 +98,7 @@ class RequestHelper
     protected function parseForm()
     {
         $result = [];
-        $data = FormParser\parseForm($this->request)->getValues();
+        $data = $this->getFormValues();
         foreach ($data as $key => $value) {
             if (isset($value[1])) {
                 $result[$key] = $value;
@@ -79,7 +115,7 @@ class RequestHelper
      * @throws \Amp\ByteStream\StreamException
      * @throws \Amp\Http\Server\ClientException
      */
-    protected function parceBody()
+    protected function parseBody()
     {
         return json_decode($this->body(), true);
     }
@@ -92,7 +128,7 @@ class RequestHelper
      */
     public function body()
     {
-        return $this->request->getBody()->buffer();
+        return $this->body ??= $this->request->getBody()->read();
     }
 
     /**
@@ -103,5 +139,13 @@ class RequestHelper
         $contentType = $this->request->getHeader('content-type') ?? '';
         $boundary = FormParser\parseContentBoundary($contentType);
         return $boundary !== null;
+    }
+
+    /**
+     * @return string[][]
+     */
+    private function getFormValues(): array
+    {
+        return $this->formValues ??= FormParser\parseForm($this->request)->getValues();
     }
 }

@@ -24,7 +24,7 @@ class RequestParamsMiddleware implements Middleware
 
     public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
-        $helper = new RequestHelper($request);
+        $helper = RequestHelper::getInstance($request);
         $this->parser->addData([
             'request' => [
                 'get' => $helper->get(),

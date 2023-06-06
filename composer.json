@@ -22,6 +22,8 @@
         "ext-pcntl": "*",
         "amphp/amp": "^v3.0",
         "amphp/log": "^v2.0",
+        "amphp/file": "^v3.0.0",
+        "amphp/http": "^v2.0.0",
         "amphp/http-server": "^v3.0",
         "amphp/http-server-form-parser": "^v2.0",
         "nikic/fast-route": "^1.3",

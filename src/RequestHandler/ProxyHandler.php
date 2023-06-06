@@ -53,12 +53,23 @@ class ProxyHandler implements RequestHandler
         $options[RequestOptions::HTTP_ERRORS] = false;
 
         $method = $request->getMethod();
-        $helper = new RequestHelper($request);
-        if ($method === 'POST') {
-            if ($helper->isFormData()) {
-                $options[RequestOptions::FORM_PARAMS] = $helper->post();
-            } else {
-                $options[RequestOptions::BODY] = $helper->body();
+        $bodyMethods = [
+            'POST',
+            'PUT',
+            'PATCH',
+        ];
+        if (in_array($method, $bodyMethods, true)) {
+            try {
+                $helper = RequestHelper::getInstance($request);
+                if ($helper->isFormData()) {
+                    $options[RequestOptions::FORM_PARAMS] = $helper->post();
+                } else {
+                    $options[RequestOptions::BODY] = $helper->body();
+                }
+            } catch (\Throwable $e) {
+                $message = "{$e->getMessage()} at {$e->getFile()}:{$e->getLine()}";
+                var_dump($message);
+                var_dump($e->getTraceAsString());
             }
         }
 
