@@ -30,7 +30,8 @@
         "monolog/monolog": "^3.3",
         "guzzlehttp/guzzle": "^7.5",
         "fakerphp/faker": "^1.21",
-        "yiisoft/data": "^1.0"
+        "yiisoft/data": "^1.0",
+        "yiisoft/cache": "^3.0"
     },
     "autoload": {
         "psr-4": {

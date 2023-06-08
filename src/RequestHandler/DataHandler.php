@@ -36,7 +36,7 @@ class DataHandler implements RequestHandler
      */
     public function handleRequest(Request $request): Response
     {
-        $helper = RequestHelper::getInstance($request);
+        $helper = new RequestHelper($request);
         $pagination = $this->data->getPagination();
         $pageSize = $helper->get($pagination->pageSizeParam, $pagination->defaultPageSize);
         $currentPage = $helper->get($pagination->pageParam, 1);

@@ -4,6 +4,9 @@ namespace lav45\MockServer;
 
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request;
+use Amp\Http\Server\RequestBody;
+use Exception;
+use Yiisoft\Cache\ArrayCache;
 
 /**
  * Class RequestHelper
@@ -15,46 +18,72 @@ class RequestHelper
     protected const REQUEST_ID_KEY = 'requestId';
 
     /** @var Request */
-    private $request;
+    private Request $request;
+    /** @var ArrayCache */
+    private static $cache;
     /** @var array */
     private $get;
     /** @var string */
     private $body;
     /** @var array */
     private $formValues;
-    /** @var self[] */
-    private static array $instances = [];
 
     /**
      * @param Request $request
-     * @return RequestHelper
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function getInstance(Request $request)
+    public function __construct(Request $request)
     {
-        $requestId = self::getRequestId($request);
-        return self::$instances[$requestId] ??= new self($request);
+        $requestId = $this->getRequestId($request);
+
+        // Create new RequestBody to avoid exceptions "Can't buffer() a payload more than once"
+        $bodyString = $this->getBodyString($requestId, $request->getBody());
+        $body = new RequestBody($bodyString);
+        $this->request = clone $request;
+        $this->request->setBody($body);
     }
 
     /**
      * @param Request $request
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
-    protected static function getRequestId(Request $request): string
+    protected function getRequestId(Request $request): string
     {
         if ($request->hasAttribute(self::REQUEST_ID_KEY) === false) {
-            $request->setAttribute(self::REQUEST_ID_KEY, bin2hex(random_bytes(32)));
+            $request->setAttribute(self::REQUEST_ID_KEY, bin2hex(random_bytes(16)));
         }
         return $request->getAttribute(self::REQUEST_ID_KEY);
     }
 
     /**
-     * @param Request $request
+     * @param string $requestId
+     * @param RequestBody $body
+     * @return string
+     * @throws Exception
      */
-    public function __construct(Request $request)
+    protected function getBodyString(string $requestId, RequestBody $body)
     {
-        $this->request = clone $request;
+        $fnGetBodyString = static function () use ($requestId, $body) {
+            $result = $body->buffer();
+            $body->onClose(static function () use ($requestId) {
+                self::getCache()->delete($requestId);
+            });
+            return $result;
+        };
+        $cache = self::getCache();
+        if ($cache->has($requestId) === false) {
+            $cache->set($requestId, $fnGetBodyString());
+        }
+        return $cache->get($requestId);
+    }
+
+    /**
+     * @return ArrayCache
+     */
+    protected static function getCache(): ArrayCache
+    {
+        return self::$cache ??= new ArrayCache();
     }
 
     /**

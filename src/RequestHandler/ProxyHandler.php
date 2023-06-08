@@ -59,17 +59,11 @@ class ProxyHandler implements RequestHandler
             'PATCH',
         ];
         if (in_array($method, $bodyMethods, true)) {
-            try {
-                $helper = RequestHelper::getInstance($request);
-                if ($helper->isFormData()) {
-                    $options[RequestOptions::FORM_PARAMS] = $helper->post();
-                } else {
-                    $options[RequestOptions::BODY] = $helper->body();
-                }
-            } catch (\Throwable $e) {
-                $message = "{$e->getMessage()} at {$e->getFile()}:{$e->getLine()}";
-                var_dump($message);
-                var_dump($e->getTraceAsString());
+            $helper = new RequestHelper($request);
+            if ($helper->isFormData()) {
+                $options[RequestOptions::FORM_PARAMS] = $helper->post();
+            } else {
+                $options[RequestOptions::BODY] = $helper->body();
             }
         }
 
