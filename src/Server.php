@@ -5,6 +5,7 @@ namespace lav45\MockServer;
 use Amp;
 use Amp\ByteStream;
 use Amp\Http\Server\DefaultErrorHandler;
+use Amp\Http\Server\Driver\SocketClientFactory;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
@@ -40,7 +41,9 @@ class Server
         $logger = new Logger('mock-server');
         $logger->pushHandler($logHandler);
 
-        $server = new SocketHttpServer($logger);
+        $serverSocketFactory = new Socket\ResourceServerSocketFactory();
+        $clientFactory = new SocketClientFactory($logger);
+        $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
         $server->expose(new Socket\InternetAddress($this->host, $this->port));
 
         $router = new Router(
