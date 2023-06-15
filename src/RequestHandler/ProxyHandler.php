@@ -6,13 +6,12 @@ use Amp\ByteStream\BufferException;
 use Amp\ByteStream\StreamException;
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\ClientException;
-use Amp\Http\Server\Request;
-use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use lav45\MockServer\Request\WrappedRequest;
 use lav45\MockServer\RequestHelper;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Proxy;
@@ -21,7 +20,7 @@ use lav45\MockServer\Mock\Response\Proxy;
  * Class ProxyHandler
  * @package lav45\MockServer\middlewares
  */
-class ProxyHandler implements RequestHandler
+class ProxyHandler extends BaseRequestHandler
 {
     /**
      * @param Proxy $proxy
@@ -35,14 +34,14 @@ class ProxyHandler implements RequestHandler
     }
 
     /**
-     * @param Request $request
+     * @param WrappedRequest $request
      * @return Response
      * @throws BufferException
      * @throws StreamException
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function handleRequest(Request $request): Response
+    public function handleWrappedRequest(WrappedRequest $request): Response
     {
         $url = $this->parser->replaceAttribute($this->proxy->url);
 
@@ -53,8 +52,13 @@ class ProxyHandler implements RequestHandler
         $options[RequestOptions::HTTP_ERRORS] = false;
 
         $method = $request->getMethod();
-        $helper = new RequestHelper($request);
-        if ($method === 'POST') {
+        $bodyMethods = [
+            'POST',
+            'PUT',
+            'PATCH',
+        ];
+        if (in_array($method, $bodyMethods, true)) {
+            $helper = new RequestHelper($request);
             if ($helper->isFormData()) {
                 $options[RequestOptions::FORM_PARAMS] = $helper->post();
             } else {

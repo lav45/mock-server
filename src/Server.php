@@ -34,8 +34,10 @@ class Server
         $logHandler = new StreamHandler(ByteStream\getStdout());
         $logHandler->pushProcessor(new PsrLogMessageProcessor());
         $logHandler->setFormatter(new ConsoleFormatter(
-            format: "[%datetime%] %level_name%:\t%message%\r\n",
-            dateFormat: 'd.m.Y H:i:s'
+            format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
+            dateFormat: 'd.m.Y H:i:s.v',
+            allowInlineLineBreaks: true,
+            ignoreEmptyContextAndExtra: true
         ));
 
         $logger = new Logger('mock-server');

@@ -10,6 +10,7 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use JsonException;
 use lav45\MockServer\middlewares\RequestParamsMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use Monolog\Logger;
@@ -37,9 +38,34 @@ class Router implements RequestHandlerInterface
     /**
      * @param Request $request
      * @return Response
-     * @throws \JsonException
      */
     public function handleRequest(Request $request): Response
+    {
+        try {
+            $started = microtime(true);
+            $requestNum = $this->getRequestNum();
+            $this->logger->info($this->getMessage($requestNum, $request));
+
+            $response = $this->handleRequestInternal($request);
+            $request->getBody()->close();
+
+            $duration = microtime(true) - $started;
+            $this->logger->debug($this->getMessage($requestNum, $request, $duration));
+        } catch (\Throwable $e) {
+            $error = "{$e->getMessage()} at {$e->getFile()}:{$e->getLine()}\n{$e->getTraceAsString()}";
+            $this->logger->error($error);
+            $response = $this->errorHandler->handleError(HttpStatus::INTERNAL_SERVER_ERROR, null, $request);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @throws JsonException
+     */
+    protected function handleRequestInternal(Request $request): Response
     {
         $method = $request->getMethod();
         $uri = \rawurldecode($request->getUri()->getPath());
@@ -76,7 +102,6 @@ class Router implements RequestHandlerInterface
                  */
                 [, $requestHandler, $routeArgs] = $match;
                 $request->setAttribute(self::class, $routeArgs);
-                $this->logger->info('Request: ' . $request->getMethod() . ' ' . $request->getUri()->getPath());
                 return $requestHandler->handleRequest($request);
 
             case Dispatcher::NOT_FOUND:
@@ -88,6 +113,40 @@ class Router implements RequestHandlerInterface
             default:
                 throw new \UnexpectedValueException("Encountered unexpected dispatcher code: " . $match[0]);
         }
+    }
+
+    /**
+     * @return int
+     */
+    private function getRequestNum(): int
+    {
+        static $requestNum = 0;
+        return ++$requestNum;
+    }
+
+    /**
+     * @param int $num
+     * @param Request $request
+     * @param float|null $seconds
+     * @return string
+     */
+    private function getMessage(int $num, Request $request, float $seconds = null): string
+    {
+        $uri = $request->getUri();
+        $queryString = $uri->getQuery();
+        $queryString = $queryString ? '?' . $queryString : '';
+        if ($seconds) {
+            $seconds = round($seconds * 1000);
+        }
+        $finished = $seconds ? " finished in {$seconds} ms" : '';
+        return sprintf(
+            "#%03u %s %s%s%s",
+            $num,
+            $request->getMethod(),
+            $uri->getPath(),
+            $queryString,
+            $finished
+        );
     }
 
     /**
@@ -120,7 +179,7 @@ class Router implements RequestHandlerInterface
     /**
      * @param string $file
      * @return array
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function getItems(string $file): array
     {
