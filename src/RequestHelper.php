@@ -2,8 +2,12 @@
 
 namespace lav45\MockServer;
 
+use Amp\ByteStream\BufferException;
+use Amp\ByteStream\StreamException;
+use Amp\Http\Server\ClientException;
 use Amp\Http\Server\FormParser;
-use Amp\Http\Server\Request;
+use Exception;
+use lav45\MockServer\Request\WrappedRequest;
 
 /**
  * Class RequestHelper
@@ -11,14 +15,18 @@ use Amp\Http\Server\Request;
  */
 class RequestHelper
 {
+    /** @var WrappedRequest */
+    private WrappedRequest $wrappedRequest;
     /** @var array */
     private $get;
 
     /**
-     * @param Request $request
+     * @param WrappedRequest $request
+     * @throws Exception
      */
-    public function __construct(private Request $request)
+    public function __construct(WrappedRequest $request)
     {
+        $this->wrappedRequest = $request;
     }
 
     /**
@@ -26,7 +34,7 @@ class RequestHelper
      */
     public function getUrlParams()
     {
-        return $this->request->getAttribute(Router::class);
+        return $this->wrappedRequest->getAttribute(Router::class);
     }
 
     /**
@@ -35,7 +43,7 @@ class RequestHelper
     public function get($key = null, $default = null)
     {
         if ($this->get === null) {
-            parse_str($this->request->getUri()->getQuery(), $this->get);
+            parse_str($this->wrappedRequest->getUri()->getQuery(), $this->get);
         }
         if ($key === null) {
             return $this->get;
@@ -45,24 +53,27 @@ class RequestHelper
 
     /**
      * @return array
-     * @throws \Amp\ByteStream\BufferException
-     * @throws \Amp\ByteStream\StreamException
-     * @throws \Amp\Http\Server\ClientException
+     * @throws BufferException
+     * @throws StreamException
+     * @throws ClientException
      */
     public function post()
     {
         return $this->isFormData() ?
             $this->parseForm() :
-            $this->parceBody();
+            $this->parseBody();
     }
 
     /**
      * @return array
+     * @throws BufferException
+     * @throws ClientException
+     * @throws StreamException
      */
     protected function parseForm()
     {
         $result = [];
-        $data = FormParser\parseForm($this->request)->getValues();
+        $data = $this->getFormValues();
         foreach ($data as $key => $value) {
             if (isset($value[1])) {
                 $result[$key] = $value;
@@ -75,24 +86,24 @@ class RequestHelper
 
     /**
      * @return array
-     * @throws \Amp\ByteStream\BufferException
-     * @throws \Amp\ByteStream\StreamException
-     * @throws \Amp\Http\Server\ClientException
+     * @throws BufferException
+     * @throws StreamException
+     * @throws ClientException
      */
-    protected function parceBody()
+    protected function parseBody()
     {
         return json_decode($this->body(), true);
     }
 
     /**
      * @return string
-     * @throws \Amp\ByteStream\BufferException
-     * @throws \Amp\ByteStream\StreamException
-     * @throws \Amp\Http\Server\ClientException
+     * @throws BufferException
+     * @throws StreamException
+     * @throws ClientException
      */
     public function body()
     {
-        return $this->request->getBody()->buffer();
+        return $this->wrappedRequest->getBody()->buffer();
     }
 
     /**
@@ -100,8 +111,20 @@ class RequestHelper
      */
     public function isFormData()
     {
-        $contentType = $this->request->getHeader('content-type') ?? '';
+        $contentType = $this->wrappedRequest->getHeader('content-type') ?? '';
         $boundary = FormParser\parseContentBoundary($contentType);
         return $boundary !== null;
+    }
+
+    /**
+     * @return string[][]
+     * @throws BufferException
+     * @throws ClientException
+     * @throws StreamException
+     */
+    private function getFormValues(): array
+    {
+        $request = $this->wrappedRequest->getRequest();
+        return FormParser\parseForm($request)->getValues();
     }
 }

@@ -22,7 +22,7 @@ class RequestHandler implements \Amp\Http\Server\RequestHandler
      */
     public function __construct(
         private readonly MockResponse $response,
-        private readonly EnvParser    $parser,
+        private readonly EnvParser    $parser
     )
     {
     }
