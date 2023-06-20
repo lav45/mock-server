@@ -5,7 +5,7 @@ namespace lav45\MockServer\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Content;
-use lav45\MockServer\Request\WrappedRequest;
+use lav45\MockServer\Request\RequestWrapper;
 
 /**
  * Class ContentHandler
@@ -25,11 +25,11 @@ class ContentHandler extends BaseRequestHandler
     }
 
     /**
-     * @param WrappedRequest $request
+     * @param RequestWrapper $request
      * @return Response
      * @throws \JsonException
      */
-    public function handleWrappedRequest(WrappedRequest $request): Response
+    public function handleWrappedRequest(RequestWrapper $request): Response
     {
         if ($this->content->getType() === Content::TYPE_JSON) {
             $json = $this->content->getJson();

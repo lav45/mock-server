@@ -13,12 +13,14 @@ use const PHP_INT_MAX;
 /**
  * @mixin RequestBody
  */
-class WrappedRequestBody
+class RequestBodyWrapper
 {
     /** @var RequestBody */
     protected RequestBody $body;
     /** @var string|null */
     protected ?string $buffer = null;
+    /** @var string|null */
+    protected ?string $read = null;
 
     /**
      * @param RequestBody $requestBody
@@ -62,6 +64,6 @@ class WrappedRequestBody
      */
     public function read(?Cancellation $cancellation = null): ?string
     {
-        return $this->buffer ??= $this->body->read($cancellation);
+        return $this->read ??= $this->body->read($cancellation);
     }
 }

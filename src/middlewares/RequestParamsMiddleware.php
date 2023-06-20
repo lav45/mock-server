@@ -8,9 +8,8 @@ use Amp\Http\Server\ClientException;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
-use lav45\MockServer\Request\WrappedRequest;
+use lav45\MockServer\Request\RequestWrapper;
 use lav45\MockServer\RequestHandler\WrappedRequestHandlerInterface;
-use lav45\MockServer\RequestHelper;
 
 /**
  * Class RequestParamsMiddleware
@@ -26,21 +25,20 @@ class RequestParamsMiddleware extends BaseMiddleware
     }
 
     /**
-     * @param WrappedRequest $request
+     * @param RequestWrapper $request
      * @param RequestHandler $requestHandler
      * @return Response
      * @throws BufferException
      * @throws StreamException
      * @throws ClientException
      */
-    public function handleWrappedRequest(WrappedRequest $request, RequestHandler $requestHandler): Response
+    public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response
     {
-        $helper = new RequestHelper($request);
         $this->parser->addData([
             'request' => [
-                'get' => $helper->get(),
-                'post' => $helper->post(),
-                'urlParams' => $helper->getUrlParams()
+                'get' => $request->get(),
+                'post' => $request->post(),
+                'urlParams' => $request->getUrlParams()
             ]
         ]);
         if ($requestHandler instanceof WrappedRequestHandlerInterface) {

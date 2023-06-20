@@ -4,9 +4,9 @@ namespace lav45\MockServer\middlewares;
 
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
-use lav45\MockServer\Request\WrappedRequest;
+use lav45\MockServer\Request\RequestWrapper;
 
 interface WrappedRequestMiddlewareInterface
 {
-    public function handleWrappedRequest(WrappedRequest $request, RequestHandler $requestHandler): Response;
+    public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response;
 }

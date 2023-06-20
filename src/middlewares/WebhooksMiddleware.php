@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\InvalidConfigException;
 use lav45\MockServer\Mock\Webhook;
-use lav45\MockServer\Request\WrappedRequest;
+use lav45\MockServer\Request\RequestWrapper;
 use lav45\MockServer\RequestHandler\WrappedRequestHandlerInterface;
 use Monolog\Logger;
 use RuntimeException;
@@ -38,14 +38,14 @@ class WebhooksMiddleware extends BaseMiddleware
     }
 
     /**
-     * @param WrappedRequest $request
+     * @param RequestWrapper $request
      * @param RequestHandler $requestHandler
      * @return Response
      * @throws BufferException
      * @throws StreamException
      * @throws ClientException
      */
-    public function handleWrappedRequest(WrappedRequest $request, RequestHandler $requestHandler): Response
+    public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response
     {
         Amp\async(fn() => $this->internalHandler($this->webhooks));
         if ($requestHandler instanceof WrappedRequestHandlerInterface) {

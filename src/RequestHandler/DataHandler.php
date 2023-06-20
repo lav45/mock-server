@@ -5,8 +5,7 @@ namespace lav45\MockServer\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Data;
-use lav45\MockServer\Request\WrappedRequest;
-use lav45\MockServer\RequestHelper;
+use lav45\MockServer\Request\RequestWrapper;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
@@ -29,16 +28,15 @@ class DataHandler extends BaseRequestHandler
     }
 
     /**
-     * @param WrappedRequest $request
+     * @param RequestWrapper $request
      * @return Response
      * @throws \JsonException
      */
-    public function handleWrappedRequest(WrappedRequest $request): Response
+    public function handleWrappedRequest(RequestWrapper $request): Response
     {
-        $helper = new RequestHelper($request);
         $pagination = $this->data->getPagination();
-        $pageSize = $helper->get($pagination->pageSizeParam, $pagination->defaultPageSize);
-        $currentPage = $helper->get($pagination->pageParam, 1);
+        $pageSize = $request->get($pagination->pageSizeParam, $pagination->defaultPageSize);
+        $currentPage = $request->get($pagination->pageParam, 1);
 
         $dataReader = new IterableDataReader($this->data->getJson());
         $dataProvider = (new OffsetPaginator($dataReader))

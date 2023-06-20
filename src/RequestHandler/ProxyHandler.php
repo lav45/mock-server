@@ -11,10 +11,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use lav45\MockServer\Request\WrappedRequest;
-use lav45\MockServer\RequestHelper;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Proxy;
+use lav45\MockServer\Request\RequestWrapper;
 
 /**
  * Class ProxyHandler
@@ -34,14 +33,14 @@ class ProxyHandler extends BaseRequestHandler
     }
 
     /**
-     * @param WrappedRequest $request
+     * @param RequestWrapper $request
      * @return Response
      * @throws BufferException
      * @throws StreamException
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function handleWrappedRequest(WrappedRequest $request): Response
+    public function handleWrappedRequest(RequestWrapper $request): Response
     {
         $url = $this->parser->replaceAttribute($this->proxy->url);
 
@@ -58,11 +57,10 @@ class ProxyHandler extends BaseRequestHandler
             'PATCH',
         ];
         if (in_array($method, $bodyMethods, true)) {
-            $helper = new RequestHelper($request);
-            if ($helper->isFormData()) {
-                $options[RequestOptions::FORM_PARAMS] = $helper->post();
+            if ($request->isFormData()) {
+                $options[RequestOptions::FORM_PARAMS] = $request->post();
             } else {
-                $options[RequestOptions::BODY] = $helper->body();
+                $options[RequestOptions::BODY] = $request->body();
             }
         }
 
