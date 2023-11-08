@@ -12,7 +12,8 @@ RUN apk add --no-cache  \
     php82-dom \
     php82-iconv \
     php82-mbstring \
-    php82-gmp
+    php82-gmp \
+    php82-posix
 
 RUN ln -s /usr/bin/php82 /usr/bin/php
 RUN ln -s /etc/php82 /etc/php
@@ -20,17 +21,10 @@ RUN ln -s /etc/php82 /etc/php
 RUN mkdir /app
 WORKDIR /app
 
-# composer
-RUN apk add --no-cache git php82-phar php82-zip
-RUN wget https://getcomposer.org/installer -O - | php -- --with-openssl --install-dir=/usr/local/bin --filename=composer
-
-COPY composer.json /app
-COPY composer.lock /app
-RUN composer install --no-dev --optimize-autoloader --no-progress --prefer-dist --no-cache
+COPY vendor /app/vendor
+COPY mock-server.php /app
+COPY src /app/src
 
 EXPOSE 8080
 ENTRYPOINT ["php"]
 CMD ["mock-server.php"]
-
-COPY mock-server.php /app
-COPY src /app/src

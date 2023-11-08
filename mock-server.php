@@ -2,9 +2,9 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-(new lav45\MockServer\Server())
-    ->setHost(getenv('HOST'))
-    ->setPort(getenv('PORT'))
-    ->setMocksPath(getenv('MOCKS_PATH'))
-    ->setLocale(getenv('LOCALE'))
-    ->start();
+(new lav45\MockServer\Server(
+    host: getenv('HOST') ?: '0.0.0.0',
+    port: (int)(getenv('PORT') ?: 8080),
+    mocksPath: getenv('MOCKS_PATH') ?: '/app/mocks',
+    locale: getenv('LOCALE') ?: 'en_US'
+))->start();

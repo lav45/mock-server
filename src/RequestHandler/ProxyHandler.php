@@ -1,30 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer\RequestHandler;
 
-use Amp\ByteStream\BufferException;
-use Amp\ByteStream\StreamException;
 use Amp\Http\HttpStatus;
-use Amp\Http\Server\ClientException;
 use Amp\Http\Server\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Proxy;
 use lav45\MockServer\Request\RequestWrapper;
 
-/**
- * Class ProxyHandler
- * @package lav45\MockServer\middlewares
- */
 class ProxyHandler extends BaseRequestHandler
 {
-    /**
-     * @param Proxy $proxy
-     * @param EnvParser $parser
-     */
     public function __construct(
         private readonly Proxy     $proxy,
         private readonly EnvParser $parser
@@ -32,17 +20,9 @@ class ProxyHandler extends BaseRequestHandler
     {
     }
 
-    /**
-     * @param RequestWrapper $request
-     * @return Response
-     * @throws BufferException
-     * @throws StreamException
-     * @throws GuzzleException
-     * @throws ClientException
-     */
     public function handleWrappedRequest(RequestWrapper $request): Response
     {
-        $url = $this->parser->replaceAttribute($this->proxy->url);
+        $url = $this->parser->replace($this->proxy->url);
 
         $options = $this->proxy->options;
         $options[RequestOptions::QUERY] = $request->getUri()->getQuery();
@@ -51,14 +31,9 @@ class ProxyHandler extends BaseRequestHandler
         $options[RequestOptions::HTTP_ERRORS] = false;
 
         $method = $request->getMethod();
-        $bodyMethods = [
-            'POST',
-            'PUT',
-            'PATCH',
-        ];
-        if (in_array($method, $bodyMethods, true)) {
+        if (in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
             if ($request->isFormData()) {
-                $options[RequestOptions::FORM_PARAMS] = $request->post();
+                $options[RequestOptions::FORM_PARAMS] = $request->parseForm();
             } else {
                 $options[RequestOptions::BODY] = $request->body();
             }
@@ -80,11 +55,7 @@ class ProxyHandler extends BaseRequestHandler
         );
     }
 
-    /**
-     * @param array $headers
-     * @return array
-     */
-    protected function filterHeaders($headers)
+    protected function filterHeaders(array $headers): array
     {
         unset(
             $headers['host'],

@@ -1,31 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer;
 
 use DateTime;
 use Faker\Generator;
 
-/**
- * Class FakerParser
- * @package lav45\MockServer
- */
 class FakerParser
 {
-    /**
-     * @param Generator $faker
-     */
     public function __construct(private readonly Generator $faker)
     {
     }
 
-    /**
-     * @param string $string
-     * @return mixed
-     * @throws InvalidConfigException
-     */
-    public function parse(string $string)
+    public function parse(string $string): mixed
     {
-        $matches = $this->parceLine($string);
+        $matches = $this->parseLine($string);
         if (empty($matches)) {
             return $string;
         }
@@ -45,24 +33,19 @@ class FakerParser
         return $result;
     }
 
-    /**
-     * @param string $value
-     * @return array
-     */
-    protected function parceLine(string $value)
+    protected function parseLine(string $value): array
     {
         preg_match('/{{\s?faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s?}}/u', $value, $matches);
         return $matches;
     }
 
-    /**
-     * @param string $str
-     * @return mixed
-     */
-    protected function parseArgs(string $str)
+    protected function parseArgs(string $str): array
     {
         $args = '[' . substr($str, 1, -1) . ']';
         $args = str_replace(["'", '\\'], ['"', '\\\\'], $args);
-        return json_decode($args, true);
+        if (empty($args)) {
+            return [];
+        }
+        return json_decode($args, true, 512, JSON_THROW_ON_ERROR);
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer\RequestHandler;
 
@@ -10,16 +10,8 @@ use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 
-/**
- * Class DataHandler
- * @package lav45\MockServer\RequestHandler
- */
 class DataHandler extends BaseRequestHandler
 {
-    /**
-     * @param Data $data
-     * @param EnvParser $parser
-     */
     public function __construct(
         private readonly Data      $data,
         private readonly EnvParser $parser
@@ -27,16 +19,11 @@ class DataHandler extends BaseRequestHandler
     {
     }
 
-    /**
-     * @param RequestWrapper $request
-     * @return Response
-     * @throws \JsonException
-     */
     public function handleWrappedRequest(RequestWrapper $request): Response
     {
         $pagination = $this->data->getPagination();
-        $pageSize = $request->get($pagination->pageSizeParam, $pagination->defaultPageSize);
-        $currentPage = $request->get($pagination->pageParam, 1);
+        $pageSize = (int)$request->get($pagination->pageSizeParam, $pagination->defaultPageSize);
+        $currentPage = (int)$request->get($pagination->pageParam, 1);
 
         $dataReader = new IterableDataReader($this->data->getJson());
         $dataProvider = (new OffsetPaginator($dataReader))
@@ -64,15 +51,17 @@ class DataHandler extends BaseRequestHandler
             ]
         ]);
 
-        if (is_array($this->data->result)) {
-            $data = $this->parser->replace($this->data->result);
-        } else {
-            $data = $this->parser->replaceAttribute($this->data->result);
+        $body = $this->parser->replace($this->data->result);
+        if (is_array($body)) {
+            $body = json_encode($body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
         $headers = $this->parser->replace($this->data->getHeaders());
-        $body = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        return new Response($this->data->status, $headers, $body);
+        return new Response(
+            status: $this->data->status,
+            headers: $headers,
+            body: $body
+        );
     }
 }

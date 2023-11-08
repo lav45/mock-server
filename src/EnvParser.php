@@ -1,75 +1,51 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer;
 
 use Closure;
+use Generator;
 use Yiisoft\Arrays\ArrayHelper;
 
-/**
- * Class EnvParser
- * @package lav45\MockServer
- */
 class EnvParser
 {
-    /** @var array */
     private array $data = [];
 
-    /**
-     * @param FakerParser $faker
-     * @throws InvalidConfigException
-     */
     public function __construct(private readonly FakerParser $faker)
     {
     }
 
-    /**
-     * @param array $data
-     */
-    public function addData(array $data)
+    public function addData(array $data): void
     {
         $this->data = array_merge_recursive($this->data, $data);
     }
 
-    /**
-     * @param array|\Generator $data
-     * @return array
-     * @throws InvalidConfigException
-     */
-    public function replace($data)
+    public function replace(mixed $data): mixed
     {
-        $data = $this->replaceFaker($data);
-        return $this->replaceKey($data);
+        if (is_string($data)) {
+            return $this->replaceAttribute($data);
+        }
+        if (is_array($data) || $data instanceof Generator) {
+            $data = $this->replaceFaker($data);
+            return $this->replaceKey($data);
+        }
+        return $data;
     }
 
-    /**
-     * @param array|\Generator $data
-     * @return array
-     */
-    public function replaceKey($data)
+    public function replaceKey(array|Generator $data): array
     {
         return $this->recursiveMap($data, function ($value) {
             return $this->replaceAttribute($value);
         });
     }
 
-    /**
-     * @param array|\Generator $data
-     * @return array
-     * @throws InvalidConfigException
-     */
-    public function replaceFaker($data)
+    public function replaceFaker(array|Generator $data): array
     {
         return $this->recursiveMap($data, function ($value) {
             return $this->faker->parse($value);
         });
     }
 
-    /**
-     * @param array|\Generator $data
-     * @param Closure $func
-     * @return array
-     */
-    protected function recursiveMap($data, Closure $func)
+    protected function recursiveMap(array|Generator $data, Closure $func): array
     {
         $result = [];
         foreach ($data as $key => $value) {
@@ -84,11 +60,7 @@ class EnvParser
         return $result;
     }
 
-    /**
-     * @param string $value
-     * @return string|mixed
-     */
-    public function replaceAttribute($value)
+    protected function replaceAttribute(string $value): mixed
     {
         $callback = function ($matches) {
             $key = trim($matches[1], '{} ');

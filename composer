@@ -5,4 +5,4 @@ docker run --rm -i --tty \
   -v $(pwd):/app \
   -e COMPOSER_HOME=/app/.composer \
   --entrypoint composer \
-   lav45/mock-server:latest $@
+  mock-server-dev:latest $@

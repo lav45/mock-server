@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer;
 
@@ -6,6 +6,8 @@ use Amp;
 use Amp\ByteStream;
 use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\SocketClientFactory;
+use Amp\Http\Server\ErrorHandler;
+use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
@@ -14,45 +16,30 @@ use Faker\Factory;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-/**
- * Class Server
- * @package lav45\MockServer
- */
 class Server
 {
-    /** @var string */
-    private $host = '0.0.0.0';
-    /** @var int */
-    private int $port = 8080;
-    /** @var string */
-    private string $mocksPath = '/app/mocks';
-    /** @var string */
-    private $locale = 'en_US';
-
-    public function start()
+    public function __construct(
+        private readonly string $host = '0.0.0.0',
+        private readonly int    $port = 8080,
+        private readonly string $mocksPath = '/app/mocks',
+        private readonly string $locale = 'en_US',
+    )
     {
-        $logHandler = new StreamHandler(ByteStream\getStdout());
-        $logHandler->pushProcessor(new PsrLogMessageProcessor());
-        $logHandler->setFormatter(new ConsoleFormatter(
-            format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
-            dateFormat: 'd.m.Y H:i:s.v',
-            allowInlineLineBreaks: true,
-            ignoreEmptyContextAndExtra: true
-        ));
+    }
 
-        $logger = new Logger('mock-server');
-        $logger->pushHandler($logHandler);
+    public function start(): void
+    {
+        $logHandler = $this->getLogHandler();
+        $logger = $this->getLogger($logHandler);
+        $server = $this->getServer($logger);
+        $errorHandler = $this->getErrorHandler();
+        $factory = $this->getFactory();
 
-        $serverSocketFactory = new Socket\ResourceServerSocketFactory();
-        $clientFactory = new SocketClientFactory($logger);
-        $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
-        $server->expose(new Socket\InternetAddress($this->host, $this->port));
-
-        $router = new Router(
-            $this->mocksPath,
-            $errorHandler = new DefaultErrorHandler(),
-            new FakerParser(Factory::create($this->locale)),
-            $logger
+        $router = new Reactor(
+            mocksPath: $this->mocksPath,
+            errorHandler: $errorHandler,
+            faker: $factory,
+            logger: $logger,
         );
 
         $server->start($router, $errorHandler);
@@ -60,51 +47,39 @@ class Server
         $server->stop();
     }
 
-    /**
-     * @param string $host
-     * @return static
-     */
-    public function setHost(string $host)
+    protected function getFactory(): FakerParser
     {
-        if ($host) {
-            $this->host = $host;
-        }
-        return $this;
+        return new FakerParser(Factory::create($this->locale));
     }
 
-    /**
-     * @param int $port
-     * @return static
-     */
-    public function setPort(int $port)
+    protected function getErrorHandler(): ErrorHandler
     {
-        if ($port) {
-            $this->port = $port;
-        }
-        return $this;
+        return new DefaultErrorHandler();
     }
 
-    /**
-     * @param string $path
-     * @return static
-     */
-    public function setMocksPath(string $path)
+    protected function getServer(Logger $logger): HttpServer
     {
-        if ($path) {
-            $this->mocksPath = $path;
-        }
-        return $this;
+        $serverSocketFactory = new Socket\ResourceServerSocketFactory();
+        $clientFactory = new SocketClientFactory($logger);
+        $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
+        $server->expose(new Socket\InternetAddress($this->host, $this->port));
+        return $server;
     }
 
-    /**
-     * @param string $locale
-     * @return static
-     */
-    public function setLocale(string $locale)
+    protected function getLogger(StreamHandler $handler, string $name = 'mock-server'): Logger
     {
-        if ($locale) {
-            $this->locale = $locale;
-        }
-        return $this;
+        return (new Logger($name))->pushHandler($handler);
+    }
+
+    protected function getLogHandler(): StreamHandler
+    {
+        return (new StreamHandler(ByteStream\getStdout()))
+            ->pushProcessor(new PsrLogMessageProcessor())
+            ->setFormatter(new ConsoleFormatter(
+                format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
+                dateFormat: 'd.m.Y H:i:s.v',
+                allowInlineLineBreaks: true,
+                ignoreEmptyContextAndExtra: true
+            ));
     }
 }

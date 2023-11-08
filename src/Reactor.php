@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer;
 
@@ -10,19 +10,16 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use JsonException;
 use lav45\MockServer\middlewares\RequestParamsMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use Monolog\Logger;
+use UnexpectedValueException;
 use function FastRoute\simpleDispatcher;
+use function implode;
+use function rawurldecode;
 
-/**
- * Class Router
- * @package lav45\MockServer
- */
-class Router implements RequestHandlerInterface
+class Reactor implements RequestHandlerInterface
 {
-    /** @var string */
     private string $mocksPath;
 
     public function __construct(
@@ -35,40 +32,10 @@ class Router implements RequestHandlerInterface
         $this->mocksPath = rtrim($mocksPath, '/');
     }
 
-    /**
-     * @param Request $request
-     * @return Response
-     */
     public function handleRequest(Request $request): Response
     {
-        try {
-            $started = microtime(true);
-            $requestNum = $this->getRequestNum();
-            $this->logger->info($this->getMessage($requestNum, $request));
-
-            $response = $this->handleRequestInternal($request);
-            $request->getBody()->close();
-
-            $duration = microtime(true) - $started;
-            $this->logger->debug($this->getMessage($requestNum, $request, $duration));
-        } catch (\Throwable $e) {
-            $error = "{$e->getMessage()} at {$e->getFile()}:{$e->getLine()}\n{$e->getTraceAsString()}";
-            $this->logger->error($error);
-            $response = $this->errorHandler->handleError(HttpStatus::INTERNAL_SERVER_ERROR, null, $request);
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     * @throws JsonException
-     */
-    protected function handleRequestInternal(Request $request): Response
-    {
         $method = $request->getMethod();
-        $uri = \rawurldecode($request->getUri()->getPath());
+        $uri = rawurldecode($request->getUri()->getPath());
 
         $file = $this->getFile($uri);
         if ($file === null) {
@@ -87,12 +54,7 @@ class Router implements RequestHandlerInterface
         return $this->dispatch($match, $request);
     }
 
-    /**
-     * @param array $match
-     * @param Request $request
-     * @return Response
-     */
-    private function dispatch(array $match, Request $request)
+    private function dispatch(array $match, Request $request): Response
     {
         switch ($match[0]) {
             case Dispatcher::FOUND:
@@ -111,48 +73,10 @@ class Router implements RequestHandlerInterface
                 return $this->makeMethodNotAllowedResponse($match[1], $request);
 
             default:
-                throw new \UnexpectedValueException("Encountered unexpected dispatcher code: " . $match[0]);
+                throw new UnexpectedValueException("Encountered unexpected dispatcher code: " . $match[0]);
         }
     }
 
-    /**
-     * @return int
-     */
-    private function getRequestNum(): int
-    {
-        static $requestNum = 0;
-        return ++$requestNum;
-    }
-
-    /**
-     * @param int $num
-     * @param Request $request
-     * @param float|null $seconds
-     * @return string
-     */
-    private function getMessage(int $num, Request $request, float $seconds = null): string
-    {
-        $uri = $request->getUri();
-        $queryString = $uri->getQuery();
-        $queryString = $queryString ? '?' . $queryString : '';
-        if ($seconds) {
-            $seconds = round($seconds * 1000);
-        }
-        $finished = $seconds ? " finished in {$seconds} ms" : '';
-        return sprintf(
-            "#%03u %s %s%s%s",
-            $num,
-            $request->getMethod(),
-            $uri->getPath(),
-            $queryString,
-            $finished
-        );
-    }
-
-    /**
-     * @param string $uri
-     * @return string|null
-     */
     private function getFile(string $uri): ?string
     {
         if (str_contains($uri, '?')) {
@@ -176,23 +100,13 @@ class Router implements RequestHandlerInterface
         return $file;
     }
 
-    /**
-     * @param string $file
-     * @return array
-     * @throws JsonException
-     */
     private function getItems(string $file): array
     {
         $content = file_get_contents($file);
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param RouteCollector $rc
-     * @param array $item
-     * @throws InvalidConfigException
-     */
-    private function addRoute(RouteCollector $rc, array $item)
+    private function addRoute(RouteCollector $rc, array $item): void
     {
         $mock = new Mock($item);
         $request = $mock->getRequest();
@@ -204,9 +118,9 @@ class Router implements RequestHandlerInterface
             'env' => $parser->replaceFaker($mock->env)
         ]);
 
-        $requestHandler = Middleware\stack(
+        $requestHandler = Middleware\stackMiddleware(
             new RequestHandler($response, $parser),
-            new WebhooksMiddleware($webhooks, $this->logger, $parser),
+            new WebhooksMiddleware($webhooks, $parser, $this->logger),
             new RequestParamsMiddleware($parser)
         );
 
@@ -223,12 +137,11 @@ class Router implements RequestHandlerInterface
 
     /**
      * Create a response if the requested method is not allowed for the matched path.
-     * @param string[] $methods
      */
     private function makeMethodNotAllowedResponse(array $methods, Request $request): Response
     {
         $response = $this->errorHandler->handleError(HttpStatus::METHOD_NOT_ALLOWED, null, $request);
-        $response->setHeader("allow", \implode(", ", $methods));
+        $response->setHeader('allow', implode(', ', $methods));
         return $response;
     }
 }

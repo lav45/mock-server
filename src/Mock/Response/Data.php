@@ -1,16 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer\Mock\Response;
 
 use lav45\MockServer\components\DTObject;
-use lav45\MockServer\InvalidConfigException;
 use lav45\MockServer\Mock\DataTypeTrait;
 use lav45\MockServer\Mock\Response\Data\Pagination;
 
-/**
- * Class Data
- * @package lav45\MockServer\Mock\Response
- */
 class Data extends DTObject
 {
     use DataTypeTrait;
@@ -18,75 +13,46 @@ class Data extends DTObject
     public const TYPE_JSON = 'json';
     public const TYPE_FILE = 'file';
 
-    /** @var int */
     public int $status = 200;
-    /** @var array */
     private array $headers = ['content-type' => 'application/json'];
-    /** @var array */
     private array $json = [];
-    /** @var Pagination */
     private Pagination $pagination;
-    /** @var string|array */
-    public $result = '{{response.data.items}}';
+    public string|array $result = '{{response.data.items}}';
 
-    /**
-     * @return Pagination
-     */
     public function getPagination(): Pagination
     {
         return $this->pagination ??= new Pagination();
     }
 
-    /**
-     * @param array $pagination
-     */
-    public function setPagination(array $pagination)
+    public function setPagination(array $pagination): void
     {
         $this->pagination = new Pagination($pagination);
     }
 
-    /**
-     * @return array
-     */
     public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @param array $headers
-     */
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): void
     {
         foreach ($headers as $key => $value) {
             $this->headers[$key] = $value;
         }
     }
 
-    /**
-     * @return array
-     */
     public function getJson(): array
     {
         return $this->json;
     }
 
-    /**
-     * @param array $json
-     * @throws InvalidConfigException
-     */
-    public function setJson(array $json)
+    public function setJson(array $json): void
     {
         $this->setType(self::TYPE_JSON);
         $this->json = $json;
     }
 
-    /**
-     * @param string $file
-     * @throws InvalidConfigException
-     * @throws \JsonException
-     */
-    public function setFile(string $file)
+    public function setFile(string $file): void
     {
         $this->setType(self::TYPE_FILE);
         $content = file_get_contents($file);

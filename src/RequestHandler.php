@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace lav45\MockServer;
 
@@ -10,28 +10,15 @@ use lav45\MockServer\RequestHandler\DataHandler;
 use lav45\MockServer\RequestHandler\ProxyHandler;
 use function Amp\delay;
 
-/**
- * Class RequestHandler
- * @package lav45\MockServer
- */
 class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
-    /**
-     * @param MockResponse $response
-     * @param EnvParser $parser
-     */
     public function __construct(
         private readonly MockResponse $response,
-        private readonly EnvParser    $parser
+        private readonly EnvParser    $parser,
     )
     {
     }
 
-    /**
-     * @param Request $request
-     * @return Response
-     * @throws \Throwable
-     */
     public function handleRequest(Request $request): Response
     {
         if ($this->response->delay) {
