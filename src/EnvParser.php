@@ -14,6 +14,11 @@ class EnvParser
     {
     }
 
+    public function reset(): void
+    {
+        $this->data = [];
+    }
+
     public function addData(array $data): void
     {
         $this->data = array_merge_recursive($this->data, $data);

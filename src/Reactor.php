@@ -11,6 +11,7 @@ use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use lav45\MockServer\middlewares\RequestParamsMiddleware;
+use lav45\MockServer\middlewares\InitEnvParserMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use Monolog\Logger;
 use UnexpectedValueException;
@@ -21,6 +22,7 @@ use function rawurldecode;
 class Reactor implements RequestHandlerInterface
 {
     private string $mocksPath;
+    private array $cacheRouter = [];
 
     public function __construct(
         string                        $mocksPath,
@@ -42,19 +44,23 @@ class Reactor implements RequestHandlerInterface
             return $this->makeNotFoundResponse($request);
         }
 
-        $routeDispatcher = simpleDispatcher(function (RouteCollector $rc) use ($file): void {
+        $match = $this->getRouter($file)->dispatch($method, $uri);
+
+        return $this->matchRequest($match, $request);
+    }
+
+    protected function getRouter($file): Dispatcher
+    {
+        $key = md5_file($file);
+        return $this->cacheRouter[$key] ??= simpleDispatcher(function (RouteCollector $rc) use ($file): void {
             $items = $this->getItems($file);
             foreach ($items as $item) {
                 $this->addRoute($rc, $item);
             }
         });
-
-        $match = $routeDispatcher->dispatch($method, $uri);
-
-        return $this->dispatch($match, $request);
     }
 
-    private function dispatch(array $match, Request $request): Response
+    private function matchRequest(array $match, Request $request): Response
     {
         switch ($match[0]) {
             case Dispatcher::FOUND:
@@ -114,14 +120,12 @@ class Reactor implements RequestHandlerInterface
         $webhooks = $mock->getWebhooks();
 
         $parser = new EnvParser($this->faker);
-        $parser->addData([
-            'env' => $parser->replaceFaker($mock->env)
-        ]);
 
         $requestHandler = Middleware\stackMiddleware(
             new RequestHandler($response, $parser),
             new WebhooksMiddleware($webhooks, $parser, $this->logger),
-            new RequestParamsMiddleware($parser)
+            new RequestParamsMiddleware($parser),
+            new InitEnvParserMiddleware($parser, $mock->env)
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);
