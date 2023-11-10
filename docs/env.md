@@ -30,14 +30,12 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "options": {
-                    "json": {
-                        "id": "{env.id}",
-                        "iban": "{env.iban}",
-                        "amount": "{{env.amount}}",
-                        "createdAt": "{env.dateTime}",
-                        "updatedAt": "{env.dateTime}"
-                    }
+                "json": {
+                    "id": "{env.id}",
+                    "iban": "{env.iban}",
+                    "amount": "{{env.amount}}",
+                    "createdAt": "{env.dateTime}",
+                    "updatedAt": "{env.dateTime}"
                 }
             }
         ]

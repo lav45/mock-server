@@ -28,7 +28,8 @@ class Reactor implements RequestHandlerInterface
         string                        $mocksPath,
         private readonly ErrorHandler $errorHandler,
         private readonly FakerParser  $faker,
-        private readonly Logger       $logger
+        private readonly Logger       $logger,
+        private readonly HttpClient   $httpClient,
     )
     {
         $this->mocksPath = rtrim($mocksPath, '/');
@@ -122,9 +123,9 @@ class Reactor implements RequestHandlerInterface
         $parser = new EnvParser($this->faker);
 
         $requestHandler = Middleware\stackMiddleware(
-            new RequestHandler($response, $parser),
+            new RequestHandler($response, $parser, $this->logger, $this->httpClient),
             new InitEnvParserMiddleware($parser, $mock->env),
-            new WebhooksMiddleware($webhooks, $parser, $this->logger),
+            new WebhooksMiddleware($webhooks, $parser, $this->logger, $this->httpClient),
             new RequestParamsMiddleware($parser),
         );
 

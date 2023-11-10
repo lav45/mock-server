@@ -4,44 +4,40 @@ namespace lav45\MockServer\RequestHandler;
 
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\Response;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\RequestOptions;
 use lav45\MockServer\EnvParser;
+use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Response\Proxy;
+use lav45\MockServer\Mock\Webhook;
 use lav45\MockServer\Request\RequestWrapper;
+use Throwable;
 
 class ProxyHandler extends BaseRequestHandler
 {
     public function __construct(
-        private readonly Proxy     $proxy,
-        private readonly EnvParser $parser
+        private readonly Proxy      $proxy,
+        private readonly EnvParser  $parser,
+        private readonly HttpClient $httpClient,
     )
     {
     }
 
     public function handleWrappedRequest(RequestWrapper $request): Response
     {
-        $url = $this->parser->replace($this->proxy->url);
-
-        $options = $this->proxy->options;
-        $options[RequestOptions::QUERY] = $request->getUri()->getQuery();
-        $options[RequestOptions::HEADERS] ??= [];
-        $options[RequestOptions::HEADERS] += $this->filterHeaders($request->getHeaders());
-        $options[RequestOptions::HTTP_ERRORS] = false;
-
-        $method = $request->getMethod();
-        if (in_array($method, ['POST', 'PUT', 'PATCH'], true)) {
-            if ($request->isFormData()) {
-                $options[RequestOptions::FORM_PARAMS] = $request->parseForm();
-            } else {
-                $options[RequestOptions::BODY] = $request->body();
-            }
-        }
-
         try {
-            $response = (new Client())->request($method, $url, $options);
-        } catch (ConnectException $exception) {
+            $url = $this->parser->replace($this->proxy->url);
+            $method = $request->getMethod();
+            $query = $request->get();
+            $body = $request->getContent() ?: '';
+            $headers = $this->getHeaders($this->proxy, $request->getHeaders());
+
+            $response = $this->httpClient->request(
+                url: $url,
+                method: $method,
+                query: $query,
+                body: $body,
+                headers: $headers,
+            );
+        } catch (Throwable $exception) {
             return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
                 body: $exception->getMessage()
@@ -49,13 +45,20 @@ class ProxyHandler extends BaseRequestHandler
         }
 
         return new Response(
-            $response->getStatusCode(),
+            $response->getStatus(),
             $response->getHeaders(),
-            $response->getBody()->getContents()
+            $response->getBody()->buffer()
         );
     }
 
-    protected function filterHeaders(array $headers): array
+    private function getHeaders(Proxy $proxy, array $headers): array
+    {
+        $result = $proxy->options['headers'] ?? $proxy->headers;
+        $result += $this->filterHeaders($headers);
+        return $result;
+    }
+
+    private function filterHeaders(array $headers): array
     {
         unset(
             $headers['host'],

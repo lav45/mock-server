@@ -2,6 +2,9 @@
 
 namespace lav45\MockServer\Request;
 
+use Amp\Http\Client\BufferedContent;
+use Amp\Http\Client\Form;
+use Amp\Http\Client\HttpContent;
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request;
 use lav45\MockServer\Reactor;
@@ -73,7 +76,7 @@ class RequestWrapper
             $this->parseBody();
     }
 
-    public function parseForm(): array
+    protected function parseForm(): array
     {
         $result = [];
         $data = $this->getFormValues();
@@ -110,5 +113,29 @@ class RequestWrapper
     private function getFormValues(): array
     {
         return FormParser\parseForm($this->getRequest())->getValues();
+    }
+
+    protected function getFormContent(): Form
+    {
+        $form = new Form();
+        foreach ($this->parseForm() as $name => $value) {
+            $form->addField($name, $value);
+        }
+        return $form;
+    }
+
+    protected function getBodyContent(): BufferedContent
+    {
+        return BufferedContent::fromString($this->body(), $this->getHeader('content-type'));
+    }
+
+    public function getContent(): ?HttpContent
+    {
+        if (in_array($this->getMethod(), ['POST', 'PUT', 'PATCH'], true) === false) {
+            return null;
+        }
+        return $this->isFormData() ?
+            $this->getFormContent() :
+            $this->getBodyContent();
     }
 }

@@ -67,8 +67,9 @@ URL to a remote server
 ```
 
 ## `webhooks[0].options`
+Deprecated! Will be removed in the next version.
 
-Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-options.html) http client
+## `webhooks[0].headers`
 
 | Types  | Default |
 |--------|---------|
@@ -80,15 +81,49 @@ Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-option
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "options": {
-                    "verify": false,
-                    "headers": {
-                        "X-API-Token": "e71ad173-dacf-493c-be55-643074fdf41c"
-                    },
-                    "json": {
-                        "ping": true
-                    }
+                "headers": {
+                    "X-API-Token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 }
+            }
+        ]
+    }
+]
+```
+
+## `webhooks[0].json`
+
+| Types  | Default |
+|--------|---------|
+| object | `[]`    |
+
+```json
+[
+    {
+        "webhooks": [
+            {
+                "url": "https://api.site.com/webhook",
+                "json": {
+                    "ping": true
+                }
+            }
+        ]
+    }
+]
+```
+
+## `webhooks[0].text`
+
+| Types  | Default |
+|--------|---------|
+| string | ''      |
+
+```json
+[
+    {
+        "webhooks": [
+            {
+                "url": "https://api.site.com/webhook",
+                "text": "<note><body>Don't forget me this weekend!</body></note>"
             }
         ]
     }
@@ -105,11 +140,9 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "options": {
-                    "json": {
-                        "id": "{{faker.uuid}}",
-                        "createdAt": "{{faker.unixTime}}"
-                    }
+                "json": {
+                    "id": "{{faker.uuid}}",
+                    "createdAt": "{{faker.unixTime}}"
                 }
             }
         ]

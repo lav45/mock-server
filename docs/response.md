@@ -188,8 +188,9 @@ For convenience, you can specify all the [request.method](request.md#requestmeth
 ```
 
 ### `response.proxy.options`
+Deprecated! Will be removed in the next version.
 
-Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-options.html) http client
+### `response.proxy.headers`
 
 | Types  | Default |
 |--------|---------|
@@ -204,11 +205,8 @@ Request options for [guzzle](https://docs.guzzlephp.org/en/stable/request-option
         "response": {
             "proxy": {
                 "url": "https://api.site.com/{request.urlParams.path}",
-                "options": {
-                    "verify": false,
-                    "headers": {
-                        "Authorization": "Bearer JWT.token"
-                    }
+                "headers": {
+                    "Authorization": "Bearer JWT.token"
                 }
             }
         }

@@ -7,5 +7,7 @@ use lav45\MockServer\components\DTObject;
 class Proxy extends DTObject
 {
     public string $url;
+    public array $headers = [];
+    /** @deprecated */
     public array $options = [];
 }

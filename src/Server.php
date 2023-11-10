@@ -34,17 +34,24 @@ class Server
         $server = $this->getServer($logger);
         $errorHandler = $this->getErrorHandler();
         $factory = $this->getFactory();
+        $httpClient = $this->getHttpClient();
 
         $router = new Reactor(
             mocksPath: $this->mocksPath,
             errorHandler: $errorHandler,
             faker: $factory,
             logger: $logger,
+            httpClient: $httpClient
         );
 
         $server->start($router, $errorHandler);
         $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop();
+    }
+
+    protected function getHttpClient(): HttpClient
+    {
+        return (new HttpClient())->build();
     }
 
     protected function getFactory(): FakerParser
