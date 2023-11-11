@@ -41,7 +41,7 @@ class RequestWrapper
         throw new RuntimeException('Calling unknown method: ' . get_class($this) . "::{$name}()");
     }
 
-    public function getBody(): RequestBodyWrapper
+    public function getBodyWrapper(): RequestBodyWrapper
     {
         return $this->body ??= new RequestBodyWrapper($this->request->getBody());
     }
@@ -49,7 +49,7 @@ class RequestWrapper
     public function getRequest(): Request
     {
         $clone = clone $this->request;
-        $clone->setBody($this->getBody()->read());
+        $clone->setBody($this->getBodyWrapper()->read());
         return $clone;
     }
 
@@ -100,7 +100,7 @@ class RequestWrapper
 
     public function body(): string
     {
-        return $this->getBody()->read();
+        return $this->getBodyWrapper()->read();
     }
 
     public function isFormData(): bool
@@ -112,7 +112,7 @@ class RequestWrapper
 
     private function getFormValues(): array
     {
-        return FormParser\parseForm($this->getRequest())->getValues();
+        return FormParser\Form::fromRequest($this->getRequest())->getValues();
     }
 
     protected function getFormContent(): Form
