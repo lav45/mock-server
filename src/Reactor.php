@@ -10,8 +10,8 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use lav45\MockServer\middlewares\RequestParamsMiddleware;
 use lav45\MockServer\middlewares\InitEnvParserMiddleware;
+use lav45\MockServer\middlewares\RequestParamsMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use Monolog\Logger;
 use UnexpectedValueException;
@@ -22,7 +22,7 @@ use function rawurldecode;
 class Reactor implements RequestHandlerInterface
 {
     private string $mocksPath;
-    private array $cacheRouter = [];
+    private array $routerCache = [];
 
     public function __construct(
         string                        $mocksPath,
@@ -53,12 +53,20 @@ class Reactor implements RequestHandlerInterface
     protected function getRouter($file): Dispatcher
     {
         $key = md5_file($file);
-        return $this->cacheRouter[$key] ??= simpleDispatcher(function (RouteCollector $rc) use ($file): void {
-            $items = $this->getItems($file);
-            foreach ($items as $item) {
-                $this->addRoute($rc, $item);
+        if (isset($this->routerCache[$file]) && $this->routerCache[$file][0] === $key) {
+            return $this->routerCache[$file][1];
+        }
+
+        $routes = $this->getRoutes($file);
+        $dispatcher = simpleDispatcher(function (RouteCollector $rc) use ($routes): void {
+            foreach ($routes as $route) {
+                $this->addRoute($rc, $route);
             }
         });
+
+        $this->routerCache[$file] = [$key, $dispatcher];
+
+        return $dispatcher;
     }
 
     private function matchRequest(array $match, Request $request): Response
@@ -107,7 +115,7 @@ class Reactor implements RequestHandlerInterface
         return $file;
     }
 
-    private function getItems(string $file): array
+    private function getRoutes(string $file): array
     {
         $content = file_get_contents($file);
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
