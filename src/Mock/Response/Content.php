@@ -29,11 +29,6 @@ class Content extends DTObject
         $this->json = $data;
     }
 
-    public function setAsText(array $data): void
-    {
-        $this->text = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    }
-
     public function getHeaders(): array
     {
         return $this->headers;

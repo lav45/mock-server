@@ -62,7 +62,7 @@ class WebhooksMiddleware extends BaseMiddleware
                 );
 
                 $statusCode = $response->getStatus();
-                $message = "Webhook: {$method} {$url} => code: {$statusCode}";
+                $message = "Webhook: {$statusCode} {$method} {$url}";
                 ($statusCode === 200) ?
                     $this->logger->info($message) :
                     $this->logger->warning($message);

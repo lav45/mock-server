@@ -8,6 +8,7 @@ class Proxy extends DTObject
 {
     public string $url;
     public array $headers = [];
+    public array|string|null $content = null;
     /** @deprecated */
     public array $options = [];
 }

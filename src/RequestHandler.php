@@ -40,7 +40,7 @@ class RequestHandler implements \Amp\Http\Server\RequestHandler
         $url = $request->getUri();
         $method = $request->getMethod();
         $statusCode = $response->getStatus();
-        $message = "Request {$type}: {$method} {$url} => code: {$statusCode}";
+        $message = "Request {$type}: {$statusCode} {$method} {$url}";
         ($statusCode === 200) ?
             $this->logger->info($message) :
             $this->logger->warning($message);

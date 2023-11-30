@@ -214,6 +214,32 @@ Deprecated! Will be removed in the next version.
 ]
 ```
 
+### `response.proxy.content`
+
+| Types               | Default |
+|---------------------|---------|
+| array\|string\|null | null    |
+
+```json
+[
+    {
+        "request": {
+            "url": "/proxy/{path:.+}"
+        },
+        "response": {
+            "proxy": {
+                "url": "https://api.site.com/content-wrapper",
+                "content": {
+                  "account": {
+                    "id": "{{faker.uuid}}"
+                  }
+                }
+            }
+        }
+    }
+]
+```
+
 ## Data provider
 
 ### `response.data.status`
