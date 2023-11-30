@@ -7,8 +7,8 @@ use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Response\Proxy;
-use lav45\MockServer\Mock\Webhook;
 use lav45\MockServer\Request\RequestWrapper;
+use League\Uri\Http;
 use Throwable;
 
 class ProxyHandler extends BaseRequestHandler
@@ -25,13 +25,15 @@ class ProxyHandler extends BaseRequestHandler
     {
         try {
             $url = $this->parser->replace($this->proxy->url);
+            $uri = Http::new($url);
+
             $method = $request->getMethod();
-            $query = $request->get();
+            $query = $this->getQuery($uri->getQuery(), $request->get());
             $body = $request->getContent() ?: '';
             $headers = $this->getHeaders($this->proxy, $request->getHeaders());
 
             $response = $this->httpClient->request(
-                url: $url,
+                uri: $uri,
                 method: $method,
                 query: $query,
                 body: $body,
@@ -49,6 +51,14 @@ class ProxyHandler extends BaseRequestHandler
             $response->getHeaders(),
             $response->getBody()->buffer()
         );
+    }
+
+    private function getQuery(string|null $uriQuery, array $requestQuery = []): array
+    {
+        if (empty($uriQuery)) {
+            return $requestQuery;
+        }
+        return RequestWrapper::parseQuery($uriQuery) + $requestQuery;
     }
 
     private function getHeaders(Proxy $proxy, array $headers): array

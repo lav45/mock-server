@@ -55,7 +55,7 @@ class WebhooksMiddleware extends BaseMiddleware
                 $body = $this->getBodyContent($webhook);
 
                 $response = $this->httpClient->request(
-                    url: $url,
+                    uri: $url,
                     method: $method,
                     body: $body,
                     headers: $headers,

@@ -61,12 +61,21 @@ class RequestWrapper
     public function get(string $key = null, array|int|string|null $default = null): array|int|string|null
     {
         if ($this->get === null) {
-            parse_str($this->getUri()->getQuery(), $this->get);
+            $this->get = self::parseQuery($this->getUri()->getQuery());
         }
         if ($key === null) {
             return $this->get;
         }
         return $this->get[$key] ?? $default;
+    }
+
+    public static function parseQuery(string|null $query): array
+    {
+        $parseQuery = [];
+        if ($query) {
+            parse_str($query, $parseQuery);
+        }
+        return $parseQuery;
     }
 
     public function post(): array

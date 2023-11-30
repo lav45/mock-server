@@ -40,14 +40,14 @@ class HttpClient
     }
 
     public function request(
-        UriInterface|string $url,
+        UriInterface|string $uri,
         string              $method = 'GET',
         array               $query = [],
         HttpContent|string  $body = '',
         array               $headers = []
     ): Response
     {
-        $request = new Request($url, $method);
+        $request = new Request($uri, $method);
         $request->setBody($body);
         $request->setQueryParameters($query);
         $request->setHeaders($headers);

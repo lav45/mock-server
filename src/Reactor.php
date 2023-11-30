@@ -133,8 +133,8 @@ class Reactor implements RequestHandlerInterface
         $requestHandler = Middleware\stackMiddleware(
             new RequestHandler($response, $parser, $this->logger, $this->httpClient),
             new InitEnvParserMiddleware($parser, $mock->env),
-            new WebhooksMiddleware($webhooks, $parser, $this->logger, $this->httpClient),
             new RequestParamsMiddleware($parser),
+            new WebhooksMiddleware($webhooks, $parser, $this->logger, $this->httpClient),
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);
