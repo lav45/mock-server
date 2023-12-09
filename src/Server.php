@@ -13,6 +13,7 @@ use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory;
+use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
@@ -23,6 +24,7 @@ class Server
         private readonly int    $port = 8080,
         private readonly string $mocksPath = '/app/mocks',
         private readonly string $locale = 'en_US',
+        private readonly string $logLevel = 'info',
     )
     {
     }
@@ -36,7 +38,7 @@ class Server
         $factory = $this->getFactory();
         $httpClient = $this->getHttpClient();
 
-        $router = new Reactor(
+        $reactor = new Reactor(
             mocksPath: $this->mocksPath,
             errorHandler: $errorHandler,
             faker: $factory,
@@ -44,7 +46,7 @@ class Server
             httpClient: $httpClient
         );
 
-        $server->start($router, $errorHandler);
+        $server->start($reactor, $errorHandler);
         $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop();
     }
@@ -80,13 +82,15 @@ class Server
 
     protected function getLogHandler(): StreamHandler
     {
-        return (new StreamHandler(ByteStream\getStdout()))
-            ->pushProcessor(new PsrLogMessageProcessor())
-            ->setFormatter(new ConsoleFormatter(
-                format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
-                dateFormat: 'd.m.Y H:i:s.v',
-                allowInlineLineBreaks: true,
-                ignoreEmptyContextAndExtra: true
-            ));
+        $handler = new StreamHandler(ByteStream\getStdout());
+        $handler->setLevel(Level::fromName($this->logLevel));
+        $handler->pushProcessor(new PsrLogMessageProcessor());
+        $handler->setFormatter(new ConsoleFormatter(
+            format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
+            dateFormat: 'd.m.Y H:i:s.v',
+            allowInlineLineBreaks: true,
+            ignoreEmptyContextAndExtra: true
+        ));
+        return $handler;
     }
 }
