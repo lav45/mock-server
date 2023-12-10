@@ -1,3 +1,7 @@
 /mocks               export-ignore
+/docs                export-ignore
 /.gitattributes      export-ignore
 /.gitignore          export-ignore
+/build.sh            export-ignore
+/composer            export-ignore
+/docker              export-ignore
