@@ -6,9 +6,9 @@ use lav45\MockServer\InvalidConfigException;
 
 trait DataTypeTrait
 {
-    private ?string $type = null;
+    private string|null $type = null;
 
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }

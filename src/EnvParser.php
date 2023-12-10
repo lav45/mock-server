@@ -4,7 +4,7 @@ namespace lav45\MockServer;
 
 use Closure;
 use Generator;
-use Yiisoft\Arrays\ArrayHelper;
+use lav45\MockServer\components\ArrayHelper;
 
 class EnvParser
 {
@@ -69,7 +69,6 @@ class EnvParser
     {
         $callback = function ($matches) {
             $key = trim($matches[1], '{} ');
-            $key = explode('.', $key);
             return ArrayHelper::getValue($this->data, $key);
         };
 

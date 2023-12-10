@@ -6,7 +6,7 @@ abstract class DTObject
 {
     public function __construct(array $config = [])
     {
-        configure($this, $config);
+        ObjectHelper::configure($this, $config);
     }
 
     public function __get(string $name)
@@ -33,12 +33,5 @@ abstract class DTObject
             return $this->$getter() !== null;
         }
         return false;
-    }
-}
-
-function configure(object $object, array $properties): void
-{
-    foreach ($properties as $name => $value) {
-        $object->$name = $value;
     }
 }

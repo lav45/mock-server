@@ -92,7 +92,7 @@ class Reactor implements RequestHandlerInterface
         }
     }
 
-    private function getFile(string $uri): ?string
+    private function getFile(string $uri): string|null
     {
         if (str_contains($uri, '?')) {
             $uri = strstr($uri, '?', true);

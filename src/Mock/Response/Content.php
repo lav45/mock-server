@@ -9,8 +9,8 @@ class Content extends DTObject
 {
     use DataTypeTrait;
 
-    public const TYPE_JSON = 'json';
-    public const TYPE_TEXT = 'text';
+    public const string TYPE_JSON = 'json';
+    public const string TYPE_TEXT = 'text';
 
     public int $status = 200;
     private array $headers = [];

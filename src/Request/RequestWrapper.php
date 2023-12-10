@@ -15,17 +15,17 @@ use RuntimeException;
  */
 class RequestWrapper
 {
-    protected const ATTRIBUTE_NAME = __CLASS__;
     protected Request $request;
-    protected ?RequestBodyWrapper $body = null;
-    private ?array $get = null;
+    protected RequestBodyWrapper|null $body = null;
+    private array|null $get = null;
 
     public static function getInstance(Request $request): static
     {
-        if ($request->hasAttribute(self::ATTRIBUTE_NAME) === false) {
-            $request->setAttribute(self::ATTRIBUTE_NAME, new self($request));
+        $attributeName = __CLASS__;
+        if ($request->hasAttribute($attributeName) === false) {
+            $request->setAttribute($attributeName, new self($request));
         }
-        return $request->getAttribute(self::ATTRIBUTE_NAME);
+        return $request->getAttribute($attributeName);
     }
 
     protected function __construct(Request $request)
@@ -138,7 +138,7 @@ class RequestWrapper
         return BufferedContent::fromString($this->body(), $this->getHeader('content-type'));
     }
 
-    public function getContent(): ?HttpContent
+    public function getContent(): HttpContent|null
     {
         if (in_array($this->getMethod(), ['POST', 'PUT', 'PATCH'], true) === false) {
             return null;

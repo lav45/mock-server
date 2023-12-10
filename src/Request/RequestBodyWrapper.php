@@ -13,8 +13,8 @@ use const PHP_INT_MAX;
 class RequestBodyWrapper
 {
     protected RequestBody $body;
-    protected ?string $buffer = null;
-    protected ?string $read = null;
+    protected string|null $buffer = null;
+    protected string|null $read = null;
 
     public function __construct(RequestBody $requestBody)
     {
@@ -34,7 +34,7 @@ class RequestBodyWrapper
         return $this->buffer ??= $this->body->buffer($cancellation, $limit);
     }
 
-    public function read(?Cancellation $cancellation = null): ?string
+    public function read(?Cancellation $cancellation = null): string|null
     {
         return $this->read ??= $this->body->read($cancellation);
     }

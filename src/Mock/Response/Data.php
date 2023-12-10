@@ -10,8 +10,8 @@ class Data extends DTObject
 {
     use DataTypeTrait;
 
-    public const TYPE_JSON = 'json';
-    public const TYPE_FILE = 'file';
+    public const string TYPE_JSON = 'json';
+    public const string TYPE_FILE = 'file';
 
     public int $status = 200;
     private array $headers = ['content-type' => 'application/json'];

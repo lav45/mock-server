@@ -11,9 +11,9 @@ class Response extends DTObject
 {
     use DataTypeTrait;
 
-    public const TYPE_CONTENT = 'content';
-    public const TYPE_PROXY = 'proxy';
-    public const TYPE_DATA = 'data';
+    public const string TYPE_CONTENT = 'content';
+    public const string TYPE_PROXY = 'proxy';
+    public const string TYPE_DATA = 'data';
 
     public float $delay = 0;
     private Content $content;
