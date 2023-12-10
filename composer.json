@@ -20,7 +20,6 @@
     "require": {
         "php": ">=8.3",
         "ext-pcntl": "*",
-        "ext-posix": "*",
         "amphp/amp": "v3.0.*",
         "amphp/log": "v2.0.*",
         "amphp/sync": "v2.1.*",
@@ -37,10 +36,12 @@
         "league/uri": "7.4.*"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "4.8.*"
+        "maglnet/composer-require-checker": "4.8.*",
+        "icanhazstring/composer-unused": "0.8.*"
     },
     "scripts": {
-        "check": "vendor/bin/composer-require-checker check"
+        "check": "vendor/bin/composer-require-checker check",
+        "unused": "vendor/bin/composer-unused"
     },
     "autoload": {
         "psr-4": {

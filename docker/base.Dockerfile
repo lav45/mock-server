@@ -11,8 +11,8 @@ RUN apk add --no-cache  \
     php83-dom \
     php83-iconv \
     php83-mbstring \
-    php83-gmp \
-    php83-posix
+    php83-tokenizer \
+    php83-gmp
 
 RUN ln -s /usr/bin/php83 /usr/bin/php
 RUN ln -s /etc/php83 /etc/php
