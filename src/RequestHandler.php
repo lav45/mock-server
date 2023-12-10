@@ -29,7 +29,7 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 
         $parser = $request->getAttribute(EnvParser::class);
 
-        $type = $this->response->getType() ?: MockResponse::TYPE_CONTENT;
+        $type = $this->response->getType(MockResponse::TYPE_CONTENT);
         $handler = match ($type) {
             MockResponse::TYPE_DATA => new DataHandler($this->response->getData(), $parser),
             MockResponse::TYPE_PROXY => new ProxyHandler($this->response->getProxy(), $parser, $this->httpClient),

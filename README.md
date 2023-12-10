@@ -32,7 +32,7 @@ Create mock file `./mocks/index.json` and put the content in it
 }]
 ```
 
-Starting the Mock Server
+Run the Mock Server
 
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
@@ -44,9 +44,16 @@ Checking
 curl http://127.0.0.1:8080/
 ```
 
-Starting in development mode
+Run in development mode
 ```shell
 ./build.sh
 ./composer install --prefer-dist
 docker run --rm -it -v $(pwd):/app --entrypoint php mock-server-dev:latest /app/mock-server.php
+```
+
+Testing
+```shell
+./build.sh
+./composer install --prefer-dist
+./composer test
 ```

@@ -1,0 +1,20 @@
+<?php
+
+require(__DIR__ . '/../vendor/autoload.php');
+
+// Fake proxy server
+Amp\async(function () {
+    (new lav45\MockServer\test\server\Server(
+        port: 8000,
+        logLevel: 'critical',
+    ))->start();
+});
+
+// Test mock server
+Amp\async(function () {
+    (new lav45\MockServer\Server(
+        port: 80,
+        mocksPath: '/app/test/mocks',
+        logLevel: 'critical',
+    ))->start();
+});

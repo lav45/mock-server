@@ -37,15 +37,22 @@
     },
     "require-dev": {
         "maglnet/composer-require-checker": "4.8.*",
-        "icanhazstring/composer-unused": "0.8.*"
+        "icanhazstring/composer-unused": "0.8.*",
+        "phpunit/phpunit": "10.5.*"
     },
     "scripts": {
+        "test": "vendor/bin/phpunit",
         "check": "vendor/bin/composer-require-checker check",
         "unused": "vendor/bin/composer-unused"
     },
     "autoload": {
         "psr-4": {
             "lav45\\MockServer\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "lav45\\MockServer\\test\\": "test"
         }
     },
     "minimum-stability": "stable",

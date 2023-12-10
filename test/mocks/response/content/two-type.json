@@ -1,0 +1,13 @@
+[
+    {
+        "request": {
+            "url": "/response/content/two-type"
+        },
+        "response": {
+            "content": {
+                "text": "Error",
+                "json": []
+            }
+        }
+    }
+]

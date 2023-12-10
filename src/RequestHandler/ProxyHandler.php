@@ -58,7 +58,7 @@ class ProxyHandler extends BaseRequestHandler
         return Http::new($url);
     }
 
-    private function getQuery(EnvParser $parser, string|null $uriQuery, array $requestQuery = []): array
+    private function getQuery(EnvParser $parser, string $uriQuery, array $requestQuery = []): array
     {
         if (empty($uriQuery)) {
             return $requestQuery;

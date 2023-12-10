@@ -8,9 +8,9 @@ trait DataTypeTrait
 {
     private string|null $type = null;
 
-    public function getType(): string|null
+    public function getType(string $default = null): string|null
     {
-        return $this->type;
+        return $this->type ?? $default;
     }
 
     protected function setType(string $type): void

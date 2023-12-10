@@ -1,0 +1,14 @@
+[
+    {
+        "request": {
+            "url": "/response/content/json"
+        },
+        "response": {
+            "content": {
+                "json": [
+                    "OK"
+                ]
+            }
+        }
+    }
+]

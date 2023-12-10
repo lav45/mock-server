@@ -1,0 +1,13 @@
+[
+    {
+        "request": {
+            "url": "/response/data/two-type"
+        },
+        "response": {
+            "data": {
+                "file": "/app/test/mocks/response/data/_data.json",
+                "json": []
+            }
+        }
+    }
+]

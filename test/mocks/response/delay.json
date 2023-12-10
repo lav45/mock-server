@@ -1,0 +1,10 @@
+[
+    {
+        "request": {
+            "url": "/response/delay"
+        },
+        "response": {
+            "delay": 0.2
+        }
+    }
+]

@@ -1,0 +1,10 @@
+[
+    {
+        "request": {
+            "url": "/response/data"
+        },
+        "response": {
+            "data": {}
+        }
+    }
+]

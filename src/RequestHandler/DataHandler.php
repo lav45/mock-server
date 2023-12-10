@@ -33,7 +33,7 @@ class DataHandler extends BaseRequestHandler
         try {
             $items = $this->parser->replace($dataProvider->read());
             $items = array_values($items);
-        } catch (PaginatorException $e) {
+        } catch (PaginatorException) {
             $items = [];
         }
 

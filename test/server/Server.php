@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer;
+namespace lav45\MockServer\test\server;
 
 use Amp;
 use Amp\ByteStream;
@@ -12,18 +12,16 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
-use Faker\Factory;
+use lav45\MockServer\test\server\components\Storage;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-final readonly class Server
+readonly class Server
 {
     public function __construct(
         private string $host = '0.0.0.0',
-        private int    $port = 8080,
-        private string $mocksPath = '/app/mocks',
-        private string $locale = 'en_US',
+        private int    $port = 8000,
         private string $logLevel = 'info',
     )
     {
@@ -35,30 +33,13 @@ final readonly class Server
         $logger = $this->getLogger($logHandler);
         $server = $this->getServer($logger);
         $errorHandler = $this->getErrorHandler();
-        $factory = $this->getFactory();
-        $httpClient = $this->getHttpClient();
 
-        $reactor = new Reactor(
-            mocksPath: $this->mocksPath,
-            errorHandler: $errorHandler,
-            faker: $factory,
-            logger: $logger,
-            httpClient: $httpClient
-        );
+        $storage = new Storage();
+        $requestHandler = new RequestHandler($storage);
 
-        $server->start($reactor, $errorHandler);
+        $server->start($requestHandler, $errorHandler);
         $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop();
-    }
-
-    protected function getHttpClient(): HttpClient
-    {
-        return (new HttpClient())->build();
-    }
-
-    protected function getFactory(): FakerParser
-    {
-        return new FakerParser(Factory::create($this->locale));
     }
 
     protected function getErrorHandler(): ErrorHandler
@@ -75,7 +56,7 @@ final readonly class Server
         return $server;
     }
 
-    protected function getLogger(StreamHandler $handler, string $name = 'mock-server'): Logger
+    protected function getLogger(StreamHandler $handler, string $name = 'listen-server'): Logger
     {
         return (new Logger($name))->pushHandler($handler);
     }
@@ -85,12 +66,7 @@ final readonly class Server
         $handler = new StreamHandler(ByteStream\getStdout());
         $handler->setLevel(Level::fromName($this->logLevel));
         $handler->pushProcessor(new PsrLogMessageProcessor());
-        $handler->setFormatter(new ConsoleFormatter(
-            format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
-            dateFormat: 'd.m.Y H:i:s.v',
-            allowInlineLineBreaks: true,
-            ignoreEmptyContextAndExtra: true
-        ));
+        $handler->setFormatter(new ConsoleFormatter);
         return $handler;
     }
 }

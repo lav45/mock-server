@@ -28,7 +28,7 @@ class RequestWrapper
         return $request->getAttribute($attributeName);
     }
 
-    protected function __construct(Request $request)
+    private function __construct(Request $request)
     {
         $this->request = $request;
     }
@@ -58,7 +58,7 @@ class RequestWrapper
         return $this->getAttribute(Reactor::class);
     }
 
-    public function get(string $key = null, array|int|string|null $default = null): array|int|string|null
+    public function get(string $key = null, array|int|float|string|bool|null $default = null): array|int|float|string|bool|null
     {
         if ($this->get === null) {
             $this->get = self::parseQuery($this->getUri()->getQuery());
@@ -69,12 +69,9 @@ class RequestWrapper
         return $this->get[$key] ?? $default;
     }
 
-    public static function parseQuery(string|null $query): array
+    public static function parseQuery(string $query): array
     {
-        $parseQuery = [];
-        if ($query) {
-            parse_str($query, $parseQuery);
-        }
+        parse_str($query, $parseQuery);
         return $parseQuery;
     }
 

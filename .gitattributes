@@ -5,3 +5,5 @@
 /build.sh            export-ignore
 /composer            export-ignore
 /docker              export-ignore
+/phpunit.xml.dist    export-ignore
+/test                export-ignore

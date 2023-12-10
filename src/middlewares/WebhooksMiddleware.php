@@ -52,6 +52,7 @@ class WebhooksMiddleware extends BaseMiddleware
             }
             try {
                 $url = $parser->replace($webhook->url);
+                $query = $this->getQuery($url);
                 $method = $parser->replace($webhook->method);
                 $headers = $this->getHeaders($webhook, $parser);
                 $body = $this->getBodyContent($webhook, $parser);
@@ -59,6 +60,7 @@ class WebhooksMiddleware extends BaseMiddleware
                 $response = $this->httpClient->request(
                     uri: $url,
                     method: $method,
+                    query: $query,
                     body: $body,
                     headers: $headers,
                 );
@@ -72,6 +74,15 @@ class WebhooksMiddleware extends BaseMiddleware
                 $this->logger->error($exception->getMessage());
             }
         }
+    }
+
+    private function getQuery(string $url): array
+    {
+        $query = parse_url($url, PHP_URL_QUERY);
+        if (empty($query)) {
+            return [];
+        }
+        return RequestWrapper::parseQuery($query);
     }
 
     private function getBodyContent(Webhook $webhook, EnvParser $parser): HttpContent|string
