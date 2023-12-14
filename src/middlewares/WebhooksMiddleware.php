@@ -31,7 +31,7 @@ class WebhooksMiddleware extends BaseMiddleware
 
     public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response
     {
-        Amp\async(fn() => $this->internalHandler($this->webhooks));
+        Amp\async(fn() => $this->internalHandler($this->webhooks, clone $this->parser));
         if ($requestHandler instanceof WrappedRequestHandlerInterface) {
             return $requestHandler->handleWrappedRequest($request);
         }
@@ -41,18 +41,18 @@ class WebhooksMiddleware extends BaseMiddleware
     /**
      * @param Webhook[] $webhooks
      */
-    protected function internalHandler(array $webhooks): void
+    protected function internalHandler(array $webhooks, EnvParser $parser): void
     {
         foreach ($webhooks as $webhook) {
             if ($delay = $webhook->delay) {
-                $delay = (float)$this->parser->replace($delay);
+                $delay = (float)$parser->replace($delay);
                 Amp\delay($delay);
             }
             try {
-                $url = $this->parser->replace($webhook->url);
-                $method = $this->parser->replace($webhook->method);
-                $headers = $this->getHeaders($webhook);
-                $body = $this->getBodyContent($webhook);
+                $url = $parser->replace($webhook->url);
+                $method = $parser->replace($webhook->method);
+                $headers = $this->getHeaders($webhook, $parser);
+                $body = $this->getBodyContent($webhook, $parser);
 
                 $response = $this->httpClient->request(
                     uri: $url,
@@ -72,25 +72,25 @@ class WebhooksMiddleware extends BaseMiddleware
         }
     }
 
-    private function getBodyContent(Webhook $webhook): HttpContent|string
+    private function getBodyContent(Webhook $webhook, EnvParser $parser): HttpContent|string
     {
         $text = $webhook->options['text'] ?? $webhook->text;
         if ($text) {
             return $text;
         }
         $json = $webhook->options['json'] ?? $webhook->json;
-        return $json ? $this->parseContent($json) : '';
+        return $json ? $this->parseContent($json, $parser) : '';
     }
 
-    protected function getHeaders(Webhook $webhook): array
+    protected function getHeaders(Webhook $webhook, EnvParser $parser): array
     {
         $headers = $webhook->options['headers'] ?? $webhook->headers;
-        return $this->parser->replace($headers);
+        return $parser->replace($headers);
     }
 
-    private function parseContent(array $body): HttpContent|string
+    private function parseContent(array $body, EnvParser $parser): HttpContent|string
     {
-        $body = $this->parser->replace($body);
+        $body = $parser->replace($body);
         $data = json_encode($body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         return BufferedContent::fromString($data, 'application/json');
     }
