@@ -455,16 +455,16 @@
         },
         {
             "name": "amphp/http-client",
-            "version": "v5.0.0",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/http-client.git",
-                "reference": "03476991480578deb2058b926c1be1479129779f"
+                "reference": "9b42ca1a5af9abd1dd8c3f9e45c2bb15957361b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/http-client/zipball/03476991480578deb2058b926c1be1479129779f",
-                "reference": "03476991480578deb2058b926c1be1479129779f",
+                "url": "https://api.github.com/repos/amphp/http-client/zipball/9b42ca1a5af9abd1dd8c3f9e45c2bb15957361b7",
+                "reference": "9b42ca1a5af9abd1dd8c3f9e45c2bb15957361b7",
                 "shasum": ""
             },
             "require": {
@@ -538,7 +538,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/http-client/issues",
-                "source": "https://github.com/amphp/http-client/tree/v5.0.0"
+                "source": "https://github.com/amphp/http-client/tree/v5.0.1"
             },
             "funding": [
                 {
@@ -546,7 +546,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-08T16:24:43+00:00"
+            "time": "2023-12-11T03:48:12+00:00"
         },
         {
             "name": "amphp/http-server",
@@ -1059,16 +1059,16 @@
         },
         {
             "name": "amphp/socket",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/socket.git",
-                "reference": "3418a0c5c0d4978b0e8e0619ce1da0851c4053d3"
+                "reference": "88ca6d2cfec2f40b1c7beac7316a26cd916fd209"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/socket/zipball/3418a0c5c0d4978b0e8e0619ce1da0851c4053d3",
-                "reference": "3418a0c5c0d4978b0e8e0619ce1da0851c4053d3",
+                "url": "https://api.github.com/repos/amphp/socket/zipball/88ca6d2cfec2f40b1c7beac7316a26cd916fd209",
+                "reference": "88ca6d2cfec2f40b1c7beac7316a26cd916fd209",
                 "shasum": ""
             },
             "require": {
@@ -1131,7 +1131,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/socket/issues",
-                "source": "https://github.com/amphp/socket/tree/v2.2.0"
+                "source": "https://github.com/amphp/socket/tree/v2.2.1"
             },
             "funding": [
                 {
@@ -1139,7 +1139,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-08-19T15:28:34+00:00"
+            "time": "2023-12-16T00:08:33+00:00"
         },
         {
             "name": "amphp/sync",
@@ -2821,16 +2821,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.24.4",
+            "version": "1.24.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "6bd0c26f3786cd9b7c359675cb789e35a8e07496"
+                "reference": "fedf211ff14ec8381c9bf5714e33a7a552dd1acc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/6bd0c26f3786cd9b7c359675cb789e35a8e07496",
-                "reference": "6bd0c26f3786cd9b7c359675cb789e35a8e07496",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/fedf211ff14ec8381c9bf5714e33a7a552dd1acc",
+                "reference": "fedf211ff14ec8381c9bf5714e33a7a552dd1acc",
                 "shasum": ""
             },
             "require": {
@@ -2862,9 +2862,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.24.4"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.24.5"
             },
-            "time": "2023-11-26T18:29:22+00:00"
+            "time": "2023-12-16T09:33:33+00:00"
         },
         {
             "name": "symfony/config",

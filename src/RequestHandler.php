@@ -11,13 +11,12 @@ use lav45\MockServer\RequestHandler\ProxyHandler;
 use Monolog\Logger;
 use function Amp\delay;
 
-class RequestHandler implements \Amp\Http\Server\RequestHandler
+readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     public function __construct(
-        private readonly MockResponse $response,
-        private readonly EnvParser    $parser,
-        private readonly Logger       $logger,
-        private readonly HttpClient   $httpClient,
+        private MockResponse $response,
+        private Logger       $logger,
+        private HttpClient   $httpClient,
     )
     {
     }
@@ -28,11 +27,13 @@ class RequestHandler implements \Amp\Http\Server\RequestHandler
             delay($this->response->delay);
         }
 
+        $parser = $request->getAttribute(EnvParser::class);
+
         $type = $this->response->getType() ?: MockResponse::TYPE_CONTENT;
         $handler = match ($type) {
-            MockResponse::TYPE_DATA => new DataHandler($this->response->getData(), $this->parser),
-            MockResponse::TYPE_PROXY => new ProxyHandler($this->response->getProxy(), $this->parser, $this->httpClient),
-            MockResponse::TYPE_CONTENT => new ContentHandler($this->response->getContent(), $this->parser)
+            MockResponse::TYPE_DATA => new DataHandler($this->response->getData(), $parser),
+            MockResponse::TYPE_PROXY => new ProxyHandler($this->response->getProxy(), $parser, $this->httpClient),
+            MockResponse::TYPE_CONTENT => new ContentHandler($this->response->getContent(), $parser)
         };
 
         $response = $handler->handleRequest($request);

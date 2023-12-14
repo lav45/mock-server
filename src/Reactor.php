@@ -10,8 +10,7 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use lav45\MockServer\middlewares\InitEnvParserMiddleware;
-use lav45\MockServer\middlewares\RequestParamsMiddleware;
+use lav45\MockServer\middlewares\InitParserMiddleware;
 use lav45\MockServer\middlewares\WebhooksMiddleware;
 use Monolog\Logger;
 use UnexpectedValueException;
@@ -50,7 +49,7 @@ class Reactor implements RequestHandlerInterface
         return $this->matchRequest($match, $request);
     }
 
-    protected function getRouter($file): Dispatcher
+    protected function getRouter(string $file): Dispatcher
     {
         $key = md5_file($file);
         if (isset($this->routerCache[$file]) && $this->routerCache[$file][0] === $key) {
@@ -128,13 +127,10 @@ class Reactor implements RequestHandlerInterface
         $response = $mock->getResponse();
         $webhooks = $mock->getWebhooks();
 
-        $parser = new EnvParser($this->faker);
-
         $requestHandler = Middleware\stackMiddleware(
-            new RequestHandler($response, $parser, $this->logger, $this->httpClient),
-            new InitEnvParserMiddleware($parser, $mock->env),
-            new RequestParamsMiddleware($parser),
-            new WebhooksMiddleware($webhooks, $parser, $this->logger, $this->httpClient),
+            new RequestHandler($response, $this->logger, $this->httpClient),
+            new InitParserMiddleware($this->faker, $mock->env),
+            new WebhooksMiddleware($webhooks, $this->logger, $this->httpClient),
         );
 
         $rc->addRoute($request->getMethod(), $request->url, $requestHandler);

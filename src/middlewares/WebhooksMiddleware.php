@@ -22,7 +22,6 @@ class WebhooksMiddleware extends BaseMiddleware
      */
     public function __construct(
         private readonly array      $webhooks,
-        private readonly EnvParser  $parser,
         private readonly Logger     $logger,
         private readonly HttpClient $httpClient,
     )
@@ -31,7 +30,10 @@ class WebhooksMiddleware extends BaseMiddleware
 
     public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response
     {
-        Amp\async(fn() => $this->internalHandler($this->webhooks, clone $this->parser));
+        $parser = $request->getAttribute(EnvParser::class);
+
+        Amp\async(fn() => $this->internalHandler($this->webhooks, $parser));
+
         if ($requestHandler instanceof WrappedRequestHandlerInterface) {
             return $requestHandler->handleWrappedRequest($request);
         }
