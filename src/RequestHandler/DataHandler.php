@@ -23,7 +23,7 @@ class DataHandler extends BaseRequestHandler
     {
         $pagination = $this->data->getPagination();
         $pageSize = (int)$request->get($pagination->pageSizeParam, $pagination->defaultPageSize);
-        $currentPage = (int)$request->get($pagination->pageParam, 1);
+        $currentPage = (int)($request->get($pagination->pageParam) ?: 1);
 
         $dataReader = new IterableDataReader($this->data->getJson());
         $dataProvider = (new OffsetPaginator($dataReader))
