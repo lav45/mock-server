@@ -5,39 +5,37 @@ namespace lav45\MockServer\middlewares;
 use Amp;
 use Amp\Http\Client\BufferedContent;
 use Amp\Http\Client\HttpContent;
+use Amp\Http\Server\Middleware;
+use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Webhook;
 use lav45\MockServer\Request\RequestWrapper;
-use lav45\MockServer\RequestHandler\WrappedRequestHandlerInterface;
 use Monolog\Logger;
 use RuntimeException;
 
-class WebhooksMiddleware extends BaseMiddleware
+readonly class WebhooksMiddleware implements Middleware
 {
     /**
      * @param Webhook[] $webhooks
      */
     public function __construct(
-        private readonly array      $webhooks,
-        private readonly Logger     $logger,
-        private readonly HttpClient $httpClient,
+        private array      $webhooks,
+        private Logger     $logger,
+        private HttpClient $httpClient,
     )
     {
     }
 
-    public function handleWrappedRequest(RequestWrapper $request, RequestHandler $requestHandler): Response
+    public function handleRequest(Request $request, RequestHandler $requestHandler): Response
     {
         $parser = $request->getAttribute(EnvParser::class);
 
         Amp\async(fn() => $this->internalHandler($this->webhooks, $parser));
 
-        if ($requestHandler instanceof WrappedRequestHandlerInterface) {
-            return $requestHandler->handleWrappedRequest($request);
-        }
-        return $requestHandler->handleRequest($request->getRequest());
+        return $requestHandler->handleRequest($request);
     }
 
     /**

@@ -19,16 +19,7 @@ class RequestWrapper
     protected RequestBodyWrapper|null $body = null;
     private array|null $get = null;
 
-    public static function getInstance(Request $request): static
-    {
-        $attributeName = __CLASS__;
-        if ($request->hasAttribute($attributeName) === false) {
-            $request->setAttribute($attributeName, new self($request));
-        }
-        return $request->getAttribute($attributeName);
-    }
-
-    private function __construct(Request $request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }

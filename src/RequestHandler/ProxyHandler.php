@@ -4,6 +4,8 @@ namespace lav45\MockServer\RequestHandler;
 
 use Amp\Http\Client\HttpContent;
 use Amp\Http\HttpStatus;
+use Amp\Http\Server\Request;
+use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
@@ -12,7 +14,7 @@ use lav45\MockServer\Request\RequestWrapper;
 use League\Uri\Http;
 use Throwable;
 
-final readonly class ProxyHandler extends BaseRequestHandler
+final readonly class ProxyHandler implements RequestHandler
 {
     public function __construct(
         private Proxy      $proxy,
@@ -22,15 +24,18 @@ final readonly class ProxyHandler extends BaseRequestHandler
     {
     }
 
-    public function handleWrappedRequest(RequestWrapper $request): Response
+    public function handleRequest(Request $request): Response
     {
-        try {
-            $uri = $this->getUri($this->parser, $this->proxy->url);
-            $method = $request->getMethod();
-            $query = $this->getQuery($this->parser, $uri->getQuery(), $request->get());
-            $body = $this->getContent($this->parser, $this->proxy->content, $request->getContent());
-            $headers = $this->getHeaders($this->parser, $this->proxy, $request->getHeaders());
+        /** @var RequestWrapper $requestWrapper */
+        $requestWrapper = $request->getAttribute(RequestWrapper::class);
 
+        $uri = $this->getUri($this->parser, $this->proxy->url);
+        $method = $requestWrapper->getMethod();
+        $query = $this->getQuery($this->parser, $uri->getQuery(), $requestWrapper->get());
+        $body = $this->getContent($this->parser, $this->proxy->content, $requestWrapper->getContent());
+        $headers = $this->getHeaders($this->parser, $this->proxy, $requestWrapper->getHeaders());
+
+        try {
             $response = $this->httpClient->request(
                 uri: $uri,
                 method: $method,

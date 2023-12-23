@@ -17,7 +17,7 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 
     public function handleRequest(Request $request): Response
     {
-        $requestWrapper = RequestWrapper::getInstance($request);
+        $requestWrapper = new RequestWrapper($request);
 
         return match ($request->getUri()->getPath()) {
             '/' => new Response(body: 'OK'),
