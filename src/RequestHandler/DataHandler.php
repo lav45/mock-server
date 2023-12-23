@@ -10,11 +10,11 @@ use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 
-class DataHandler extends BaseRequestHandler
+final readonly class DataHandler extends BaseRequestHandler
 {
     public function __construct(
-        private readonly Data      $data,
-        private readonly EnvParser $parser
+        private Data      $data,
+        private EnvParser $parser
     )
     {
     }

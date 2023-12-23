@@ -6,7 +6,7 @@ use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use lav45\MockServer\Request\RequestWrapper;
 
-abstract class BaseRequestHandler implements WrappedRequestHandlerInterface
+abstract readonly class BaseRequestHandler implements WrappedRequestHandlerInterface
 {
     public function handleRequest(Request $request): Response
     {

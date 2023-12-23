@@ -7,7 +7,6 @@ RUN apk add --no-cache \
     php83-zip \
     php83-xml \
     php83-xmlwriter \
-    php83-tokenizer \
-    php83-pecl-xdebug
+    php83-tokenizer
 
 RUN wget https://getcomposer.org/installer -O - | php -- --with-openssl --install-dir=/usr/local/bin --filename=composer

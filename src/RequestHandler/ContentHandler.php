@@ -7,11 +7,11 @@ use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Content;
 use lav45\MockServer\Request\RequestWrapper;
 
-class ContentHandler extends BaseRequestHandler
+final readonly class ContentHandler extends BaseRequestHandler
 {
     public function __construct(
-        private readonly Content   $content,
-        private readonly EnvParser $parser,
+        private Content   $content,
+        private EnvParser $parser,
     )
     {
     }

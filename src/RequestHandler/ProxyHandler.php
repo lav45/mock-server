@@ -12,12 +12,12 @@ use lav45\MockServer\Request\RequestWrapper;
 use League\Uri\Http;
 use Throwable;
 
-class ProxyHandler extends BaseRequestHandler
+final readonly class ProxyHandler extends BaseRequestHandler
 {
     public function __construct(
-        private readonly Proxy      $proxy,
-        private readonly EnvParser  $parser,
-        private readonly HttpClient $httpClient,
+        private Proxy      $proxy,
+        private EnvParser  $parser,
+        private HttpClient $httpClient,
     )
     {
     }

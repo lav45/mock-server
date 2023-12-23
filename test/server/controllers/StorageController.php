@@ -25,15 +25,11 @@ final readonly class StorageController
         $data = $this->storage->all();
         $data = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
+        $this->storage->flush();
+
         return new Response(
             headers: $headers,
             body: $data
         );
-    }
-
-    public function delete(): Response
-    {
-        $this->storage->flush();
-        return new Response();
     }
 }

@@ -42,8 +42,7 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
         }
 
         return match ($request->getMethod()) {
-            'GET' => $controller->index(),
-            'DELETE' => $controller->delete()
+            'GET' => $controller->index()
         };
     }
 

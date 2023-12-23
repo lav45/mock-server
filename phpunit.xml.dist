@@ -6,7 +6,7 @@
          colors="true"
 >
   <testsuites>
-    <testsuite name="Mock Server Test">
+    <testsuite name="Mock Server - Functional testing">
       <directory>test/suite</directory>
     </testsuite>
   </testsuites>

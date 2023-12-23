@@ -57,9 +57,9 @@ class Reactor implements RequestHandlerInterface
         }
 
         $routes = $this->getRoutes($file);
-        $dispatcher = simpleDispatcher(function (RouteCollector $rc) use ($routes): void {
+        $dispatcher = simpleDispatcher(function (RouteCollector $router) use ($routes): void {
             foreach ($routes as $route) {
-                $this->addRoute($rc, $route);
+                $this->addRoute($router, $route);
             }
         });
 
@@ -120,7 +120,7 @@ class Reactor implements RequestHandlerInterface
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function addRoute(RouteCollector $rc, array $item): void
+    private function addRoute(RouteCollector $router, array $item): void
     {
         $mock = new Mock($item);
         $request = $mock->getRequest();
@@ -133,7 +133,7 @@ class Reactor implements RequestHandlerInterface
             new WebhooksMiddleware($webhooks, $this->logger, $this->httpClient),
         );
 
-        $rc->addRoute($request->getMethod(), $request->url, $requestHandler);
+        $router->addRoute($request->getMethod(), $request->url, $requestHandler);
     }
 
     /**

@@ -42,7 +42,7 @@ class WebhookTest extends TestCase
 
         $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
         $this->assertEquals(200, $response->getStatus());
-        $this->HttpClient->request('http://127.0.0.1:8000/__storage', 'DELETE');
+
         $content = $response->getBody()->buffer();
         $content = json_decode($content, true);
 
