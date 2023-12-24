@@ -6,7 +6,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 Amp\async(function () {
     (new lav45\MockServer\test\server\Server(
         port: 8000,
-        logLevel: 'critical',
+        logLevel: 'error',
     ))->start();
 });
 
@@ -15,6 +15,6 @@ Amp\async(function () {
     (new lav45\MockServer\Server(
         port: 80,
         mocksPath: '/app/test/mocks',
-        logLevel: 'critical',
+        logLevel: 'error',
     ))->start();
 });

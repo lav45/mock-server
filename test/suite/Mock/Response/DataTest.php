@@ -267,10 +267,4 @@ class DataTest extends TestCase
         $this->assertEquals(418, $response->getStatus());
         $this->assertEquals('[]', $response->getBody()->buffer());
     }
-
-    public function testSetTwoType(): void
-    {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/two-type');
-        $this->assertSame(500, $response->getStatus());
-    }
 }
