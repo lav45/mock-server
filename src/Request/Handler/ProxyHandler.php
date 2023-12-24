@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\RequestHandler;
+namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Client\HttpContent;
 use Amp\Http\HttpStatus;
@@ -10,7 +10,7 @@ use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Response\Proxy;
-use lav45\MockServer\Request\RequestWrapper;
+use lav45\MockServer\Request\Wrapper\RequestWrapper;
 use League\Uri\Http;
 use Throwable;
 

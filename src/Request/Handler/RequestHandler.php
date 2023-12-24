@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer;
+namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
+use lav45\MockServer\EnvParser;
+use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Response as MockResponse;
-use lav45\MockServer\RequestHandler\ContentHandler;
-use lav45\MockServer\RequestHandler\DataHandler;
-use lav45\MockServer\RequestHandler\ProxyHandler;
 use Monolog\Logger;
 use function Amp\delay;
 

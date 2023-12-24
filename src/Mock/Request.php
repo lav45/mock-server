@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Mock;
 
-use lav45\MockServer\components\DTObject;
+use lav45\MockServer\Component\DTObject;
 
 class Request extends DTObject
 {

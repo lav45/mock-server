@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\RequestHandler;
+namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;

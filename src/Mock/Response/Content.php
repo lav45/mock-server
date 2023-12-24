@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Mock\Response;
 
-use lav45\MockServer\components\DTObject;
+use lav45\MockServer\Component\DTObject;
 use lav45\MockServer\Mock\DataTypeTrait;
 
 class Content extends DTObject

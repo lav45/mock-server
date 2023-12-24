@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer;
+namespace lav45\MockServer\Mock;
 
-use lav45\MockServer\components\DTObject;
-use lav45\MockServer\Mock\Request;
-use lav45\MockServer\Mock\Response;
-use lav45\MockServer\Mock\Webhook;
+use lav45\MockServer\Component\DTObject;
 
 class Mock extends DTObject
 {

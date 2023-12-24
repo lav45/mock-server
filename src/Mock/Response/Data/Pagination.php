@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Mock\Response\Data;
 
-use lav45\MockServer\components\DTObject;
+use lav45\MockServer\Component\DTObject;
 
 class Pagination extends DTObject
 {

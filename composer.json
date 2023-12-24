@@ -41,7 +41,7 @@
         "phpunit/phpunit": "^10.5"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --testdox",
+        "test": "vendor/bin/phpunit",
         "check": "vendor/bin/composer-require-checker check",
         "unused": "vendor/bin/composer-unused"
     },

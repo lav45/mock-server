@@ -4,9 +4,9 @@ namespace lav45\MockServer;
 
 use Closure;
 use Generator;
-use lav45\MockServer\components\ArrayHelper;
+use lav45\MockServer\Component\ArrayHelper;
 
-class EnvParser
+final class EnvParser
 {
     private array $data = [];
 

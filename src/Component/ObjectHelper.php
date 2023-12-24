@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\components;
+namespace lav45\MockServer\Component;
 
 class ObjectHelper
 {

@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\middlewares;
+namespace lav45\MockServer\Request\Middleware;
 
-use Amp;
 use Amp\Http\Client\BufferedContent;
 use Amp\Http\Client\HttpContent;
 use Amp\Http\Server\Middleware;
@@ -12,9 +11,11 @@ use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Webhook;
-use lav45\MockServer\Request\RequestWrapper;
+use lav45\MockServer\Request\Wrapper\RequestWrapper;
 use Monolog\Logger;
 use RuntimeException;
+use function Amp\async;
+use function Amp\delay;
 
 readonly class WebhooksMiddleware implements Middleware
 {
@@ -33,7 +34,7 @@ readonly class WebhooksMiddleware implements Middleware
     {
         $parser = $request->getAttribute(EnvParser::class);
 
-        Amp\async(fn() => $this->internalHandler($this->webhooks, $parser));
+        async(fn() => $this->internalHandler($this->webhooks, $parser));
 
         return $requestHandler->handleRequest($request);
     }
@@ -46,7 +47,7 @@ readonly class WebhooksMiddleware implements Middleware
         foreach ($webhooks as $webhook) {
             if ($delay = $webhook->delay) {
                 $delay = (float)$parser->replace($delay);
-                Amp\delay($delay);
+                delay($delay);
             }
             try {
                 $url = $parser->replace($webhook->url);

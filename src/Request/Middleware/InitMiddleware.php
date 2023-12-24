@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\middlewares;
+namespace lav45\MockServer\Request\Middleware;
 
 use Amp\Http\Server\Middleware;
 use Amp\Http\Server\Request;
@@ -8,7 +8,7 @@ use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\FakerParser;
-use lav45\MockServer\Request\RequestWrapper;
+use lav45\MockServer\Request\Wrapper\RequestWrapper;
 
 final readonly class InitMiddleware implements Middleware
 {

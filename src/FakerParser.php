@@ -5,9 +5,9 @@ namespace lav45\MockServer;
 use DateTime;
 use Faker\Generator;
 
-class FakerParser
+final readonly class FakerParser
 {
-    public function __construct(private readonly Generator $faker)
+    public function __construct(private Generator $faker)
     {
     }
 

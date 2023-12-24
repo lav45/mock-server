@@ -12,11 +12,11 @@ use Amp\Socket\ClientTlsContext;
 use Amp\Socket\ConnectContext;
 use Psr\Http\Message\UriInterface;
 
-class HttpClient
+final class HttpClient
 {
     private \Amp\Http\Client\HttpClient $client;
 
-    public function build(): static
+    public function build(): self
     {
         $this->client = $this->getBuilder()->build();
         return $this;

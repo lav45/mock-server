@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Request;
+namespace lav45\MockServer\Request\Wrapper;
 
 use Amp\Http\Client\BufferedContent;
 use Amp\Http\Client\Form;
