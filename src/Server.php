@@ -16,6 +16,7 @@ use Faker\Factory;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Psr\Log\LoggerInterface;
 
 final readonly class Server
 {
@@ -36,7 +37,7 @@ final readonly class Server
         $server = $this->getServer($logger);
         $errorHandler = $this->getErrorHandler();
         $factory = $this->getFactory();
-        $httpClient = $this->getHttpClient();
+        $httpClient = $this->getHttpClient($logger);
 
         $reactor = new Reactor(
             mocksPath: $this->mocksPath,
@@ -51,9 +52,13 @@ final readonly class Server
         $server->stop();
     }
 
-    protected function getHttpClient(): HttpClient
+    protected function getHttpClient(LoggerInterface $logger): HttpClient
     {
-        return (new HttpClient())->build();
+        return (new HttpClient(
+            logLevelOk: Level::Info,
+            logLevelError: Level::Error,
+            logger: $logger
+        ))->build();
     }
 
     protected function getFactory(): FakerParser

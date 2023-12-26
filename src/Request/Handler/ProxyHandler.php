@@ -3,6 +3,8 @@
 namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Client\HttpContent;
+use Amp\Http\Client\Request as HttpRequest;
+use Amp\Http\Client\Response as HttpResponse;
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
@@ -31,13 +33,17 @@ final readonly class ProxyHandler implements RequestHandlerInterface
         $headers = $this->getHeaders($this->parser, $this->proxy, $request->getHeaders());
 
         try {
-            $response = $this->httpClient->request(
-                uri: $uri,
-                method: $method,
-                query: $query,
-                body: $body,
-                headers: $headers,
-            );
+            $response = $this->httpClient
+                ->withLogMessage(static function (HttpRequest $request, HttpResponse $response): string {
+                    return "Proxy: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
+                })
+                ->request(
+                    uri: $uri,
+                    method: $method,
+                    query: $query,
+                    body: $body,
+                    headers: $headers,
+                );
         } catch (Throwable $exception) {
             return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,

@@ -4,6 +4,8 @@ namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Client\BufferedContent;
 use Amp\Http\Client\HttpContent;
+use Amp\Http\Client\Request;
+use Amp\Http\Client\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Webhook;
@@ -45,19 +47,17 @@ final readonly class WebhookHandler
                 $headers = $this->getHeaders($webhook, $parser);
                 $body = $this->getBodyContent($webhook, $parser);
 
-                $response = $this->httpClient->request(
-                    uri: $url,
-                    method: $method,
-                    query: $query,
-                    body: $body,
-                    headers: $headers,
-                );
-
-                $statusCode = $response->getStatus();
-                $message = "Webhook: {$statusCode} {$method} {$url}";
-                ($statusCode === 200) ?
-                    $this->logger->info($message) :
-                    $this->logger->warning($message);
+                $this->httpClient
+                    ->withLogMessage(static function (Request $request, Response $response) {
+                        return "Webhook: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
+                    })
+                    ->request(
+                        uri: $url,
+                        method: $method,
+                        query: $query,
+                        body: $body,
+                        headers: $headers,
+                    );
             } catch (RuntimeException $exception) {
                 $this->logger->error($exception->getMessage());
             }

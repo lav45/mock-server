@@ -8,13 +8,26 @@ use Amp\Http\Client\HttpClientBuilder;
 use Amp\Http\Client\HttpContent;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
+use Amp\Http\HttpStatus;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\ConnectContext;
+use Closure;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
 
 final class HttpClient
 {
     private \Amp\Http\Client\HttpClient $client;
+
+    private Closure|null $logMessage = null;
+
+    public function __construct(
+        private readonly mixed                $logLevelOk,
+        private readonly mixed                $logLevelError,
+        private readonly LoggerInterface|null $logger = null,
+    )
+    {
+    }
 
     public function build(): self
     {
@@ -52,6 +65,37 @@ final class HttpClient
         $request->setQueryParameters($query);
         $request->setHeaders($headers);
 
-        return $this->client->request($request);
+        $response = $this->client->request($request);
+
+        $this->log($request, $response);
+
+        return $response;
+    }
+
+    private function log(Request $request, Response $response): void
+    {
+        if ($this->logMessage === null ||
+            $this->logger === null
+        ) {
+            return;
+        }
+        $message = call_user_func($this->logMessage, $request, $response);
+        $loggerLevel = match ($response->getStatus()) {
+            HttpStatus::OK => $this->logLevelOk,
+            default => $this->logLevelError
+        };
+
+        $this->logger->log($loggerLevel, $message);
+    }
+
+    /**
+     * @param Closure $message => fn (Request $request, Response $response): string { ... }
+     * @return self
+     */
+    public function withLogMessage(Closure $message): self
+    {
+        $new = clone $this;
+        $new->logMessage = $message;
+        return $new;
     }
 }
