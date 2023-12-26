@@ -19,7 +19,7 @@ final readonly class StorageController
         return new Response();
     }
 
-    public function index(): Response
+    public function flush(): Response
     {
         $headers = ["content-type" => "application/json"];
         $data = $this->storage->all();

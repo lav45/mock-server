@@ -2,8 +2,6 @@
 
 namespace lav45\MockServer\Request\Handler;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\Mock\Response\Data;
@@ -12,7 +10,7 @@ use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 
-final readonly class DataHandler implements RequestHandler
+final readonly class DataHandler implements RequestHandlerInterface
 {
     public function __construct(
         private Data      $data,
@@ -21,14 +19,11 @@ final readonly class DataHandler implements RequestHandler
     {
     }
 
-    public function handleRequest(Request $request): Response
+    public function handleRequest(RequestWrapper $request): Response
     {
-        /** @var RequestWrapper $requestWrapper */
-        $requestWrapper = $request->getAttribute(RequestWrapper::class);
-
         $pagination = $this->data->getPagination();
-        $pageSize = (int)$requestWrapper->get($pagination->pageSizeParam, $pagination->defaultPageSize);
-        $currentPage = (int)($requestWrapper->get($pagination->pageParam) ?: 1);
+        $pageSize = (int)$request->get($pagination->pageSizeParam, $pagination->defaultPageSize);
+        $currentPage = (int)($request->get($pagination->pageParam) ?: 1);
 
         $dataReader = new IterableDataReader($this->data->getJson());
         $dataProvider = (new OffsetPaginator($dataReader))

@@ -55,13 +55,5 @@
             "lav45\\MockServer\\test\\": "test"
         }
     },
-    "minimum-stability": "stable",
-    "config": {
-        "classmap-authoritative": true,
-        "optimize-autoloader": true,
-        "apcu-autoloader": true,
-        "preferred-install": {
-            "*": "dist"
-        }
-    }
+    "minimum-stability": "stable"
 }

@@ -4,7 +4,6 @@ namespace lav45\MockServer;
 
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\ErrorHandler;
-use Amp\Http\Server\Middleware;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
@@ -12,8 +11,6 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use lav45\MockServer\Mock\Mock;
 use lav45\MockServer\Request\Handler\RequestHandler;
-use lav45\MockServer\Request\Middleware\InitMiddleware;
-use lav45\MockServer\Request\Middleware\WebhooksMiddleware;
 use Monolog\Logger;
 use UnexpectedValueException;
 use function FastRoute\simpleDispatcher;
@@ -129,10 +126,13 @@ class Reactor implements RequestHandlerInterface
         $response = $mock->getResponse();
         $webhooks = $mock->getWebhooks();
 
-        $requestHandler = Middleware\stackMiddleware(
-            new RequestHandler($response, $this->logger, $this->httpClient),
-            new InitMiddleware($this->faker, $mock->env),
-            new WebhooksMiddleware($webhooks, $this->logger, $this->httpClient),
+        $requestHandler = new RequestHandler(
+            $response,
+            $webhooks,
+            $this->faker,
+            $mock->env,
+            $this->logger,
+            $this->httpClient
         );
 
         $router->addRoute($request->getMethod(), $request->url, $requestHandler);

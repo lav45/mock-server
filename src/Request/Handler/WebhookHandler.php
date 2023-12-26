@@ -1,13 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Request\Middleware;
+namespace lav45\MockServer\Request\Handler;
 
 use Amp\Http\Client\BufferedContent;
 use Amp\Http\Client\HttpContent;
-use Amp\Http\Server\Middleware;
-use Amp\Http\Server\Request;
-use Amp\Http\Server\RequestHandler;
-use Amp\Http\Server\Response;
 use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Webhook;
@@ -17,44 +13,37 @@ use RuntimeException;
 use function Amp\async;
 use function Amp\delay;
 
-readonly class WebhooksMiddleware implements Middleware
+final readonly class WebhookHandler
 {
-    /**
-     * @param Webhook[] $webhooks
-     */
     public function __construct(
-        private array      $webhooks,
         private Logger     $logger,
+        private EnvParser  $parser,
         private HttpClient $httpClient,
     )
     {
     }
 
-    public function handleRequest(Request $request, RequestHandler $requestHandler): Response
+    public function send(array $webhooks): void
     {
-        $parser = $request->getAttribute(EnvParser::class);
-
-        async(fn() => $this->internalHandler($this->webhooks, $parser));
-
-        return $requestHandler->handleRequest($request);
+        async(fn() => $this->internalHandler($webhooks));
     }
 
     /**
      * @param Webhook[] $webhooks
      */
-    protected function internalHandler(array $webhooks, EnvParser $parser): void
+    protected function internalHandler(array $webhooks): void
     {
         foreach ($webhooks as $webhook) {
             if ($delay = $webhook->delay) {
-                $delay = (float)$parser->replace($delay);
+                $delay = (float)$this->parser->replace($delay);
                 delay($delay);
             }
             try {
-                $url = $parser->replace($webhook->url);
+                $url = $this->parser->replace($webhook->url);
                 $query = $this->getQuery($url);
-                $method = $parser->replace($webhook->method);
-                $headers = $this->getHeaders($webhook, $parser);
-                $body = $this->getBodyContent($webhook, $parser);
+                $method = $this->parser->replace($webhook->method);
+                $headers = $this->getHeaders($webhook, $this->parser);
+                $body = $this->getBodyContent($webhook, $this->parser);
 
                 $response = $this->httpClient->request(
                     uri: $url,
