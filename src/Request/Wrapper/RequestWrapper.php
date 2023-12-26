@@ -13,15 +13,13 @@ use RuntimeException;
 /**
  * @mixin Request
  */
-class RequestWrapper
+final class RequestWrapper
 {
-    protected Request $request;
-    protected RequestBodyWrapper|null $body = null;
+    private string|null $body = null;
     private array|null $get = null;
 
-    public function __construct(Request $request)
+    public function __construct(private readonly Request $request)
     {
-        $this->request = $request;
     }
 
     public function __call(string $name, array $args)
@@ -32,27 +30,15 @@ class RequestWrapper
         throw new RuntimeException('Calling unknown method: ' . get_class($this) . "::{$name}()");
     }
 
-    public function getBodyWrapper(): RequestBodyWrapper
-    {
-        return $this->body ??= new RequestBodyWrapper($this->request->getBody());
-    }
-
-    public function getRequest(): Request
-    {
-        $clone = clone $this->request;
-        $clone->setBody($this->getBodyWrapper()->read());
-        return $clone;
-    }
-
     public function getUrlParams(): array
     {
-        return $this->getAttribute(Reactor::class);
+        return $this->request->getAttribute(Reactor::class);
     }
 
-    public function get(string $key = null, array|int|float|string|bool|null $default = null): array|int|float|string|bool|null
+    public function get(string $key = null, mixed $default = null): mixed
     {
         if ($this->get === null) {
-            $this->get = self::parseQuery($this->getUri()->getQuery());
+            $this->get = self::parseQuery($this->request->getUri()->getQuery());
         }
         if ($key === null) {
             return $this->get;
@@ -73,7 +59,7 @@ class RequestWrapper
             $this->parseBody();
     }
 
-    protected function parseForm(): array
+    private function parseForm(): array
     {
         $result = [];
         $data = $this->getFormValues();
@@ -87,7 +73,7 @@ class RequestWrapper
         return $result;
     }
 
-    protected function parseBody(): array
+    private function parseBody(): array
     {
         if ($body = $this->body()) {
             return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -97,22 +83,25 @@ class RequestWrapper
 
     public function body(): string
     {
-        return $this->getBodyWrapper()->read();
+        return $this->body ??= $this->request->getBody()->read() ?? '';
     }
 
     public function isFormData(): bool
     {
-        $contentType = $this->getHeader('content-type') ?? '';
-        $boundary = FormParser\parseContentBoundary($contentType);
-        return $boundary !== null;
+        return FormParser\parseContentBoundary($this->getContentType()) !== null;
+    }
+
+    private function getContentType(): string
+    {
+        return $this->request->getHeader('content-type') ?? '';
     }
 
     private function getFormValues(): array
     {
-        return FormParser\Form::fromRequest($this->getRequest())->getValues();
+        return FormParser\Form::fromRequest($this->request)->getValues();
     }
 
-    protected function getFormContent(): Form
+    private function getFormContent(): Form
     {
         $form = new Form();
         foreach ($this->parseForm() as $name => $value) {
@@ -121,14 +110,19 @@ class RequestWrapper
         return $form;
     }
 
-    protected function getBodyContent(): BufferedContent
+    private function getBodyContent(): BufferedContent
     {
-        return BufferedContent::fromString($this->body(), $this->getHeader('content-type'));
+        return BufferedContent::fromString($this->body(), $this->getContentType());
+    }
+
+    private function hasContent(): bool
+    {
+        return in_array($this->request->getMethod(), ['POST', 'PUT', 'PATCH'], true);
     }
 
     public function getContent(): HttpContent|null
     {
-        if (in_array($this->getMethod(), ['POST', 'PUT', 'PATCH'], true) === false) {
+        if ($this->hasContent() === false) {
             return null;
         }
         return $this->isFormData() ?
