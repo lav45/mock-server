@@ -25,25 +25,25 @@ final readonly class WebhookHandler
 
     public function send(array $webhooks): void
     {
-        async(fn() => $this->internalHandler($webhooks));
+        async(fn() => $this->internalHandler($webhooks, clone $this->parser));
     }
 
     /**
      * @param Webhook[] $webhooks
      */
-    protected function internalHandler(array $webhooks): void
+    protected function internalHandler(array $webhooks, EnvParser $parser): void
     {
         foreach ($webhooks as $webhook) {
             if ($delay = $webhook->delay) {
-                $delay = (float)$this->parser->replace($delay);
+                $delay = (float)$parser->replace($delay);
                 delay($delay);
             }
             try {
-                $url = $this->parser->replace($webhook->url);
+                $url = $parser->replace($webhook->url);
                 $query = $this->getQuery($url);
-                $method = $this->parser->replace($webhook->method);
-                $headers = $this->getHeaders($webhook, $this->parser);
-                $body = $this->getBodyContent($webhook, $this->parser);
+                $method = $parser->replace($webhook->method);
+                $headers = $this->getHeaders($webhook, $parser);
+                $body = $this->getBodyContent($webhook, $parser);
 
                 $response = $this->httpClient->request(
                     uri: $url,
