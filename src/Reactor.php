@@ -11,7 +11,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use lav45\MockServer\Mock\Mock;
 use lav45\MockServer\Request\Handler\RequestHandler;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 use function FastRoute\simpleDispatcher;
 use function implode;
@@ -23,11 +23,11 @@ class Reactor implements RequestHandlerInterface
     private array $routerCache = [];
 
     public function __construct(
-        string                        $mocksPath,
-        private readonly ErrorHandler $errorHandler,
-        private readonly FakerParser  $faker,
-        private readonly Logger       $logger,
-        private readonly HttpClient   $httpClient,
+        string                           $mocksPath,
+        private readonly ErrorHandler    $errorHandler,
+        private readonly FakerParser     $faker,
+        private readonly LoggerInterface $logger,
+        private readonly HttpClient      $httpClient,
     )
     {
         $this->mocksPath = rtrim($mocksPath, '/');

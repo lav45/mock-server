@@ -10,7 +10,7 @@ use lav45\MockServer\EnvParser;
 use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Webhook;
 use lav45\MockServer\Request\Wrapper\RequestWrapper;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use function Amp\async;
 use function Amp\delay;
@@ -18,9 +18,9 @@ use function Amp\delay;
 final readonly class WebhookHandler
 {
     public function __construct(
-        private Logger     $logger,
-        private EnvParser  $parser,
-        private HttpClient $httpClient,
+        private LoggerInterface $logger,
+        private EnvParser       $parser,
+        private HttpClient      $httpClient,
     )
     {
     }

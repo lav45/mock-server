@@ -10,7 +10,7 @@ use lav45\MockServer\HttpClient;
 use lav45\MockServer\Mock\Response as MockResponse;
 use lav45\MockServer\Mock\Webhook;
 use lav45\MockServer\Request\Wrapper\RequestWrapper;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use function Amp\delay;
 
 readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
@@ -19,12 +19,12 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
      * @param Webhook[] $webhooks
      */
     public function __construct(
-        private MockResponse $response,
-        private array        $webhooks,
-        private FakerParser  $faker,
-        private array        $env,
-        private Logger       $logger,
-        private HttpClient   $httpClient,
+        private MockResponse    $response,
+        private array           $webhooks,
+        private FakerParser     $faker,
+        private array           $env,
+        private LoggerInterface $logger,
+        private HttpClient      $httpClient,
     )
     {
     }
@@ -42,7 +42,7 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
         return $this->runRequest($this->logger, $parser, $this->httpClient, $requestWrapper, $type, $delay);
     }
 
-    protected function runRequest(Logger $logger, EnvParser $parser, HttpClient $httpClient, RequestWrapper $request, string $type, float $delay = 0): Response
+    protected function runRequest(LoggerInterface $logger, EnvParser $parser, HttpClient $httpClient, RequestWrapper $request, string $type, float $delay = 0): Response
     {
         $handler = $this->createResponseHandler($type, $parser, $httpClient);
 
@@ -55,7 +55,7 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
         return $response;
     }
 
-    private function logRequest(Logger $logger, RequestWrapper $request, string $type, int $statusCode): void
+    private function logRequest(LoggerInterface $logger, RequestWrapper $request, string $type, int $statusCode): void
     {
         $url = $request->getUri();
         $method = $request->getMethod();
@@ -74,7 +74,7 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
         };
     }
 
-    protected function sendWebhook(Logger $logger, EnvParser $parser, HttpClient $httpClient, array $webhooks): void
+    protected function sendWebhook(LoggerInterface $logger, EnvParser $parser, HttpClient $httpClient, array $webhooks): void
     {
         (new WebhookHandler($logger, $parser, $httpClient))->send($webhooks);
     }

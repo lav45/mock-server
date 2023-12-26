@@ -71,7 +71,7 @@ final readonly class Server
         return new DefaultErrorHandler();
     }
 
-    protected function getServer(Logger $logger): HttpServer
+    protected function getServer(LoggerInterface $logger): HttpServer
     {
         $serverSocketFactory = new Socket\ResourceServerSocketFactory();
         $clientFactory = new SocketClientFactory($logger);
@@ -80,7 +80,7 @@ final readonly class Server
         return $server;
     }
 
-    protected function getLogger(StreamHandler $handler, string $name = 'mock-server'): Logger
+    protected function getLogger(StreamHandler $handler, string $name = 'mock-server'): LoggerInterface
     {
         return (new Logger($name))->pushHandler($handler);
     }

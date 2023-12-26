@@ -16,6 +16,7 @@ use lav45\MockServer\test\server\components\Storage;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Psr\Log\LoggerInterface;
 
 readonly class Server
 {
@@ -47,7 +48,7 @@ readonly class Server
         return new DefaultErrorHandler();
     }
 
-    protected function getServer(Logger $logger): HttpServer
+    protected function getServer(LoggerInterface $logger): HttpServer
     {
         $serverSocketFactory = new Socket\ResourceServerSocketFactory();
         $clientFactory = new SocketClientFactory($logger);
@@ -56,7 +57,7 @@ readonly class Server
         return $server;
     }
 
-    protected function getLogger(StreamHandler $handler, string $name = 'listen-server'): Logger
+    protected function getLogger(StreamHandler $handler, string $name = 'listen-server'): LoggerInterface
     {
         return (new Logger($name))->pushHandler($handler);
     }
