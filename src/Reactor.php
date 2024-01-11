@@ -12,7 +12,6 @@ use FastRoute\RouteCollector;
 use lav45\MockServer\Mock\Mock;
 use lav45\MockServer\Request\Handler\RequestHandler;
 use Psr\Log\LoggerInterface;
-use UnexpectedValueException;
 use function FastRoute\simpleDispatcher;
 use function implode;
 use function rawurldecode;
@@ -69,7 +68,7 @@ class Reactor implements RequestHandlerInterface
 
     private function matchRequest(array $match, Request $request): Response
     {
-        return match($match[0]) {
+        return match ($match[0]) {
             Dispatcher::FOUND => $this->makeFoundResponse($match, $request),
             Dispatcher::NOT_FOUND => $this->makeNotFoundResponse($request),
             Dispatcher::METHOD_NOT_ALLOWED => $this->makeMethodNotAllowedResponse($match[1], $request),

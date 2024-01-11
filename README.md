@@ -47,13 +47,13 @@ curl http://127.0.0.1:8080/
 Run in development mode
 ```shell
 ./build.sh
-./composer install --prefer-dist
+./composer install
 docker run --rm -it -v $(pwd):/app --entrypoint php mock-server-dev:latest /app/mock-server.php
 ```
 
 Testing
 ```shell
 ./build.sh
-./composer install --prefer-dist
+./composer install
 ./composer test
 ```
