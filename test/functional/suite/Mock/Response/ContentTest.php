@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\suite\Mock\Response;
+namespace lav45\MockServer\test\functional\suite\Mock\Response;
 
 use lav45\MockServer\HttpClient;
 use PHPUnit\Framework\TestCase;

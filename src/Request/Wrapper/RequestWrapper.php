@@ -105,7 +105,13 @@ final class RequestWrapper
     {
         $form = new Form();
         foreach ($this->parseForm() as $name => $value) {
-            $form->addField($name, $value);
+            if (is_array($value)) {
+                foreach ($value as $val) {
+                    $form->addField($name, $val);
+                }
+            } else {
+                $form->addField($name, $value);
+            }
         }
         return $form;
     }

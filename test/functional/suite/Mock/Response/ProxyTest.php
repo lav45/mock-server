@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\suite\Mock\Response;
+namespace lav45\MockServer\test\functional\suite\Mock\Response;
 
+use Amp\Http\Client\Form;
 use lav45\MockServer\HttpClient;
 use PHPUnit\Framework\TestCase;
 
@@ -90,7 +91,7 @@ class ProxyTest extends TestCase
         $content = json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);
-        $this->assertEquals([], $content['get']);
+        $this->assertEquals(['n' => '1'], $content['get']);
 
         $this->assertCount(6, $content['post']);
 
@@ -124,5 +125,49 @@ class ProxyTest extends TestCase
 
         $this->assertArrayHasKey('content-type', $content['headers']);
         $this->assertEquals('application/json', $content['headers']['content-type'][0]);
+    }
+
+    public function testFormData(): void
+    {
+        $data = [
+            'id' => 100,
+            'item' => [1, 2, 3]
+        ];
+
+        $form = new Form();
+        foreach ($data as $name => $value) {
+            if (is_array($value)) {
+                foreach ($value as $val) {
+                    $form->addField($name, (string)$val);
+                }
+            } else {
+                $form->addField($name, (string)$value);
+            }
+        }
+
+        $response = $this->HttpClient->request(
+            uri: 'http://127.0.0.1/response/proxy/storage',
+            method: 'POST',
+            body: $form,
+            headers: ['content-type' => $form->getContentType()]
+        );
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $this->getStorageData();
+
+        $this->assertEquals('POST', $content[0]['method']);
+        $this->assertEquals([], $content[0]['get']);
+
+        $expected = [
+            'id' => '100',
+            'item' => ['1', '2', '3']
+        ];
+        $this->assertEquals($expected, $content[0]['post']);
+
+        $this->assertArrayHasKey('content-type', $content[0]['headers']);
+        $this->assertEquals('application/x-www-form-urlencoded', $content[0]['headers']['content-type'][0]);
+
+        $this->assertArrayHasKey('authorization', $content[0]['headers']);
+        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $content[0]['headers']['authorization'][0]);
     }
 }

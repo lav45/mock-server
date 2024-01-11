@@ -57,8 +57,8 @@ class Reactor implements RequestHandlerInterface
 
         $routes = $this->getRoutes($file);
         $dispatcher = simpleDispatcher(function (RouteCollector $router) use ($routes): void {
-            foreach ($routes as $route) {
-                $this->addRoute($router, $route);
+            foreach ($routes as $item) {
+                $this->addRoute($router, new Mock($item));
             }
         });
 
@@ -69,33 +69,15 @@ class Reactor implements RequestHandlerInterface
 
     private function matchRequest(array $match, Request $request): Response
     {
-        switch ($match[0]) {
-            case Dispatcher::FOUND:
-                /**
-                 * @var RequestHandlerInterface $requestHandler
-                 * @var string[] $routeArgs
-                 */
-                [, $requestHandler, $routeArgs] = $match;
-                $request->setAttribute(self::class, $routeArgs);
-                return $requestHandler->handleRequest($request);
-
-            case Dispatcher::NOT_FOUND:
-                return $this->makeNotFoundResponse($request);
-
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                return $this->makeMethodNotAllowedResponse($match[1], $request);
-
-            default:
-                throw new UnexpectedValueException("Encountered unexpected dispatcher code: " . $match[0]);
-        }
+        return match($match[0]) {
+            Dispatcher::FOUND => $this->makeFoundResponse($match, $request),
+            Dispatcher::NOT_FOUND => $this->makeNotFoundResponse($request),
+            Dispatcher::METHOD_NOT_ALLOWED => $this->makeMethodNotAllowedResponse($match[1], $request),
+        };
     }
 
     private function getFile(string $uri): string|null
     {
-        if (str_contains($uri, '?')) {
-            $uri = strstr($uri, '?', true);
-        }
-
         if ($uri === '/') {
             $uri = '/index';
         } else {
@@ -119,9 +101,8 @@ class Reactor implements RequestHandlerInterface
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function addRoute(RouteCollector $router, array $item): void
+    private function addRoute(RouteCollector $router, Mock $mock): void
     {
-        $mock = new Mock($item);
         $request = $mock->getRequest();
         $response = $mock->getResponse();
         $webhooks = $mock->getWebhooks();
@@ -136,6 +117,17 @@ class Reactor implements RequestHandlerInterface
         );
 
         $router->addRoute($request->getMethod(), $request->url, $requestHandler);
+    }
+
+    private function makeFoundResponse(array $match, Request $request): Response
+    {
+        /**
+         * @var RequestHandlerInterface $requestHandler
+         * @var string[] $routeArgs
+         */
+        [, $requestHandler, $routeArgs] = $match;
+        $request->setAttribute(self::class, $routeArgs);
+        return $requestHandler->handleRequest($request);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\server;
+namespace lav45\MockServer\test\functional\server;
 
 use Amp;
 use Amp\ByteStream;
@@ -12,7 +12,7 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
-use lav45\MockServer\test\server\components\Storage;
+use lav45\MockServer\test\functional\server\components\Storage;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;

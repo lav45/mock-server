@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\server\controllers;
+namespace lav45\MockServer\test\functional\server\controllers;
 
 use Amp\Http\Server\Response;
-use lav45\MockServer\test\server\controllers\dto\RequestDTO;
+use lav45\MockServer\test\functional\server\controllers\dto\RequestDTO;
 
 class ContentController
 {

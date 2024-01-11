@@ -34,7 +34,9 @@ readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
         $requestWrapper = new RequestWrapper($request);
         $parser = $this->createParser($requestWrapper, $this->faker, $this->env);
 
-        $this->sendWebhook($this->logger, $parser, $this->httpClient, $this->webhooks);
+        if ($this->webhooks) {
+            $this->sendWebhook($this->logger, $parser, $this->httpClient, $this->webhooks);
+        }
 
         $type = $this->response->getType(MockResponse::TYPE_CONTENT);
         $delay = $this->response->delay;

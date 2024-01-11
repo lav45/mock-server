@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\server\controllers\dto;
+namespace lav45\MockServer\test\functional\server\controllers\dto;
 
 readonly class RequestDTO
 {

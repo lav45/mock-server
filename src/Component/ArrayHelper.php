@@ -10,15 +10,11 @@ use function rtrim;
 class ArrayHelper
 {
     public static function getValue(
-        array      $data,
-        int|string $name,
-        mixed      $default = null
+        array  $data,
+        string $name,
+        mixed  $default = null
     ): mixed
     {
-        if (empty($name)) {
-            return $default;
-        }
-
         $path = explode('.', string: rtrim($name, '.'));
 
         foreach ($path as $step) {
@@ -27,7 +23,6 @@ class ArrayHelper
             }
             $data = &$data[$step];
         }
-
         return $data;
     }
 }

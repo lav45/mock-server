@@ -6,7 +6,7 @@
         },
         "response": {
             "proxy": {
-                "url": "http://127.0.0.1:8000/content",
+                "url": "http://127.0.0.1:8000/content?n=1",
                 "content": [
                     {"id": 1, "name": "name 1"},
                     {"id": 2, "name": "name 2"},

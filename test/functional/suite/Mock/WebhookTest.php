@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\suite\Mock;
+namespace lav45\MockServer\test\functional\suite\Mock;
 
 use lav45\MockServer\HttpClient;
 use PHPUnit\Framework\TestCase;
@@ -80,7 +80,7 @@ class WebhookTest extends TestCase
         $this->assertCount(4, $content[3]['post']);
 
         $this->assertArrayHasKey('id', $content[3]['post'][0]);
-        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~i';
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
         $this->assertMatchesRegularExpression($uuidPattern, $content[3]['post'][0]['id']);
         $this->assertArrayHasKey('name', $content[3]['post'][0]);
 

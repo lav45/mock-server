@@ -44,12 +44,15 @@ final readonly class ProxyHandler implements RequestHandlerInterface
                     body: $body,
                     headers: $headers,
                 );
-        } catch (Throwable $exception) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (Throwable $exception) {
             return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
                 body: $exception->getMessage()
             );
         }
+        // @codeCoverageIgnoreEnd
 
         return new Response(
             $response->getStatus(),

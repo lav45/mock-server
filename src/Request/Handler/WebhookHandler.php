@@ -27,13 +27,13 @@ final readonly class WebhookHandler
 
     public function send(array $webhooks): void
     {
-        async(fn() => $this->internalHandler($webhooks, clone $this->parser));
+        async(fn() => $this->internalSend($webhooks, clone $this->parser));
     }
 
     /**
      * @param Webhook[] $webhooks
      */
-    protected function internalHandler(array $webhooks, EnvParser $parser): void
+    protected function internalSend(array $webhooks, EnvParser $parser): void
     {
         foreach ($webhooks as $webhook) {
             if ($delay = $webhook->delay) {
@@ -58,9 +58,12 @@ final readonly class WebhookHandler
                         body: $body,
                         headers: $headers,
                     );
-            } catch (RuntimeException $exception) {
+            }
+            // @codeCoverageIgnoreStart
+            catch (RuntimeException $exception) {
                 $this->logger->error($exception->getMessage());
             }
+            // @codeCoverageIgnoreEnd
         }
     }
 

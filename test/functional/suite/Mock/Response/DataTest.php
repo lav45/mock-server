@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\suite\Mock\Response;
+namespace lav45\MockServer\test\functional\suite\Mock\Response;
 
 use lav45\MockServer\HttpClient;
 use PHPUnit\Framework\TestCase;
@@ -80,7 +80,7 @@ class DataTest extends TestCase
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(6, $content['data']);
 
-        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~i';
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
         $this->assertMatchesRegularExpression($uuidPattern, $content['data'][0]['id']);
         $this->assertArrayHasKey('name', $content['data'][0]);
 
@@ -230,7 +230,7 @@ class DataTest extends TestCase
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(5, $content['data']);
 
-        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~i';
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
         $this->assertMatchesRegularExpression($uuidPattern, $content['data'][1]['id']);
         $this->assertArrayHasKey('name', $content['data'][1]);
 
@@ -266,5 +266,27 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/status');
         $this->assertEquals(418, $response->getStatus());
         $this->assertEquals('[]', $response->getBody()->buffer());
+    }
+
+    public function testJsonPage100(): void
+    {
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 100]);
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $response->getBody()->buffer();
+        $content = json_decode($content, true);
+
+        $this->assertArrayHasKey('data', $content);
+        $this->assertCount(0, $content['data']);
+        $this->assertEquals([], $content['data']);
+
+        $this->assertArrayHasKey('pagination', $content);
+        $expectedPagination = [
+            'totalItems' => 12,
+            'currentPage' => 100,
+            'totalPages' => 2,
+            'pageSize' => 0,
+        ];
+        $this->assertEquals($expectedPagination, $content['pagination']);
     }
 }

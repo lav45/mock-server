@@ -23,9 +23,6 @@ final readonly class FakerParser
         $result = $this->faker->format($format, $arguments);
 
         if ($result instanceof DateTime)  {
-            if (empty($matches[4]) || empty($matches[5])) {
-                throw new InvalidConfigException('Incorrect format. Use DateTime .method() for the convert DateTime object to scalar value.');
-            }
             $func = [$result, $matches[4]];
             $args = $this->parseArgs($matches[5]);
             return call_user_func_array($func, $args);
@@ -43,9 +40,6 @@ final readonly class FakerParser
     {
         $args = '[' . substr($str, 1, -1) . ']';
         $args = str_replace(["'", '\\'], ['"', '\\\\'], $args);
-        if (empty($args)) {
-            return [];
-        }
         return json_decode($args, true, 512, JSON_THROW_ON_ERROR);
     }
 }

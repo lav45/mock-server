@@ -22,9 +22,9 @@ final class HttpClient
     private Closure|null $logMessage = null;
 
     public function __construct(
-        private readonly mixed                $logLevelOk,
-        private readonly mixed                $logLevelError,
         private readonly LoggerInterface|null $logger = null,
+        private readonly mixed                $logLevelOk = null,
+        private readonly mixed                $logLevelError = null,
     )
     {
     }

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\server;
+namespace lav45\MockServer\test\functional\server;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use lav45\MockServer\Request\Wrapper\RequestWrapper;
-use lav45\MockServer\test\server\components\Storage;
-use lav45\MockServer\test\server\controllers\ContentController;
-use lav45\MockServer\test\server\controllers\StorageController;
+use lav45\MockServer\test\functional\server\components\Storage;
+use lav45\MockServer\test\functional\server\controllers\ContentController;
+use lav45\MockServer\test\functional\server\controllers\StorageController;
 
 final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {

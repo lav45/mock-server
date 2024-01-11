@@ -3,11 +3,21 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="test/bootstrap.php"
          cacheDirectory=".phpunit.cache"
-         colors="true"
->
-  <testsuites>
-    <testsuite name="Mock Server - Functional testing">
-      <directory>test/suite</directory>
-    </testsuite>
-  </testsuites>
+         colors="true">
+    <testsuites>
+        <testsuite name="Mock Server - Functional testing">
+            <directory>test/functional/suite</directory>
+            <directory>test/unit/suite</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <report>
+            <html outputDirectory="test/coverage"/>
+        </report>
+    </coverage>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
 </phpunit>

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\test\server\components;
+namespace lav45\MockServer\test\functional\server\components;
 
 class Storage
 {

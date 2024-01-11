@@ -49,15 +49,15 @@ final readonly class Server
 
         $server->start($reactor, $errorHandler);
         $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
-        $server->stop();
+        $server->stop(); // @codeCoverageIgnore
     }
 
     protected function getHttpClient(LoggerInterface $logger): HttpClient
     {
         return (new HttpClient(
+            logger: $logger,
             logLevelOk: Level::Info,
-            logLevelError: Level::Error,
-            logger: $logger
+            logLevelError: Level::Error
         ))->build();
     }
 
