@@ -13,27 +13,25 @@ final readonly class FakerParser
 
     public function parse(string $string): mixed
     {
-        $matches = $this->parseLine($string);
-        if (empty($matches)) {
-            return $string;
+        $callback = function ($matches) {
+            $format = $matches[1];
+            $arguments = isset($matches[2]) ? $this->parseArgs($matches[2]) : [];
+            $result = $this->faker->format($format, $arguments);
+
+            if ($result instanceof DateTime) {
+                $func = [$result, $matches[4]];
+                $args = $this->parseArgs($matches[5]);
+                return call_user_func_array($func, $args);
+            }
+            return $result;
+        };
+
+        $pattern = '\s?faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s?';
+        preg_match('/{{' .$pattern . '}}/u', $string, $matches);
+        if ($matches) {
+            return $callback($matches);
         }
-
-        $format = $matches[1];
-        $arguments = isset($matches[2]) ? $this->parseArgs($matches[2]) : [];
-        $result = $this->faker->format($format, $arguments);
-
-        if ($result instanceof DateTime)  {
-            $func = [$result, $matches[4]];
-            $args = $this->parseArgs($matches[5]);
-            return call_user_func_array($func, $args);
-        }
-        return $result;
-    }
-
-    protected function parseLine(string $value): array
-    {
-        preg_match('/{{\s?faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s?}}/u', $value, $matches);
-        return $matches;
+        return preg_replace_callback('/{' . $pattern . '}/u', $callback, $string);
     }
 
     protected function parseArgs(string $str): array

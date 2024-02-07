@@ -27,7 +27,15 @@ class ContentTest extends TestCase
         $this->assertEquals('application/json', $headers['content-type'][0]);
 
         $content = $response->getBody()->buffer();
-        $this->assertEquals(['OK'], json_decode($content, true));
+        $content = json_decode($content, true);
+        $this->assertArrayHasKey('id', $content);
+
+        $ids = explode('/', $content['id']);
+        $this->assertCount(2, $ids);
+
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
+        $this->assertMatchesRegularExpression($uuidPattern, $ids[0]);
+        $this->assertMatchesRegularExpression($uuidPattern, $ids[1]);
     }
 
     public function testText(): void

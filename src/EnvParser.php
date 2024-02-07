@@ -67,11 +67,11 @@ final class EnvParser
             return ArrayHelper::getValue($this->data, $key);
         };
 
-        preg_match('/({{\s?[.\w]+\s?}})/u', $value, $matches);
+        $pattern = '\s?[.\w]+\s?';
+        preg_match('/({{' . $pattern . '}})/u', $value, $matches);
         if ($matches) {
             return $callback($matches);
         }
-
-        return preg_replace_callback('/({\s?[.\w]+\s?})/u', $callback, $value);
+        return preg_replace_callback('/({' . $pattern . '})/u', $callback, $value);
     }
 }

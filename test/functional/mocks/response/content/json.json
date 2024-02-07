@@ -3,11 +3,14 @@
         "request": {
             "url": "/response/content/json"
         },
+        "env": {
+            "uuid": "{{faker.uuid}}"
+        },
         "response": {
             "content": {
-                "json": [
-                    "OK"
-                ]
+                "json": {
+                    "id": "{env.uuid}/{faker.uuid}"
+                }
             }
         }
     }
