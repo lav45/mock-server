@@ -10,11 +10,6 @@
             <directory>test/unit/suite</directory>
         </testsuite>
     </testsuites>
-    <coverage>
-        <report>
-            <html outputDirectory="test/coverage"/>
-        </report>
-    </coverage>
     <source>
         <include>
             <directory>src</directory>

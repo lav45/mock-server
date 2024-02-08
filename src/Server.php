@@ -36,13 +36,13 @@ final readonly class Server
         $logger = $this->getLogger($logHandler);
         $server = $this->getServer($logger);
         $errorHandler = $this->getErrorHandler();
-        $factory = $this->getFactory();
+        $faker = $this->getFakerFactory();
         $httpClient = $this->getHttpClient($logger);
 
         $reactor = new Reactor(
             mocksPath: $this->mocksPath,
             errorHandler: $errorHandler,
-            faker: $factory,
+            faker: $faker,
             logger: $logger,
             httpClient: $httpClient
         );
@@ -61,7 +61,7 @@ final readonly class Server
         ))->build();
     }
 
-    protected function getFactory(): FakerParser
+    protected function getFakerFactory(): FakerParser
     {
         return new FakerParser(Factory::create($this->locale));
     }

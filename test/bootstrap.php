@@ -4,7 +4,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 // Fake proxy server
 Amp\async(function () {
-    (new \lav45\MockServer\test\functional\server\Server(
+    (new lav45\MockServer\test\functional\server\Server(
         port: 8000,
         logLevel: 'error',
     ))->start();

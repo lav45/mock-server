@@ -44,6 +44,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
+        "ctest": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html test/coverage",
         "check": "vendor/bin/composer-require-checker check",
         "unused": "vendor/bin/composer-unused"
     },
