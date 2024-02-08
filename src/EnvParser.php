@@ -62,16 +62,17 @@ final class EnvParser
 
     protected function replaceAttribute(string $value): mixed
     {
-        $callback = function ($matches) {
-            $key = trim($matches[1], '{} ');
-            return ArrayHelper::getValue($this->data, $key);
-        };
-
         $pattern = '\s?[.\w]+\s?';
         preg_match('/({{' . $pattern . '}})/u', $value, $matches);
         if ($matches) {
-            return $callback($matches);
+            return $this->getValue($matches);
         }
-        return preg_replace_callback('/({' . $pattern . '})/u', $callback, $value);
+        return preg_replace_callback('/({' . $pattern . '})/u', [$this, 'getValue'], $value);
+    }
+
+    private function getValue(array $matches): mixed
+    {
+        $key = trim($matches[1], '{ }');
+        return ArrayHelper::getValue($this->data, $key);
     }
 }

@@ -13,28 +13,29 @@ final readonly class FakerParser
 
     public function parse(string $string): mixed
     {
-        $callback = function ($matches) {
-            $format = $matches[1];
-            $arguments = isset($matches[2]) ? $this->parseArgs($matches[2]) : [];
-            $result = $this->faker->format($format, $arguments);
-
-            if ($result instanceof DateTime) {
-                $func = [$result, $matches[4]];
-                $args = $this->parseArgs($matches[5]);
-                return call_user_func_array($func, $args);
-            }
-            return $result;
-        };
-
         $pattern = '\s?faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s?';
         preg_match('/{{' .$pattern . '}}/u', $string, $matches);
         if ($matches) {
-            return $callback($matches);
+            return $this->generate($matches);
         }
-        return preg_replace_callback('/{' . $pattern . '}/u', $callback, $string);
+        return preg_replace_callback('/{' . $pattern . '}/u', [$this, 'generate'], $string);
     }
 
-    protected function parseArgs(string $str): array
+    private function generate(array $matches): mixed
+    {
+        $format = $matches[1];
+        $arguments = isset($matches[2]) ? $this->parseArgs($matches[2]) : [];
+        $result = $this->faker->format($format, $arguments);
+
+        if ($result instanceof DateTime) {
+            $func = [$result, $matches[4]];
+            $args = $this->parseArgs($matches[5]);
+            return call_user_func_array($func, $args);
+        }
+        return $result;
+    }
+
+    private function parseArgs(string $str): array
     {
         $args = '[' . substr($str, 1, -1) . ']';
         $args = str_replace(["'", '\\'], ['"', '\\\\'], $args);
