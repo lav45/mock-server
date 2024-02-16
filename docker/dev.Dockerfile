@@ -10,8 +10,6 @@ RUN apk add --no-cache \
     php83-tokenizer \
     php83-xdebug
 
-RUN sed -i 's|;zend_extension=xdebug.so|zend_extension=xdebug.so|' /etc/php83/conf.d/50_xdebug.ini
-
 RUN wget https://getcomposer.org/installer -O - | php -- --with-openssl --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
