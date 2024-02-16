@@ -4,6 +4,7 @@ namespace lav45\MockServer\test\unit\suite;
 
 use Faker\Factory;
 use lav45\MockServer\FakerParser;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FakerParserTest extends TestCase
@@ -15,9 +16,7 @@ class FakerParserTest extends TestCase
         $this->parser = new FakerParser(Factory::create('en_US'));
     }
 
-    /**
-     * @dataProvider parseDataProvider
-     */
+    #[DataProvider('parseDataProvider')]
     public function testParse(string $str, string $pattern): void
     {
         $result = $this->parser->parse($str);
