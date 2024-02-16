@@ -43,10 +43,15 @@
         "phpunit/php-code-coverage": "10.1.*"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
-        "ctest": "XDEBUG_MODE=coverage php -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
+        "phpunit": "vendor/bin/phpunit",
+        "coverage": "XDEBUG_MODE=coverage php -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
         "check": "vendor/bin/composer-require-checker check",
-        "unused": "vendor/bin/composer-unused"
+        "unused": "vendor/bin/composer-unused",
+        "test": [
+            "@phpunit",
+            "@check",
+            "@unused"
+        ]
     },
     "autoload": {
         "psr-4": {
