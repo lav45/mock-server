@@ -1,0 +1,26 @@
+deptrac:
+  paths:
+    - ./src
+
+  layers:
+    - name: Infrastructure
+      collectors:
+        - type: classNameRegex
+          value: ~^Infrastructure\\.*~
+
+    - name: Application
+      collectors:
+        - type: classNameRegex
+          value: ~^Application\\.*~
+
+    - name: Domain
+      collectors:
+        - type: classNameRegex
+          value: ~^Domain\\.*~
+
+  ruleset:
+    Infrastructure:
+      - Application
+      - Domain
+    Application:
+      - Domain

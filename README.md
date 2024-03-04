@@ -48,7 +48,7 @@ Run in development mode
 ```shell
 ./build.sh
 ./composer install
-docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server-dev:latest
+docker run --rm -it -v $(pwd):/app -p 8080:8080 -e DEBUG=1 mock-server-dev:latest
 ```
 
 Testing

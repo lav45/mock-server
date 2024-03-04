@@ -2,20 +2,18 @@
 
 namespace lav45\MockServer\test\functional\suite\Mock;
 
-use lav45\MockServer\HttpClient;
+use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use PHPUnit\Framework\TestCase;
 use function Amp\delay;
 
-/**
- * @see \lav45\MockServer\Mock\Webhook
- */
 class WebhookTest extends TestCase
 {
     private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
-        $this->HttpClient = (new HttpClient())->build();
+        $this->HttpClient = HttpClientFactory::create();
     }
 
     public function testIndex(): void
@@ -30,9 +28,8 @@ class WebhookTest extends TestCase
         ];
 
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/webhook/200',
+            uri: 'http://127.0.0.1/webhook/200?id=500',
             method: 'POST',
-            query: ['id' => 500],
             body: json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             headers: ['content-type' => 'application/json']
         );
@@ -51,7 +48,7 @@ class WebhookTest extends TestCase
         $this->assertEquals([], $content[0]['post']);
 
         $delay = round($content[1]['time'] - $content[0]['time'], 2);
-        $this->assertTrue($delay >= 0.5);
+        $this->assertTrue($delay >= 0.5, var_export($delay, true));
 
         $this->assertEquals('POST', $content[1]['method']);
         $this->assertEquals([], $content[1]['get']);

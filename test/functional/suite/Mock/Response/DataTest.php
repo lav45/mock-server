@@ -2,19 +2,17 @@
 
 namespace lav45\MockServer\test\functional\suite\Mock\Response;
 
-use lav45\MockServer\HttpClient;
+use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @see \lav45\MockServer\Mock\Response\Data
- */
 class DataTest extends TestCase
 {
     private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
-        $this->HttpClient = (new HttpClient())->build();
+        $this->HttpClient = HttpClientFactory::create();
     }
 
     public function testIndex(): void
@@ -71,7 +69,7 @@ class DataTest extends TestCase
 
     public function testJsonPage2(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 2]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -113,7 +111,7 @@ class DataTest extends TestCase
 
     public function testJsonPage0(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 0]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=0');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -151,7 +149,7 @@ class DataTest extends TestCase
 
     public function testJsonSize3(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 2, '_s' => 3]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2&_s=3');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -192,7 +190,7 @@ class DataTest extends TestCase
 
     public function testJsonSize10(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 2, '_s' => 10]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2&_s=10');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -221,7 +219,7 @@ class DataTest extends TestCase
 
     public function testFile(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/file', query: ['_p' => 2, '_s' => 5]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/file?_p=2&_s=5');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -270,7 +268,7 @@ class DataTest extends TestCase
 
     public function testJsonPage100(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json', query: ['_p' => 100]);
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=100');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();

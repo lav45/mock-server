@@ -1,7 +1,6 @@
 FROM mock-server-base
 
 RUN apk add --no-cache \
-    git \
     php83-phar \
     php83-curl \
     php83-zip \

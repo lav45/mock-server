@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\test\functional\server\controllers\dto;
 
-readonly class RequestDTO
+final readonly class RequestDTO
 {
     public float $time;
 

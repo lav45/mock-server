@@ -3,19 +3,17 @@
 namespace lav45\MockServer\test\functional\suite\Mock\Response;
 
 use Amp\Http\Client\Form;
-use lav45\MockServer\HttpClient;
+use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @see \lav45\MockServer\Mock\Response\Proxy
- */
 class ProxyTest extends TestCase
 {
     private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
-        $this->HttpClient = (new HttpClient())->build();
+        $this->HttpClient = HttpClientFactory::create();
     }
 
     public function testPost(): void
@@ -45,11 +43,8 @@ class ProxyTest extends TestCase
 
     public function testGet(): void
     {
-        $get = ['id' => 100];
-
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/storage',
-            query: $get,
+            uri: 'http://127.0.0.1/response/proxy/storage?id=100',
             headers: ['content-type' => 'application/json']
         );
         $this->assertEquals(200, $response->getStatus());
@@ -57,7 +52,7 @@ class ProxyTest extends TestCase
         $content = $this->getStorageData();
 
         $this->assertEquals('GET', $content[0]['method']);
-        $this->assertEquals($get, $content[0]['get']);
+        $this->assertEquals(['id' => 100], $content[0]['get']);
         $this->assertEquals([], $content[0]['post']);
 
         $this->assertArrayHasKey('content-type', $content[0]['headers']);
@@ -148,7 +143,7 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/storage',
             method: 'POST',
-            body: $form,
+            body: $form->getContent()->read(),
             headers: ['content-type' => $form->getContentType()]
         );
         $this->assertEquals(200, $response->getStatus());

@@ -7,10 +7,12 @@ use Amp\Http\Server\ErrorHandler;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
+use Faker\Generator;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use lav45\MockServer\Mock\Mock;
-use lav45\MockServer\Request\Handler\RequestHandler;
+use lav45\MockServer\Infrastructure\Controller\Request as RequestController;
+use lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Psr\Log\LoggerInterface;
 use function FastRoute\simpleDispatcher;
 use function implode;
@@ -24,7 +26,7 @@ class Reactor implements RequestHandlerInterface
     public function __construct(
         string                           $mocksPath,
         private readonly ErrorHandler    $errorHandler,
-        private readonly FakerParser     $faker,
+        private readonly Generator       $faker,
         private readonly LoggerInterface $logger,
         private readonly HttpClient      $httpClient,
     )
@@ -57,7 +59,7 @@ class Reactor implements RequestHandlerInterface
         $routes = $this->getRoutes($file);
         $dispatcher = simpleDispatcher(function (RouteCollector $router) use ($routes): void {
             foreach ($routes as $item) {
-                $this->addRoute($router, new Mock($item));
+                $router->addRoute(...$this->createRoute($item));
             }
         });
 
@@ -100,22 +102,22 @@ class Reactor implements RequestHandlerInterface
         return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function addRoute(RouteCollector $router, Mock $mock): void
+    private function createRoute(array $data): array
     {
-        $request = $mock->getRequest();
-        $response = $mock->getResponse();
-        $webhooks = $mock->getWebhooks();
+        $mock = MockFactory::create($data);
 
-        $requestHandler = new RequestHandler(
-            $response,
-            $webhooks,
-            $this->faker,
-            $mock->env,
-            $this->logger,
-            $this->httpClient
+        $handler = new RequestController(
+            faker: $this->faker,
+            logger: $this->logger,
+            httpClient: $this->httpClient,
+            mockDto: $mock,
         );
 
-        $router->addRoute($request->getMethod(), $request->url, $requestHandler);
+        return [
+            $mock->request->method,
+            $mock->request->url,
+            $handler
+        ];
     }
 
     private function makeFoundResponse(array $match, Request $request): Response

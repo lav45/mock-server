@@ -2,19 +2,17 @@
 
 namespace lav45\MockServer\test\functional\suite\Mock;
 
-use lav45\MockServer\HttpClient;
+use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @see \lav45\MockServer\Mock\Response
- */
 class ResponseTest extends TestCase
 {
     private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
-        $this->HttpClient = (new HttpClient())->build();
+        $this->HttpClient = HttpClientFactory::create();
     }
 
     public function testIndex(): void

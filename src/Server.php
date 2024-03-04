@@ -13,6 +13,9 @@ use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory;
+use Faker\Generator;
+use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use lav45\MockServer\Infrastructure\Wrapper\HttpClient as HttpClientWrapper;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -52,18 +55,14 @@ final readonly class Server
         $server->stop(); // @codeCoverageIgnore
     }
 
-    protected function getHttpClient(LoggerInterface $logger): HttpClient
+    protected function getHttpClient(LoggerInterface $logger): HttpClientWrapper
     {
-        return (new HttpClient(
-            logger: $logger,
-            logLevelOk: Level::Info,
-            logLevelError: Level::Error
-        ))->build();
+        return HttpClientFactory::create($logger);
     }
 
-    protected function getFakerFactory(): FakerParser
+    protected function getFakerFactory(): Generator
     {
-        return new FakerParser(Factory::create($this->locale));
+        return Factory::create($this->locale);
     }
 
     protected function getErrorHandler(): ErrorHandler
