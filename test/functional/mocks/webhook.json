@@ -1,5 +1,11 @@
 [
     {
+        "env": {
+            "webhook": {
+                "token": "e71ad173-dacf-493c-be55-643074fdf41c"
+            },
+            "uuid": "{{faker.uuid}}"
+        },
         "request": {
             "method": "POST",
             "url": "/webhook/{id}"
@@ -77,6 +83,26 @@
                     "Content-Type": "multipart/form-data; boundary=FB"
                 },
                 "text": "--FB\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nJohn\r\n--FB\r\nContent-Disposition: form-data; name=\"age\"\r\n\r\n12\r\n--FB--\r\n"
+            },
+            {
+                "url": "http://127.0.0.1:8000/storage",
+                "options": {
+                    "headers": {
+                        "X-API-Token": "{{env.webhook.token}}"
+                    },
+                    "json": {
+                        "uuid": "{{env.uuid}}"
+                    }
+                }
+            },
+            {
+                "url": "http://127.0.0.1:8000/storage",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "options": {
+                    "text": "{\"text\": \"OK\"}"
+                }
             }
         ]
     }

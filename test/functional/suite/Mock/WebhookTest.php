@@ -108,5 +108,13 @@ class WebhookTest extends TestCase
         $this->assertArrayHasKey('content-type', $content[7]['headers']);
         $this->assertEquals('multipart/form-data; boundary=FB', $content[7]['headers']['content-type'][0]);
         $this->assertSame(['name' => 'John', 'age' => '12'], $content[7]['post']);
+
+        $this->assertEquals('POST', $content[8]['method']);
+        $this->assertArrayHasKey('x-api-token', $content[8]['headers']);
+        $this->assertEquals('e71ad173-dacf-493c-be55-643074fdf41c', $content[8]['headers']['x-api-token'][0]);
+        $this->assertMatchesRegularExpression($uuidPattern, $content[8]['post']['uuid']);
+
+        $this->assertEquals('POST', $content[9]['method']);
+        $this->assertSame(['text' => 'OK'], $content[9]['post']);
     }
 }

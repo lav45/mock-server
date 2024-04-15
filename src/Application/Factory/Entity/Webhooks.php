@@ -32,12 +32,17 @@ final readonly class Webhooks
         $delay = Delay::new($parser->replace($item->delay));
         $url = new Url($parser->replace($item->url));
         $method = HttpMethod::new($parser->replace($item->method));
-        $headers = HttpHeadersFactory::new($parser, $item->headers, isset($item->json));
 
-        $body = Body::from(
-            json: $parser->replace($item->json),
-            text: $parser->replace($item->text)
-        );
+        $headers = $item->options['headers'] ?? $item->headers;
+        $headers = HttpHeadersFactory::new($parser, $headers, isset($item->json));
+
+        $json = $item->options['json'] ?? $item->json;
+        $json = $parser->replace($json);
+
+        $text = $item->options['text'] ?? $item->text;
+        $text = $parser->replace($text);
+
+        $body = Body::from(json: $json, text: $text);
 
         return new Webhook(
             delay: $delay,
