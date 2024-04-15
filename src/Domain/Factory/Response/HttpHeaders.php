@@ -36,7 +36,7 @@ final readonly class HttpHeaders
             $headers[] = new HttpHeader('content-type', 'application/json');
         }
         foreach ($this->parser->replace($this->headers) as $name => $value) {
-            $headers[] = new HttpHeader($name, $value);
+            $headers[] = new HttpHeader($name, (string)$value);
         }
         return new HttpHeadersResponse(...$headers);
     }

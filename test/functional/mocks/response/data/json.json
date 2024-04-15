@@ -6,10 +6,10 @@
         "response": {
             "data": {
                 "headers": {
-                    "X-Pagination-Total-Count": "{response.data.pagination.totalItems}",
-                    "X-Pagination-Current-Page": "{response.data.pagination.currentPage}",
-                    "X-Pagination-Page-Count": "{response.data.pagination.totalPages}",
-                    "X-Pagination-Per-Page": "{response.data.pagination.pageSize}"
+                    "X-Pagination-Total-Count": "{{response.data.pagination.totalItems}}",
+                    "X-Pagination-Current-Page": "{{response.data.pagination.currentPage}}",
+                    "X-Pagination-Page-Count": "{{response.data.pagination.totalPages}}",
+                    "X-Pagination-Per-Page": "{{response.data.pagination.pageSize}}"
                 },
                 "pagination": {
                     "pageParam": "_p",
