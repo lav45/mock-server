@@ -1,4 +1,4 @@
-FROM mock-server-base
+FROM mock-server-base:latest
 
 RUN apk add --no-cache \
     php83-phar \

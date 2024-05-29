@@ -21,6 +21,7 @@
     "require": {
         "php": ">=8.3",
         "ext-pcntl": "*",
+        "ext-filter": "*",
         "amphp/amp": "v3.0.*",
         "amphp/log": "v2.0.*",
         "amphp/sync": "v2.1.*",

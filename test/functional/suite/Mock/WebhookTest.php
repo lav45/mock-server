@@ -113,6 +113,8 @@ class WebhookTest extends TestCase
         $this->assertArrayHasKey('x-api-token', $content[8]['headers']);
         $this->assertEquals('e71ad173-dacf-493c-be55-643074fdf41c', $content[8]['headers']['x-api-token'][0]);
         $this->assertMatchesRegularExpression($uuidPattern, $content[8]['post']['uuid']);
+        $this->assertMatchesRegularExpression('~^TEST\d{4}$~', $content[8]['post']['id']);
+        $this->assertMatchesRegularExpression('~^\d{12}$~', $content[8]['post']['correlationId']);
 
         $this->assertEquals('POST', $content[9]['method']);
         $this->assertSame(['text' => 'OK'], $content[9]['post']);

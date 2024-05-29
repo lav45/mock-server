@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.20
 
 RUN apk upgrade --no-cache --available
 RUN apk add --no-cache  \
@@ -15,7 +15,6 @@ RUN apk add --no-cache  \
     php83-gmp \
     php83-opcache
 
-RUN ln -s /usr/bin/php83 /usr/bin/php
 RUN ln -s /etc/php83 /etc/php
 
 RUN echo 'opcache.enable=on' >> /etc/php/conf.d/00_opcache.ini

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9a6ea8f8c9f75bfb568cbeb18e26859",
+    "content-hash": "c2829f3012f62e2d9c7439b4fa5f330f",
     "packages": [
         {
             "name": "amphp/amp",
-            "version": "v3.0.0",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/amp.git",
-                "reference": "aaf0ec1d5a2c20b523258995a10e80c1fb765871"
+                "reference": "138801fb68cfc9c329da8a7b39d01ce7291ee4b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/amp/zipball/aaf0ec1d5a2c20b523258995a10e80c1fb765871",
-                "reference": "aaf0ec1d5a2c20b523258995a10e80c1fb765871",
+                "url": "https://api.github.com/repos/amphp/amp/zipball/138801fb68cfc9c329da8a7b39d01ce7291ee4b0",
+                "reference": "138801fb68cfc9c329da8a7b39d01ce7291ee4b0",
                 "shasum": ""
             },
             "require": {
@@ -27,7 +27,7 @@
             "require-dev": {
                 "amphp/php-cs-fixer-config": "^2",
                 "phpunit/phpunit": "^9",
-                "psalm/phar": "^4.13"
+                "psalm/phar": "5.23.1"
             },
             "type": "library",
             "autoload": {
@@ -77,7 +77,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/amp/issues",
-                "source": "https://github.com/amphp/amp/tree/v3.0.0"
+                "source": "https://github.com/amphp/amp/tree/v3.0.2"
             },
             "funding": [
                 {
@@ -85,7 +85,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-12-18T16:52:44+00:00"
+            "time": "2024-05-10T21:37:46+00:00"
         },
         {
             "name": "amphp/byte-stream",
@@ -164,16 +164,16 @@
         },
         {
             "name": "amphp/cache",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/cache.git",
-                "reference": "218bb3888d380eb9dd926cd06f803573c84391d3"
+                "reference": "46912e387e6aa94933b61ea1ead9cf7540b7797c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/cache/zipball/218bb3888d380eb9dd926cd06f803573c84391d3",
-                "reference": "218bb3888d380eb9dd926cd06f803573c84391d3",
+                "url": "https://api.github.com/repos/amphp/cache/zipball/46912e387e6aa94933b61ea1ead9cf7540b7797c",
+                "reference": "46912e387e6aa94933b61ea1ead9cf7540b7797c",
                 "shasum": ""
             },
             "require": {
@@ -217,7 +217,7 @@
             "homepage": "https://amphp.org/cache",
             "support": {
                 "issues": "https://github.com/amphp/cache/issues",
-                "source": "https://github.com/amphp/cache/tree/v2.0.0"
+                "source": "https://github.com/amphp/cache/tree/v2.0.1"
             },
             "funding": [
                 {
@@ -225,20 +225,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-01-09T21:04:12+00:00"
+            "time": "2024-04-19T03:38:06+00:00"
         },
         {
             "name": "amphp/dns",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/dns.git",
-                "reference": "3e3f413fbbaacd9632b1612941b363fa26a72e52"
+                "reference": "04c88e67bef804203df934703bd422ea72f46b0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/dns/zipball/3e3f413fbbaacd9632b1612941b363fa26a72e52",
-                "reference": "3e3f413fbbaacd9632b1612941b363fa26a72e52",
+                "url": "https://api.github.com/repos/amphp/dns/zipball/04c88e67bef804203df934703bd422ea72f46b0e",
+                "reference": "04c88e67bef804203df934703bd422ea72f46b0e",
                 "shasum": ""
             },
             "require": {
@@ -305,7 +305,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/dns/issues",
-                "source": "https://github.com/amphp/dns/tree/v2.1.1"
+                "source": "https://github.com/amphp/dns/tree/v2.1.2"
             },
             "funding": [
                 {
@@ -313,7 +313,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-01-30T23:25:30+00:00"
+            "time": "2024-04-19T03:49:29+00:00"
         },
         {
             "name": "amphp/hpack",
@@ -550,16 +550,16 @@
         },
         {
             "name": "amphp/http-server",
-            "version": "v3.3.0",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/http-server.git",
-                "reference": "4b580fec9ecb7d24a080c8d3b47404cb76759fca"
+                "reference": "26001b1ffac11db30c627ed4daba2088951b0ffa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/http-server/zipball/4b580fec9ecb7d24a080c8d3b47404cb76759fca",
-                "reference": "4b580fec9ecb7d24a080c8d3b47404cb76759fca",
+                "url": "https://api.github.com/repos/amphp/http-server/zipball/26001b1ffac11db30c627ed4daba2088951b0ffa",
+                "reference": "26001b1ffac11db30c627ed4daba2088951b0ffa",
                 "shasum": ""
             },
             "require": {
@@ -586,7 +586,7 @@
                 "league/uri-components": "^2.4.2 | ^7.1",
                 "monolog/monolog": "^3",
                 "phpunit/phpunit": "^9",
-                "psalm/phar": "^5.4"
+                "psalm/phar": "~5.23"
             },
             "suggest": {
                 "ext-zlib": "Allows GZip compression of response bodies"
@@ -635,7 +635,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/http-server/issues",
-                "source": "https://github.com/amphp/http-server/tree/v3.3.0"
+                "source": "https://github.com/amphp/http-server/tree/v3.3.1"
             },
             "funding": [
                 {
@@ -643,7 +643,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-28T23:14:52+00:00"
+            "time": "2024-04-21T15:46:46+00:00"
         },
         {
             "name": "amphp/http-server-form-parser",
@@ -933,16 +933,16 @@
         },
         {
             "name": "amphp/process",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/process.git",
-                "reference": "a79dc87100be857db2c4bbfd5369585a6d1e658c"
+                "reference": "52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/process/zipball/a79dc87100be857db2c4bbfd5369585a6d1e658c",
-                "reference": "a79dc87100be857db2c4bbfd5369585a6d1e658c",
+                "url": "https://api.github.com/repos/amphp/process/zipball/52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d",
+                "reference": "52e08c09dec7511d5fbc1fb00d3e4e79fc77d58d",
                 "shasum": ""
             },
             "require": {
@@ -989,7 +989,7 @@
             "homepage": "https://amphp.org/process",
             "support": {
                 "issues": "https://github.com/amphp/process/issues",
-                "source": "https://github.com/amphp/process/tree/v2.0.2"
+                "source": "https://github.com/amphp/process/tree/v2.0.3"
             },
             "funding": [
                 {
@@ -997,7 +997,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-13T20:38:21+00:00"
+            "time": "2024-04-19T03:13:44+00:00"
         },
         {
             "name": "amphp/serialization",
@@ -1895,20 +1895,20 @@
         },
         {
             "name": "psr/http-factory",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-factory.git",
-                "reference": "e616d01114759c4c489f93b099585439f795fe35"
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/e616d01114759c4c489f93b099585439f795fe35",
-                "reference": "e616d01114759c4c489f93b099585439f795fe35",
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0.0",
+                "php": ">=7.1",
                 "psr/http-message": "^1.0 || ^2.0"
             },
             "type": "library",
@@ -1932,7 +1932,7 @@
                     "homepage": "https://www.php-fig.org/"
                 }
             ],
-            "description": "Common interfaces for PSR-7 HTTP message factories",
+            "description": "PSR-17: Common interfaces for PSR-7 HTTP message factories",
             "keywords": [
                 "factory",
                 "http",
@@ -1944,9 +1944,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-factory/tree/1.0.2"
+                "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2023-04-10T20:10:41+00:00"
+            "time": "2024-04-15T12:06:14+00:00"
         },
         {
             "name": "psr/http-message",
@@ -2191,16 +2191,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.4.0",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "7c3aff79d10325257a001fcf92d991f24fc967cf"
+                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/7c3aff79d10325257a001fcf92d991f24fc967cf",
-                "reference": "7c3aff79d10325257a001fcf92d991f24fc967cf",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
+                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
                 "shasum": ""
             },
             "require": {
@@ -2209,7 +2209,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "3.4-dev"
+                    "dev-main": "3.5-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -2238,7 +2238,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.4.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.5.0"
             },
             "funding": [
                 {
@@ -2254,7 +2254,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-23T14:45:45+00:00"
+            "time": "2024-04-18T09:32:20+00:00"
         },
         {
             "name": "yiisoft/arrays",
@@ -3010,16 +3010,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.1.2",
+            "version": "11.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "51e342a0bc987e0ea8418105d0711f08ae116de3"
+                "reference": "d475be032238173ca3b0a516f5cc291d174708ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/51e342a0bc987e0ea8418105d0711f08ae116de3",
-                "reference": "51e342a0bc987e0ea8418105d0711f08ae116de3",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/d475be032238173ca3b0a516f5cc291d174708ae",
+                "reference": "d475be032238173ca3b0a516f5cc291d174708ae",
                 "shasum": ""
             },
             "require": {
@@ -3090,7 +3090,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.1.2"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.1.3"
             },
             "funding": [
                 {
@@ -3106,7 +3106,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-14T07:13:56+00:00"
+            "time": "2024-04-24T06:34:25+00:00"
         },
         {
             "name": "qossmic/deptrac-shim",
@@ -3158,6 +3158,7 @@
             "support": {
                 "source": "https://github.com/qossmic/deptrac-shim/tree/main"
             },
+            "abandoned": "qossmic/deptrac",
             "time": "2024-03-26T10:15:35+00:00"
         },
         {
@@ -4143,7 +4144,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.3",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+        "ext-filter": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

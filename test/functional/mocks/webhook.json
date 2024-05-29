@@ -4,7 +4,8 @@
             "webhook": {
                 "token": "e71ad173-dacf-493c-be55-643074fdf41c"
             },
-            "uuid": "{{faker.uuid}}"
+            "uuid": "{{faker.uuid}}",
+            "correlationId": "{{faker.numerify('############')}}"
         },
         "request": {
             "method": "POST",
@@ -91,6 +92,8 @@
                         "X-API-Token": "{{env.webhook.token}}"
                     },
                     "json": {
+                        "id": "{{faker.bothify('TEST####')}}",
+                        "correlationId": "{{env.correlationId}}",
                         "uuid": "{{env.uuid}}"
                     }
                 }

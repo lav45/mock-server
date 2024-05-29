@@ -8,7 +8,7 @@ use function explode;
 use function is_array;
 use function rtrim;
 
-class ArrayHelper
+final class ArrayHelper
 {
     public static function getValue(
         array  $data,

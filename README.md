@@ -21,7 +21,6 @@ HTTP mocking application for testing and fast prototyping
 ## Quick start
 
 Create mock file `./mocks/index.json` and put the content in it
-
 ```json
 [{
   "response": {
@@ -33,13 +32,11 @@ Create mock file `./mocks/index.json` and put the content in it
 ```
 
 Run the Mock Server
-
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
 Checking
-
 ```shell
 curl http://127.0.0.1:8080/
 ```
