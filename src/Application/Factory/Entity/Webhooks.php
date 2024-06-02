@@ -34,10 +34,11 @@ final readonly class Webhooks
         $method = HttpMethod::new($parser->replace($item->method));
 
         $headers = $item->options['headers'] ?? $item->headers;
-        $headers = HttpHeadersFactory::new($parser, $headers, isset($item->json));
 
         $json = $item->options['json'] ?? $item->json;
         $json = $parser->replace($json);
+
+        $headers = HttpHeadersFactory::new($parser, $headers, isset($json));
 
         $text = $item->options['text'] ?? $item->text;
         $text = $parser->replace($text);
