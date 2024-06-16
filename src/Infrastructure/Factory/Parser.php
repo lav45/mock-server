@@ -12,21 +12,22 @@ use lav45\MockServer\Infrastructure\Service\Parser\Param;
 final readonly class Parser
 {
     private Faker $fakerParser;
-    private Param $paramParser;
 
     public function __construct(
         private Generator $faker,
-        array             $env = [],
+        private array     $env = [],
     ) {
         $this->fakerParser = new Faker($this->faker);
-        $this->paramParser = new Param([
-            'env' => $this->fakerParser->replace($env),
-        ]);
     }
 
     public function create(RequestDTO $request): ParserInterface
     {
-        $paramParser = $this->paramParser->withData(['request' => (array)$request]);
+        $env = $this->fakerParser->replace($this->env);
+
+        $paramParser = new Param([
+            'request' => (array)$request,
+            'env' => $env,
+        ]);
 
         return new Group($paramParser, $this->fakerParser);
     }

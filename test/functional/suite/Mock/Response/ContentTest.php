@@ -34,6 +34,18 @@ class ContentTest extends TestCase
         $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
         $this->assertMatchesRegularExpression($uuidPattern, $ids[0]);
         $this->assertMatchesRegularExpression($uuidPattern, $ids[1]);
+
+        $response = $this->HttpClient->request('http://127.0.0.1/response/content/json');
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $response->getBody()->buffer();
+        $content = \json_decode($content, true);
+
+        $ids2 = \explode('/', $content['id']);
+        $this->assertCount(2, $ids2);
+
+        $this->assertNotEquals($ids[0], $ids2[0]);
+        $this->assertNotEquals($ids[1], $ids2[1]);
     }
 
     public function testText(): void
