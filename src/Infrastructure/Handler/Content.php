@@ -11,9 +11,7 @@ final readonly class Content implements ResponseHandler
 {
     use DelayTrait;
 
-    public function __construct(private ContentEntity $data)
-    {
-    }
+    public function __construct(private ContentEntity $data) {}
 
     public function handle(Request $request): Response
     {
@@ -22,7 +20,7 @@ final readonly class Content implements ResponseHandler
         return new Response(
             status: $this->data->status->value,
             headers: $this->data->headers->all(),
-            body: $this->data->body->toString()
+            body: $this->data->body->toString(),
         );
     }
 }

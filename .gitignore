@@ -7,3 +7,4 @@ phpunit.xml
 .composer
 .draft
 .deptrac.cache
+.php_cs.cache

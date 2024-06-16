@@ -2,8 +2,8 @@
 
 namespace lav45\MockServer\test\unit\suite\Domain\ValueObject\Response;
 
-use PHPUnit\Framework\TestCase;
 use lav45\MockServer\Domain\ValueObject\Response\Body;
+use PHPUnit\Framework\TestCase;
 
 final class BodyTest extends TestCase
 {

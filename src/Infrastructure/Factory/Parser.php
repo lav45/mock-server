@@ -17,11 +17,10 @@ final readonly class Parser
     public function __construct(
         private Generator $faker,
         array             $env = [],
-    )
-    {
+    ) {
         $this->fakerParser = new Faker($this->faker);
         $this->paramParser = new Param([
-            'env' => $this->fakerParser->replace($env)
+            'env' => $this->fakerParser->replace($env),
         ]);
     }
 

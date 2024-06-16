@@ -17,10 +17,8 @@ final readonly class Collection
     public function __construct(
         private DataDTO      $data,
         private float|string $delay,
-        private Parser       $parser
-    )
-    {
-    }
+        private Parser       $parser,
+    ) {}
 
     public function create(): CollectionEntity
     {
@@ -37,7 +35,7 @@ final readonly class Collection
 
         $items = Body::from(
             json: $this->parser->replace($this->data->json),
-            file: $this->data->file
+            file: $this->data->file,
         )->toArray();
 
         return new CollectionEntity(

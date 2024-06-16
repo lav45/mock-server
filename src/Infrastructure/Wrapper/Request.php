@@ -15,16 +15,14 @@ final class Request
     private string $body;
     private array $get;
 
-    public function __construct(private readonly HttpRequest $request)
-    {
-    }
+    public function __construct(private readonly HttpRequest $request) {}
 
     public function __call(string $name, array $args)
     {
-        if (method_exists($this->request, $name)) {
-            return call_user_func_array([$this->request, $name], $args);
+        if (\method_exists($this->request, $name)) {
+            return \call_user_func_array([$this->request, $name], $args);
         }
-        throw new RuntimeException('Calling unknown method: ' . get_class($this) . "::{$name}()");
+        throw new RuntimeException('Calling unknown method: ' . self::class . "::{$name}()");
     }
 
     public function getUrlParams(): array
@@ -42,7 +40,7 @@ final class Request
         if (empty($query)) {
             return [];
         }
-        parse_str($query, $parseQuery);
+        \parse_str($query, $parseQuery);
         return $parseQuery;
     }
 
@@ -70,7 +68,7 @@ final class Request
     private function parseBody(): array
     {
         if ($body = $this->body()) {
-            return json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            return \json_decode($body, true, 512, JSON_THROW_ON_ERROR);
         }
         return [];
     }

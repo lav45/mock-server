@@ -9,6 +9,7 @@ use lav45\MockServer\Domain\ValueObject\Webhook as WebhookItem;
 use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+
 use function Amp\async;
 use function Amp\delay;
 
@@ -19,8 +20,7 @@ final readonly class Webhook implements WebhookService
     public function __construct(
         private LoggerInterface $logger,
         HttpClient              $httpClient,
-    )
-    {
+    ) {
         $this->httpClient = $httpClient->withLogMessage(static function (HttpRequest $request, HttpResponse $response) {
             return "Webhook: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
         });

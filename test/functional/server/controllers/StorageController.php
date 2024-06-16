@@ -8,9 +8,7 @@ use lav45\MockServer\test\functional\server\controllers\dto\RequestDTO;
 
 final readonly class StorageController
 {
-    public function __construct(private Storage $storage)
-    {
-    }
+    public function __construct(private Storage $storage) {}
 
     public function create(string $method, array $get, array $post, array $headers): Response
     {
@@ -23,13 +21,13 @@ final readonly class StorageController
     {
         $headers = ["content-type" => "application/json"];
         $data = $this->storage->all();
-        $data = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         $this->storage->flush();
 
         return new Response(
             headers: $headers,
-            body: $data
+            body: $data,
         );
     }
 }

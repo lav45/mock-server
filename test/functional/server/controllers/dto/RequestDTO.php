@@ -11,8 +11,7 @@ final readonly class RequestDTO
         public array $get,
         public array $post,
         public array $headers,
-    )
-    {
-        $this->time = microtime(true);
+    ) {
+        $this->time = \microtime(true);
     }
 }

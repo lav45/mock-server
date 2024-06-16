@@ -16,7 +16,5 @@ final readonly class Webhook
         public HttpMethod  $method,
         public HttpHeaders $headers,
         public Body        $body,
-    )
-    {
-    }
+    ) {}
 }

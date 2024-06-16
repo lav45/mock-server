@@ -13,7 +13,5 @@ final readonly class Proxy
         public mixed  $content = null,
         public array  $headers = [],
         public array  $options = [],
-    )
-    {
-    }
+    ) {}
 }

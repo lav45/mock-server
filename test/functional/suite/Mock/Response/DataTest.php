@@ -32,7 +32,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(6, $content['data']);
@@ -73,7 +73,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(6, $content['data']);
@@ -115,7 +115,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(6, $content['data']);
@@ -153,7 +153,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(3, $content['data']);
@@ -194,7 +194,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(2, $content['data']);
@@ -223,7 +223,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(5, $content['data']);
@@ -272,7 +272,7 @@ class DataTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
         $this->assertCount(0, $content['data']);

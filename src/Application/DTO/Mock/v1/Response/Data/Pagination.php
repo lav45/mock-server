@@ -11,7 +11,5 @@ final readonly class Pagination
         public string $pageParam = 'page',
         public string $pageSizeParam = 'per-page',
         public int    $defaultPageSize = 20,
-    )
-    {
-    }
+    ) {}
 }

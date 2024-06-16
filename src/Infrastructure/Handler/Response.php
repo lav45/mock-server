@@ -12,9 +12,7 @@ use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 
 final readonly class Response implements ResponseHandlerFactory
 {
-    public function __construct(private HttpClient $httpClient)
-    {
-    }
+    public function __construct(private HttpClient $httpClient) {}
 
     public function create(ResponseEntity $data): ResponseHandler
     {

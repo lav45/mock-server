@@ -17,7 +17,5 @@ final readonly class Response
         public Data|null    $data = null,
         /** @var float|string */
         public mixed        $delay = 0.0,
-    )
-    {
-    }
+    ) {}
 }

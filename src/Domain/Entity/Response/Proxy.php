@@ -15,7 +15,5 @@ final readonly class Proxy implements Response
         public Url         $url,
         public HttpHeaders $headers,
         public Body        $content,
-    )
-    {
-    }
+    ) {}
 }

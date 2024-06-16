@@ -11,9 +11,7 @@ use lav45\MockServer\Domain\Service\Parser;
 
 final readonly class Response
 {
-    public function __construct(private ResponseDTO $response)
-    {
-    }
+    public function __construct(private ResponseDTO $response) {}
 
     public function create(Parser $parser): ResponseEntity
     {

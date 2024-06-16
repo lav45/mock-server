@@ -29,9 +29,7 @@ final readonly class Server
         private string $mocksPath = '/app/mocks',
         private string $locale = 'en_US',
         private string $logLevel = 'info',
-    )
-    {
-    }
+    ) {}
 
     public function start(): void
     {
@@ -47,11 +45,11 @@ final readonly class Server
             errorHandler: $errorHandler,
             faker: $faker,
             logger: $logger,
-            httpClient: $httpClient
+            httpClient: $httpClient,
         );
 
         $server->start($reactor, $errorHandler);
-        $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+        $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop(); // @codeCoverageIgnore
     }
 
@@ -93,7 +91,7 @@ final readonly class Server
             format: "[%datetime%]\t%level_name%\t%message%\t%context%\n",
             dateFormat: 'd.m.Y H:i:s.v',
             allowInlineLineBreaks: true,
-            ignoreEmptyContextAndExtra: true
+            ignoreEmptyContextAndExtra: true,
         ));
         return $handler;
     }

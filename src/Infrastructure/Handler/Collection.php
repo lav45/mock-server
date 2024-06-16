@@ -15,9 +15,7 @@ final readonly class Collection implements ResponseHandler
 {
     use DelayTrait;
 
-    public function __construct(private CollectionEntity $data)
-    {
-    }
+    public function __construct(private CollectionEntity $data) {}
 
     public function handle(RequestDTO $request): ResponseDTO
     {
@@ -31,8 +29,8 @@ final readonly class Collection implements ResponseHandler
 
         try {
             $items = $dataProvider->read();
-            $items = iterator_to_array($items);
-            $items = array_values($items);
+            $items = \iterator_to_array($items);
+            $items = \array_values($items);
         } catch (PaginatorException) {
             $items = [];
         }
@@ -51,9 +49,9 @@ final readonly class Collection implements ResponseHandler
                         'currentPage' => $currentPage,
                         'totalPages' => $totalPages,
                         'pageSize' => $pageSize,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $status = $this->data->status->value;

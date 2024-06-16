@@ -3,23 +3,18 @@
 namespace lav45\MockServer\Infrastructure\Component;
 
 use Closure;
-use function array_key_exists;
-use function explode;
-use function is_array;
-use function rtrim;
 
 final class ArrayHelper
 {
     public static function getValue(
         array  $data,
         string $name,
-        mixed  $default = null
-    ): mixed
-    {
-        $path = explode('.', string: rtrim($name, '.'));
+        mixed  $default = null,
+    ): mixed {
+        $path = \explode('.', string: \rtrim($name, '.'));
 
         foreach ($path as $step) {
-            if (is_array($data) === false || (isset($data[$step]) || array_key_exists($step, $data)) === false) {
+            if (\is_array($data) === false || (isset($data[$step]) || \array_key_exists($step, $data)) === false) {
                 return $default;
             }
             $data = &$data[$step];
@@ -31,9 +26,9 @@ final class ArrayHelper
     {
         $result = [];
         foreach ($data as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $result[$key] = self::map($value, $fn);
-            } elseif (is_string($value)) {
+            } elseif (\is_string($value)) {
                 $result[$key] = $fn($value);
             } else {
                 $result[$key] = $value;

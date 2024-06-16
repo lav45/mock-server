@@ -25,10 +25,10 @@ class ContentTest extends TestCase
         $this->assertEquals('application/json', $headers['content-type'][0]);
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
         $this->assertArrayHasKey('id', $content);
 
-        $ids = explode('/', $content['id']);
+        $ids = \explode('/', $content['id']);
         $this->assertCount(2, $ids);
 
         $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';

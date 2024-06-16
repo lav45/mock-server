@@ -8,7 +8,7 @@ trait DelayTrait
 {
     public function delay(float $start, float $delay): void
     {
-        $end = microtime(true);
+        $end = \microtime(true);
         $timeout = $delay - ($end - $start);
 
         if ($timeout > 0.0) {

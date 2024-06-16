@@ -13,9 +13,7 @@ final readonly class Request
     public function __construct(
         private WebhookService         $webhookService,
         private ResponseHandlerFactory $responseHandler,
-    )
-    {
-    }
+    ) {}
 
     public function execute(RequestDTO $request, Mock $mock): ResponseDTO
     {

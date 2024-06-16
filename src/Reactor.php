@@ -14,9 +14,8 @@ use lav45\MockServer\Infrastructure\Controller\Request as RequestController;
 use lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
 use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Psr\Log\LoggerInterface;
+
 use function FastRoute\simpleDispatcher;
-use function implode;
-use function rawurldecode;
 
 class Reactor implements RequestHandlerInterface
 {
@@ -29,15 +28,14 @@ class Reactor implements RequestHandlerInterface
         private readonly Generator       $faker,
         private readonly LoggerInterface $logger,
         private readonly HttpClient      $httpClient,
-    )
-    {
-        $this->mocksPath = rtrim($mocksPath, '/');
+    ) {
+        $this->mocksPath = \rtrim($mocksPath, '/');
     }
 
     public function handleRequest(Request $request): Response
     {
         $method = $request->getMethod();
-        $uri = rawurldecode($request->getUri()->getPath());
+        $uri = \rawurldecode($request->getUri()->getPath());
 
         $file = $this->getFile($uri);
         if ($file === null) {
@@ -51,7 +49,7 @@ class Reactor implements RequestHandlerInterface
 
     protected function getRouter(string $file): Dispatcher
     {
-        $key = md5_file($file);
+        $key = \md5_file($file);
         if (isset($this->routerCache[$file]) && $this->routerCache[$file][0] === $key) {
             return $this->routerCache[$file][1];
         }
@@ -82,12 +80,12 @@ class Reactor implements RequestHandlerInterface
         if ($uri === '/') {
             $uri = '/index';
         } else {
-            $uri = rtrim($uri, '/');
+            $uri = \rtrim($uri, '/');
         }
 
         $file = "{$this->mocksPath}{$uri}.json";
-        if (file_exists($file) === false) {
-            $uri = dirname($uri);
+        if (\file_exists($file) === false) {
+            $uri = \dirname($uri);
             if ($uri === '/') {
                 return null;
             }
@@ -98,8 +96,8 @@ class Reactor implements RequestHandlerInterface
 
     private function getRoutes(string $file): array
     {
-        $content = file_get_contents($file);
-        return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $content = \file_get_contents($file);
+        return \json_decode($content, true, 512, JSON_THROW_ON_ERROR);
     }
 
     private function createRoute(array $data): array
@@ -116,7 +114,7 @@ class Reactor implements RequestHandlerInterface
         return [
             $mock->request->method,
             $mock->request->url,
-            $handler
+            $handler,
         ];
     }
 
@@ -145,7 +143,7 @@ class Reactor implements RequestHandlerInterface
     private function makeMethodNotAllowedResponse(array $methods, Request $request): Response
     {
         $response = $this->errorHandler->handleError(HttpStatus::METHOD_NOT_ALLOWED, null, $request);
-        $response->setHeader('allow', implode(', ', $methods));
+        $response->setHeader('allow', \implode(', ', $methods));
         return $response;
     }
 }

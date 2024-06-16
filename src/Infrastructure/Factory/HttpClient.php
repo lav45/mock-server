@@ -16,14 +16,13 @@ final readonly class HttpClient
     public static function create(
         LoggerInterface|null $logger = null,
         mixed                $logLevelOk = Level::Info,
-        mixed                $logLevelError = Level::Error
-    ): HttpClientWrapper
-    {
+        mixed                $logLevelError = Level::Error,
+    ): HttpClientWrapper {
         $tls = (new ClientTlsContext(''))
             ->withoutPeerVerification()
             ->withSecurityLevel(0);
 
-        $context = (new ConnectContext)
+        $context = (new ConnectContext())
             ->withTlsContext($tls);
 
         $factory = new DefaultConnectionFactory(null, $context);

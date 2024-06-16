@@ -11,7 +11,7 @@ final readonly class HttpMethod
 
     public static function new(string $value): self
     {
-        return new self(strtoupper($value));
+        return new self(\strtoupper($value));
     }
 
     private function isValidMethod(string $value): bool

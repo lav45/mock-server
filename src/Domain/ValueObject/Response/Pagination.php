@@ -8,8 +8,7 @@ final readonly class Pagination
         public string $pageParam,
         public string $pageSizeParam,
         public int    $defaultPageSize,
-    )
-    {
+    ) {
         \assert($this->isValidParamName($pageParam), 'Invalid pageParam');
         \assert($this->isValidParamName($pageSizeParam), 'Invalid pageSizeParam');
         \assert($this->isValidDefaultPageSize($defaultPageSize), 'Invalid defaultPageSize');
@@ -17,7 +16,7 @@ final readonly class Pagination
 
     private function isValidParamName(string $param): bool
     {
-        return (bool)preg_match('~^[\w\-]+$~', $param);
+        return (bool)\preg_match('~^[\w\-]+$~', $param);
     }
 
     private function isValidDefaultPageSize(int $value): bool

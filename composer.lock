@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2829f3012f62e2d9c7439b4fa5f330f",
+    "content-hash": "d14db5980e40f5e4e93f2ac08ffe12aa",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3109,59 +3109,6 @@
             "time": "2024-04-24T06:34:25+00:00"
         },
         {
-            "name": "qossmic/deptrac-shim",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/qossmic/deptrac-shim.git",
-                "reference": "2e60248641f63c3fddf2690b221765cfb9223906"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/qossmic/deptrac-shim/zipball/2e60248641f63c3fddf2690b221765cfb9223906",
-                "reference": "2e60248641f63c3fddf2690b221765cfb9223906",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "ext-tokenizer": "*",
-                "ext-zlib": "*",
-                "php": "^8.1"
-            },
-            "replace": {
-                "qossmic/deptrac": "self.version"
-            },
-            "suggest": {
-                "ext-dom": "For using the JUnit output formatter"
-            },
-            "default-branch": true,
-            "bin": [
-                "deptrac"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tim Glabisch"
-                },
-                {
-                    "name": "Simon Mönch"
-                },
-                {
-                    "name": "Denis Brumann"
-                }
-            ],
-            "description": "deptrac phar distribution",
-            "support": {
-                "source": "https://github.com/qossmic/deptrac-shim/tree/main"
-            },
-            "abandoned": "qossmic/deptrac",
-            "time": "2024-03-26T10:15:35+00:00"
-        },
-        {
             "name": "sebastian/cli-parser",
             "version": "3.0.1",
             "source": {
@@ -4137,9 +4084,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "qossmic/deptrac-shim": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

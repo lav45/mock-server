@@ -21,8 +21,7 @@ final readonly class Proxy implements ResponseHandler
     public function __construct(
         private ProxyEntity $data,
         HttpClient          $httpClient,
-    )
-    {
+    ) {
         $this->httpClient = $httpClient->withLogMessage(static function (HttpRequest $request, HttpResponse $response) {
             return "Proxy: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
         });
@@ -46,7 +45,7 @@ final readonly class Proxy implements ResponseHandler
         catch (Throwable $exception) {
             return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
-                body: $exception->getMessage()
+                body: $exception->getMessage(),
             );
         } // @codeCoverageIgnoreEnd
 

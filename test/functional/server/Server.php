@@ -24,9 +24,7 @@ readonly class Server
         private string $host = '0.0.0.0',
         private int    $port = 8000,
         private string $logLevel = 'info',
-    )
-    {
-    }
+    ) {}
 
     public function start(): void
     {
@@ -39,7 +37,7 @@ readonly class Server
         $requestHandler = new RequestHandler($storage);
 
         $server->start($requestHandler, $errorHandler);
-        $logger->info(sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+        $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop();
     }
 
@@ -67,7 +65,7 @@ readonly class Server
         $handler = new StreamHandler(ByteStream\getStdout());
         $handler->setLevel(Level::fromName($this->logLevel));
         $handler->pushProcessor(new PsrLogMessageProcessor());
-        $handler->setFormatter(new ConsoleFormatter);
+        $handler->setFormatter(new ConsoleFormatter());
         return $handler;
     }
 }

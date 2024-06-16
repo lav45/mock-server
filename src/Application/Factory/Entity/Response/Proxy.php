@@ -15,10 +15,8 @@ final readonly class Proxy
     public function __construct(
         private ProxyDTO     $data,
         private float|string $delay,
-        private Parser       $parser
-    )
-    {
-    }
+        private Parser       $parser,
+    ) {}
 
     public function create(): ProxyEntity
     {
@@ -27,7 +25,7 @@ final readonly class Proxy
         $content = Body::new($this->parser->replace($this->data->content));
 
         $headers = $this->data->options['headers'] ?? $this->data->headers;
-        $headers = HttpHeadersFactory::new($this->parser, $headers, is_array($this->data->content));
+        $headers = HttpHeadersFactory::new($this->parser, $headers, \is_array($this->data->content));
 
         return new ProxyEntity(
             delay: $delay,

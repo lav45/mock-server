@@ -12,7 +12,5 @@ final readonly class Request
         public array  $headers,
         public array  $urlParams,
         public string $body,
-    )
-    {
-    }
+    ) {}
 }

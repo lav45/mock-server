@@ -13,8 +13,8 @@ final class ArrayHelperTest extends TestCase
             1 => true,
             2 => null,
             'a' => [
-                'b' => 1
-            ]
+                'b' => 1,
+            ],
         ];
 
         $this->assertNull(ArrayHelper::getValue($data, 'd'));

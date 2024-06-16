@@ -18,17 +18,14 @@ final class HttpClient
         private readonly LoggerInterface|null $logger = null,
         private readonly mixed                $logLevelOk = null,
         private readonly mixed                $logLevelError = null,
-    )
-    {
-    }
+    ) {}
 
     public function request(
         string      $uri,
         string      $method = 'GET',
         string|null $body = null,
-        array|null  $headers = null
-    ): Response
-    {
+        array|null  $headers = null,
+    ): Response {
         $request = new Request($uri, $method);
 
         $body && $request->setBody($body);
@@ -49,11 +46,11 @@ final class HttpClient
             return;
         }
 
-        $message = call_user_func($this->logMessage, $request, $response);
+        $message = \call_user_func($this->logMessage, $request, $response);
 
         $loggerLevel = match ($response->getStatus()) {
             HttpStatus::OK => $this->logLevelOk,
-            default => $this->logLevelError
+            default => $this->logLevelError,
         };
 
         $this->logger->log($loggerLevel, $message);
@@ -61,7 +58,6 @@ final class HttpClient
 
     /**
      * @param Closure $message => fn (Request $request, Response $response): string { ... }
-     * @return self
      */
     public function withLogMessage(Closure $message): self
     {

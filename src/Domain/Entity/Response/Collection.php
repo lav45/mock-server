@@ -18,7 +18,5 @@ final readonly class Collection implements Response
         public Body        $body,
         public Pagination  $pagination,
         public array       $items,
-    )
-    {
-    }
+    ) {}
 }

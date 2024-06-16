@@ -23,8 +23,8 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/storage',
             method: 'POST',
-            body: json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            headers: ['content-type' => 'application/json']
+            body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -45,7 +45,7 @@ class ProxyTest extends TestCase
     {
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/storage?id=100',
-            headers: ['content-type' => 'application/json']
+            headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -66,7 +66,7 @@ class ProxyTest extends TestCase
     {
         $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
         $content = $response->getBody()->buffer();
-        return json_decode($content, true);
+        return \json_decode($content, true);
     }
 
     public function testArrayContent(): void
@@ -74,7 +74,7 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/array-content',
             method: 'POST',
-            headers: ['content-type' => 'application/json']
+            headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -83,7 +83,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);
         $this->assertEquals(['n' => '1'], $content['get']);
@@ -102,7 +102,7 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/string-content',
             method: 'POST',
-            headers: ['content-type' => 'application/json']
+            headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -111,7 +111,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);
         $this->assertEquals([], $content['get']);
@@ -126,12 +126,12 @@ class ProxyTest extends TestCase
     {
         $data = [
             'id' => 100,
-            'item' => [1, 2, 3]
+            'item' => [1, 2, 3],
         ];
 
         $form = new Form();
         foreach ($data as $name => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 foreach ($value as $val) {
                     $form->addField($name, (string)$val);
                 }
@@ -144,7 +144,7 @@ class ProxyTest extends TestCase
             uri: 'http://127.0.0.1/response/proxy/storage',
             method: 'POST',
             body: $form->getContent()->read(),
-            headers: ['content-type' => $form->getContentType()]
+            headers: ['content-type' => $form->getContentType()],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -155,7 +155,7 @@ class ProxyTest extends TestCase
 
         $expected = [
             'id' => '100',
-            'item' => ['1', '2', '3']
+            'item' => ['1', '2', '3'],
         ];
         $this->assertEquals($expected, $content[0]['post']);
 

@@ -15,10 +15,8 @@ final readonly class Content
     public function __construct(
         private ContentDTO   $data,
         private float|string $delay,
-        private Parser       $parser
-    )
-    {
-    }
+        private Parser       $parser,
+    ) {}
 
     public function create(): ContentEntity
     {
@@ -29,7 +27,7 @@ final readonly class Content
 
         $body = Body::from(
             json: $this->parser->replace($this->data->json),
-            text: $this->parser->replace($this->data->text)
+            text: $this->parser->replace($this->data->text),
         );
 
         return new ContentEntity(

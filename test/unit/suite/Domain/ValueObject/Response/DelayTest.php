@@ -2,9 +2,9 @@
 
 namespace lav45\MockServer\test\unit\suite\Domain\ValueObject\Response;
 
+use lav45\MockServer\Domain\ValueObject\Response\Delay;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
 
 final class DelayTest extends TestCase
 {

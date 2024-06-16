@@ -5,6 +5,7 @@ namespace lav45\MockServer\test\functional\suite\Mock;
 use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
 use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use PHPUnit\Framework\TestCase;
+
 use function Amp\delay;
 
 class WebhookTest extends TestCase
@@ -30,8 +31,8 @@ class WebhookTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/webhook/200?id=500',
             method: 'POST',
-            body: json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            headers: ['content-type' => 'application/json']
+            body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -41,14 +42,14 @@ class WebhookTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = json_decode($content, true);
+        $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertEquals([], $content[0]['get']);
         $this->assertEquals([], $content[0]['post']);
 
-        $delay = round($content[1]['time'] - $content[0]['time'], 2);
-        $this->assertTrue($delay >= 0.5, var_export($delay, true));
+        $delay = \round($content[1]['time'] - $content[0]['time'], 2);
+        $this->assertTrue($delay >= 0.5, \var_export($delay, true));
 
         $this->assertEquals('POST', $content[1]['method']);
         $this->assertEquals([], $content[1]['get']);
@@ -65,7 +66,7 @@ class WebhookTest extends TestCase
             'get' => ['id' => '500'],
             'post' => $data,
             'urlParams' => ['id' => '200'],
-            'urlParamsId' => '200'
+            'urlParamsId' => '200',
         ];
         $this->assertSame($expected, $content[2]['post']);
 

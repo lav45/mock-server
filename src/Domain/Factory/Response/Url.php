@@ -6,9 +6,7 @@ use lav45\MockServer\Domain\ValueObject\Response\Url as UrlResponse;
 
 final readonly class Url
 {
-    public function __construct(private string $url)
-    {
-    }
+    public function __construct(private string $url) {}
 
     public function withQuery(array $get): self
     {
@@ -27,12 +25,12 @@ final readonly class Url
             return $url;
         }
 
-        $query = $oldQuery = parse_url($url, PHP_URL_QUERY);
+        $query = $oldQuery = \parse_url($url, PHP_URL_QUERY);
         $query = $this->parseQuery($query) + $get;
-        $query = http_build_query($query);
+        $query = \http_build_query($query);
 
-        if (str_contains($url, '?')) {
-            $url = str_replace("?{$oldQuery}", "?{$query}", $url);
+        if (\str_contains($url, '?')) {
+            $url = \str_replace("?{$oldQuery}", "?{$query}", $url);
         } else {
             $url .= "?{$query}";
         }
@@ -45,7 +43,7 @@ final readonly class Url
         if (empty($query)) {
             return [];
         }
-        parse_str($query, $parseQuery);
+        \parse_str($query, $parseQuery);
         return $parseQuery;
     }
 }

@@ -55,7 +55,7 @@ final class FakerTest extends TestCase
                     "{{faker.md5}}",
                     "{{faker.md5}}",
                     "{{faker.md5}}",
-                ]
+                ],
             ],
         ]);
 

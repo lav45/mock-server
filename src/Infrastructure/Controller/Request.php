@@ -29,8 +29,7 @@ final readonly class Request implements HttpRequestHandler
         private LoggerInterface $logger,
         private HttpClient      $httpClient,
         private MockDTO         $mockDto,
-    )
-    {
+    ) {
         $this->mockFactory = new MockFactory(
             response: new ResponseFactory($this->mockDto->response),
             webhooks: new WebhookFactory(...$this->mockDto->webhooks),
@@ -55,7 +54,7 @@ final readonly class Request implements HttpRequestHandler
         return new HttpResponse(
             status: $responseDto->status,
             headers: $responseDto->headers,
-            body: $responseDto->body
+            body: $responseDto->body,
         );
     }
 }

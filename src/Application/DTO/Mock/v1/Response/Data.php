@@ -16,7 +16,5 @@ final readonly class Data
         public mixed       $result = '{{response.data.items}}',
         public array       $json = [],
         public string|null $file = null,
-    )
-    {
-    }
+    ) {}
 }

@@ -6,9 +6,7 @@ use Stringable;
 
 final readonly class Body implements Stringable
 {
-    private function __construct(public string $content)
-    {
-    }
+    private function __construct(public string $content) {}
 
     public function __toString(): string
     {
@@ -30,7 +28,7 @@ final readonly class Body implements Stringable
 
     public static function new(array|string|null $data = null): self
     {
-        return is_array($data) ?
+        return \is_array($data) ?
             self::fromJson($data) :
             self::fromText($data);
     }
@@ -49,9 +47,8 @@ final readonly class Body implements Stringable
     public static function from(
         array|null  $json = null,
         string|null $text = null,
-        string|null $file = null
-    ): self
-    {
+        string|null $file = null,
+    ): self {
         if ($file) {
             return self::fromJsonFile($file);
         }
@@ -63,8 +60,8 @@ final readonly class Body implements Stringable
 
     public static function fromJsonFile(string $file): self
     {
-        $content = file_get_contents($file);
-        \assert(json_validate($content), 'Invalid file content');
+        $content = \file_get_contents($file);
+        \assert(\json_validate($content), 'Invalid file content');
         return new self($content);
     }
 }

@@ -35,11 +35,11 @@ class ResponseTest extends TestCase
 
     public function testDelay(): void
     {
-        $start = microtime(true);
+        $start = \microtime(true);
         $response = $this->HttpClient->request('http://127.0.0.1/response/delay');
-        $end = microtime(true);
+        $end = \microtime(true);
 
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals(0.2, round($end - $start, 1));
+        $this->assertEquals(0.2, \round($end - $start, 1));
     }
 }

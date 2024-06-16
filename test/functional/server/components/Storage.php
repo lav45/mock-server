@@ -28,7 +28,7 @@ class Storage
 
     public function count(): int
     {
-        return count($this->data);
+        return \count($this->data);
     }
 
     public function flush(): void

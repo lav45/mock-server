@@ -11,9 +11,7 @@ use lav45\MockServer\test\functional\server\controllers\StorageController;
 
 final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
-    public function __construct(private Storage $storage)
-    {
-    }
+    public function __construct(private Storage $storage) {}
 
     public function handleRequest(Request $request): Response
     {
@@ -24,7 +22,7 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
             '/storage' => $this->runStorageController($requestWrapper),
             '/__storage' => $this->runStorageController($requestWrapper, true),
             '/content' => $this->runContentController($requestWrapper),
-            default => new Response(status: 404)
+            default => new Response(status: 404),
         };
     }
 
@@ -37,12 +35,12 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
                 $request->getMethod(),
                 $request->get(),
                 $request->post(),
-                $request->getHeaders()
+                $request->getHeaders(),
             );
         }
 
         return match ($request->getMethod()) {
-            'GET' => $controller->flush()
+            'GET' => $controller->flush(),
         };
     }
 
@@ -52,7 +50,7 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
             $request->getMethod(),
             $request->get(),
             $request->post(),
-            $request->getHeaders()
+            $request->getHeaders(),
         );
     }
 }

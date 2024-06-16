@@ -15,7 +15,5 @@ final readonly class Content implements Response
         public HttpStatus  $status,
         public HttpHeaders $headers,
         public Body        $body,
-    )
-    {
-    }
+    ) {}
 }

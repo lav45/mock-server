@@ -10,7 +10,5 @@ final readonly class Mock
         public Response $response,
         /** @var Webhook[] */
         public iterable $webhooks = [],
-    )
-    {
-    }
+    ) {}
 }

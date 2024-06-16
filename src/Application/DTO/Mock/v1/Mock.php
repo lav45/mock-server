@@ -16,7 +16,5 @@ final readonly class Mock
         #[Subtype(Webhook::class)]
         public array    $webhooks = [],
         public array    $env = [],
-    )
-    {
-    }
+    ) {}
 }

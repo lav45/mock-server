@@ -10,9 +10,7 @@ final readonly class Body
     public function __construct(
         private string|array $template,
         private Parser       $parser,
-    )
-    {
-    }
+    ) {}
 
     public function withData(array $data): self
     {

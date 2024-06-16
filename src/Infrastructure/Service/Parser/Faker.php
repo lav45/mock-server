@@ -9,9 +9,7 @@ use lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
 final readonly class Faker implements Parser
 {
-    public function __construct(private Generator $faker)
-    {
-    }
+    public function __construct(private Generator $faker) {}
 
     public function withData(array $data): self
     {
@@ -20,10 +18,10 @@ final readonly class Faker implements Parser
 
     public function replace(mixed $data): mixed
     {
-        if (is_string($data)) {
+        if (\is_string($data)) {
             return $this->replaceAttribute($data);
         }
-        if (is_array($data)) {
+        if (\is_array($data)) {
             return $this->replaceMap($data);
         }
         return $data;
@@ -37,11 +35,11 @@ final readonly class Faker implements Parser
     private function replaceAttribute(string $string): mixed
     {
         $pattern = '\s*faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s*';
-        preg_match('/{{' . $pattern . '}}/iu', $string, $matches);
+        \preg_match('/{{' . $pattern . '}}/iu', $string, $matches);
         if ($matches) {
             return $this->generate($matches);
         }
-        return preg_replace_callback('/{' . $pattern . '}/iu', fn($matches) => $this->generate($matches), $string);
+        return \preg_replace_callback('/{' . $pattern . '}/iu', fn($matches) => $this->generate($matches), $string);
     }
 
     private function generate(array $matches): mixed
@@ -53,15 +51,15 @@ final readonly class Faker implements Parser
         if ($result instanceof DateTime) {
             $func = [$result, $matches[4]];
             $args = $this->parseArgs($matches[5]);
-            return call_user_func_array($func, $args);
+            return \call_user_func_array($func, $args);
         }
         return $result;
     }
 
     private function parseArgs(string $str): array
     {
-        $args = '[' . substr($str, 1, -1) . ']';
-        $args = str_replace(["'", '\\'], ['"', '\\\\'], $args);
-        return json_decode($args, true, 512, JSON_THROW_ON_ERROR);
+        $args = '[' . \substr($str, 1, -1) . ']';
+        $args = \str_replace(["'", '\\'], ['"', '\\\\'], $args);
+        return \json_decode($args, true, 512, JSON_THROW_ON_ERROR);
     }
 }

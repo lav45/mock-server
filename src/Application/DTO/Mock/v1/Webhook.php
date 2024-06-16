@@ -15,7 +15,5 @@ final readonly class Webhook
         public array|null  $json = null,
         public string|null $text = null,
         public array       $options = [],
-    )
-    {
-    }
+    ) {}
 }

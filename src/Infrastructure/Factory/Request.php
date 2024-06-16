@@ -13,7 +13,7 @@ final readonly class Request
         $request = new RequestWrapper($httpRequest);
 
         return new RequestDTO(
-            start: microtime(true),
+            start: \microtime(true),
             method: $request->getMethod(),
             get: $request->get(),
             post: $request->post(),

@@ -7,8 +7,7 @@ final readonly class HttpHeader
     public function __construct(
         public string $name,
         public string $value,
-    )
-    {
+    ) {
         \assert($this->isValidName($name), 'Invalid header name: "' . $name . '"');
         \assert($this->isValidValue($value), 'Invalid header value: "' . $value . '"');
     }

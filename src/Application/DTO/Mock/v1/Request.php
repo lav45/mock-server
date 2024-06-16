@@ -11,7 +11,5 @@ final readonly class Request
         public string $url = '/',
         /** @var array|string */
         public mixed $method = ['GET'],
-    )
-    {
-    }
+    ) {}
 }

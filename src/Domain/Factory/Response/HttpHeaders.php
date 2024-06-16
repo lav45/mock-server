@@ -12,10 +12,8 @@ final readonly class HttpHeaders
         private Parser $parser,
         /** @var array<string,string> */
         private array  $headers,
-        private bool   $withJson = false
-    )
-    {
-    }
+        private bool   $withJson = false,
+    ) {}
 
     public static function new(Parser $parser, array $headers, bool $withJson = false): HttpHeadersResponse
     {

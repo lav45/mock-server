@@ -10,9 +10,7 @@ final readonly class Mock
     public function __construct(
         private Response $response,
         private Webhooks $webhooks,
-    )
-    {
-    }
+    ) {}
 
     public function create(Parser $parser): MockEntity
     {

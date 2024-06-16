@@ -2,6 +2,4 @@
 
 namespace lav45\MockServer\Domain\Entity;
 
-interface Response
-{
-}
+interface Response {}

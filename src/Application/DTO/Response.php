@@ -8,7 +8,5 @@ final readonly class Response
         public int    $status = 200,
         public array  $headers = [],
         public string $body = '',
-    )
-    {
-    }
+    ) {}
 }

@@ -30,7 +30,7 @@ final class MockTest extends TestCase
             'request' => [
                 'method' => 'POST',
                 'url' => '/webhook/{id}',
-            ]
+            ],
         ];
 
         $object = MockFactory::create($data);

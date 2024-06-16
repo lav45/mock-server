@@ -12,7 +12,5 @@ final readonly class Content
         public array      $headers = [],
         public string     $text = '',
         public array|null $json = null,
-    )
-    {
-    }
+    ) {}
 }
