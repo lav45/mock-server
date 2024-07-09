@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Application\Factory\Entity\Response;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Response\Proxy as ProxyDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Response\Proxy as ProxyData;
 use lav45\MockServer\Domain\Entity\Response\Proxy as ProxyEntity;
 use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
 use lav45\MockServer\Domain\Factory\Response\Url as UrlFactory;
@@ -13,7 +13,7 @@ use lav45\MockServer\Domain\ValueObject\Response\Delay;
 final readonly class Proxy
 {
     public function __construct(
-        private ProxyDTO     $data,
+        private ProxyData    $data,
         private float|string $delay,
         private Parser       $parser,
     ) {}

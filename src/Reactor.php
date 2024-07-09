@@ -108,7 +108,7 @@ class Reactor implements RequestHandlerInterface
             faker: $this->faker,
             logger: $this->logger,
             httpClient: $this->httpClient,
-            mockDto: $mock,
+            mockData: $mock,
         );
 
         return [

@@ -2,8 +2,8 @@
 
 namespace lav45\MockServer\Infrastructure\Handler;
 
-use lav45\MockServer\Application\DTO\Request;
-use lav45\MockServer\Application\DTO\Response;
+use lav45\MockServer\Application\Data\Request;
+use lav45\MockServer\Application\Data\Response;
 use lav45\MockServer\Application\Handler\Response as ResponseHandler;
 use lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
 

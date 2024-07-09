@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Application\Factory\Entity;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Webhook as WebhookDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Webhook as WebhookData;
 use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
 use lav45\MockServer\Domain\Service\Parser;
 use lav45\MockServer\Domain\ValueObject\Response\Body;
@@ -15,7 +15,7 @@ final readonly class Webhooks
 {
     private array $data;
 
-    public function __construct(WebhookDTO ...$data)
+    public function __construct(WebhookData ...$data)
     {
         $this->data = $data;
     }
@@ -27,7 +27,7 @@ final readonly class Webhooks
         }
     }
 
-    private function createWebhookItem(WebhookDTO $item, Parser $parser): Webhook
+    private function createWebhookItem(WebhookData $item, Parser $parser): Webhook
     {
         $delay = Delay::new($parser->replace($item->delay));
         $url = new Url($parser->replace($item->url));

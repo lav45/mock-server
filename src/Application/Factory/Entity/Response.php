@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Application\Factory\Entity;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Response as ResponseDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Response as ResponseData;
 use lav45\MockServer\Application\Factory\Entity\Response\Collection as CollectionEntityFactory;
 use lav45\MockServer\Application\Factory\Entity\Response\Content as ContentEntityFactory;
 use lav45\MockServer\Application\Factory\Entity\Response\Proxy as ProxyEntityFactory;
@@ -11,7 +11,7 @@ use lav45\MockServer\Domain\Service\Parser;
 
 final readonly class Response
 {
-    public function __construct(private ResponseDTO $response) {}
+    public function __construct(private ResponseData $response) {}
 
     public function create(Parser $parser): ResponseEntity
     {

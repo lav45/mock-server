@@ -2,9 +2,8 @@
 
 namespace lav45\MockServer\test\unit\suite\Infrastructure\Factory;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Request as RequestDTO;
-use lav45\MockServer\Application\DTO\Mock\v1\Response as ResponseDTO;
-use lav45\MockServer\Application\DTO\Mock\v1\Response\Content as ResponseContentDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Request;
+use lav45\MockServer\Application\Data\Mock\v1\Response;
 use lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -14,12 +13,12 @@ final class MockTest extends TestCase
     {
         $object = MockFactory::create([]);
 
-        $this->assertInstanceOf(RequestDTO::class, $object->request);
+        $this->assertInstanceOf(Request::class, $object->request);
         $this->assertEquals(['GET'], $object->request->method);
         $this->assertEquals('/', $object->request->url);
 
-        $this->assertInstanceOf(ResponseDTO::class, $object->response);
-        $this->assertInstanceOf(ResponseContentDTO::class, $object->response->content);
+        $this->assertInstanceOf(Response::class, $object->response);
+        $this->assertInstanceOf(Response\Content::class, $object->response->content);
         $this->assertEquals([], $object->webhooks);
         $this->assertEquals([], $object->env);
     }
@@ -35,8 +34,8 @@ final class MockTest extends TestCase
 
         $object = MockFactory::create($data);
 
-        $this->assertInstanceOf(RequestDTO::class, $object->request);
-        $this->assertInstanceOf(ResponseDTO::class, $object->response);
+        $this->assertInstanceOf(Request::class, $object->request);
+        $this->assertInstanceOf(Response::class, $object->response);
         $this->assertEquals([], $object->webhooks);
         $this->assertEquals([], $object->env);
 
@@ -45,7 +44,7 @@ final class MockTest extends TestCase
 
         $this->assertEquals(0.0, $object->response->delay);
 
-        $this->assertInstanceOf(ResponseContentDTO::class, $object->response->content);
+        $this->assertInstanceOf(Response\Content::class, $object->response->content);
         $this->assertEquals(200, $object->response->content->status);
         $this->assertEquals('', $object->response->content->text);
     }

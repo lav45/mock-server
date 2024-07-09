@@ -2,20 +2,20 @@
 
 namespace lav45\MockServer\Infrastructure\Factory;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Mock as MockDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Mock as MockData;
 use Sunrise\Hydrator\Hydrator;
 
 final readonly class Mock
 {
-    public static function create(array $data): MockDTO
+    public static function create(array $data): MockData
     {
         $data = self::prepareData($data);
         return self::hydrate($data);
     }
 
-    private static function hydrate(array $data): MockDTO
+    private static function hydrate(array $data): MockData
     {
-        return (new Hydrator())->hydrate(MockDTO::class, $data);
+        return (new Hydrator())->hydrate(MockData::class, $data);
     }
 
     private static function prepareData(array $data): array

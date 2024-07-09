@@ -2,8 +2,8 @@
 
 namespace lav45\MockServer\Infrastructure\Handler;
 
-use lav45\MockServer\Application\DTO\Request as RequestDTO;
-use lav45\MockServer\Application\DTO\Response as ResponseDTO;
+use lav45\MockServer\Application\Data\Request as RequestData;
+use lav45\MockServer\Application\Data\Response as ResponseData;
 use lav45\MockServer\Application\Handler\Response as ResponseHandler;
 use lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
 use lav45\MockServer\Infrastructure\Component\ArrayHelper;
@@ -17,7 +17,7 @@ final readonly class Collection implements ResponseHandler
 
     public function __construct(private CollectionEntity $data) {}
 
-    public function handle(RequestDTO $request): ResponseDTO
+    public function handle(RequestData $request): ResponseData
     {
         $pageSize = (int)ArrayHelper::getValue($request->get, $this->data->pagination->pageSizeParam, $this->data->pagination->defaultPageSize);
         $currentPage = (int)(ArrayHelper::getValue($request->get, $this->data->pagination->pageParam) ?: 1);
@@ -60,7 +60,7 @@ final readonly class Collection implements ResponseHandler
 
         $this->delay($request->start, $this->data->delay->value);
 
-        return new ResponseDTO(
+        return new ResponseData(
             status: $status,
             headers: $headers,
             body: $body,

@@ -4,7 +4,7 @@ namespace lav45\MockServer\test\functional\server\controllers;
 
 use Amp\Http\Server\Response;
 use lav45\MockServer\test\functional\server\components\Storage;
-use lav45\MockServer\test\functional\server\controllers\dto\RequestDTO;
+use lav45\MockServer\test\functional\server\controllers\Data\Request;
 
 final readonly class StorageController
 {
@@ -12,7 +12,7 @@ final readonly class StorageController
 
     public function create(string $method, array $get, array $post, array $headers): Response
     {
-        $dto = new RequestDTO($method, $get, $post, $headers);
+        $dto = new Request($method, $get, $post, $headers);
         $this->storage->add($dto);
         return new Response();
     }

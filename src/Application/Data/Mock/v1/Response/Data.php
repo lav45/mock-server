@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\DTO\Mock\v1\Response;
+namespace lav45\MockServer\Application\Data\Mock\v1\Response;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Response\Data\Pagination;
+use lav45\MockServer\Application\Data\Mock\v1\Response\Data\Pagination;
 
 /**
  * @codeCoverageIgnore

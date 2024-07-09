@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Application\Factory\Entity\Response;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Response\Data as DataDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Response\Data as DataData;
 use lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
 use lav45\MockServer\Domain\Factory\Response\Body as BodyFactory;
 use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
@@ -15,7 +15,7 @@ use lav45\MockServer\Domain\ValueObject\Response\Pagination;
 final readonly class Collection
 {
     public function __construct(
-        private DataDTO      $data,
+        private DataData     $data,
         private float|string $delay,
         private Parser       $parser,
     ) {}

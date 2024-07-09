@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\DTO\Mock\v1\Response\Data;
+namespace lav45\MockServer\Application\Data\Mock\v1\Response\Data;
 
 /**
  * @codeCoverageIgnore

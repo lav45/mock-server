@@ -2,7 +2,7 @@
 
 namespace lav45\MockServer\Application\Factory\Entity\Response;
 
-use lav45\MockServer\Application\DTO\Mock\v1\Response\Content as ContentDTO;
+use lav45\MockServer\Application\Data\Mock\v1\Response\Content as ContentData;
 use lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
 use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
 use lav45\MockServer\Domain\Service\Parser;
@@ -13,7 +13,7 @@ use lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
 final readonly class Content
 {
     public function __construct(
-        private ContentDTO   $data,
+        private ContentData  $data,
         private float|string $delay,
         private Parser       $parser,
     ) {}
