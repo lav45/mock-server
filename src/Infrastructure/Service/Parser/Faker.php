@@ -5,11 +5,18 @@ namespace Lav45\MockServer\Infrastructure\Service\Parser;
 use DateTime;
 use Faker\Generator;
 use Lav45\MockServer\Domain\Service\Parser;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
 final readonly class Faker implements Parser
 {
-    public function __construct(private Generator $faker) {}
+    private ParsingHelper $parser;
+
+    public function __construct(private Generator $faker)
+    {
+        $this->parser = new ParsingHelper(
+            pattern: 'faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?',
+            value: fn(array $matches) => $this->getValue($matches),
+        );
+    }
 
     public function withData(array $data): self
     {
@@ -18,39 +25,18 @@ final readonly class Faker implements Parser
 
     public function replace(mixed $data): mixed
     {
-        if (\is_string($data)) {
-            return $this->replaceAttribute($data);
-        }
-        if (\is_array($data)) {
-            return $this->replaceMap($data);
-        }
-        return $data;
+        return $this->parser->replace($data);
     }
 
-    private function replaceMap(array $data): array
+    private function getValue(array $matches): mixed
     {
-        return ArrayHelper::map($data, fn($value) => $this->replaceAttribute($value));
-    }
-
-    private function replaceAttribute(string $string): mixed
-    {
-        $pattern = '\s*faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?\s*';
-        \preg_match('/{{' . $pattern . '}}/iu', $string, $matches);
-        if ($matches) {
-            return $this->generate($matches);
-        }
-        return \preg_replace_callback('/{' . $pattern . '}/iu', fn($matches) => $this->generate($matches), $string);
-    }
-
-    private function generate(array $matches): mixed
-    {
-        $format = $matches[1];
-        $arguments = isset($matches[2]) ? $this->parseArgs($matches[2]) : [];
+        $format = $matches[2];
+        $arguments = isset($matches[3]) ? $this->parseArgs($matches[3]) : [];
         $result = $this->faker->format($format, $arguments);
 
         if ($result instanceof DateTime) {
-            $func = [$result, $matches[4]];
-            $args = $this->parseArgs($matches[5]);
+            $func = [$result, $matches[5]];
+            $args = $this->parseArgs($matches[6]);
             return \call_user_func_array($func, $args);
         }
         return $result;
