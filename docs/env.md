@@ -44,6 +44,7 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
 ```
 
 Response:
+
 ```json
 {
     "id": "ea6143fe-bf40-3f1a-90d3-e6872204888d",
@@ -56,6 +57,7 @@ Response:
 ```
 
 Webhook will send the data:
+
 ```json
 {
     "id": "ea6143fe-bf40-3f1a-90d3-e6872204888d",
@@ -63,5 +65,39 @@ Webhook will send the data:
     "amount": 1000,
     "createdAt": "2023-02-17 04:24:55",
     "updatedAt": "2023-02-17 04:24:55"
+}
+```
+
+## Server environment
+
+You can pass the environment parameters when starting the container
+
+```shell
+docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 -e DOMAIN=api.server.com lav45/mock-server:latest
+```
+
+```json
+[
+    {
+        "response": {
+            "content": {
+                "json": {
+                    "term": "{{env.TERM}}",
+                    "domain": "{{env.DOMAIN}}",
+                    "url": "https://{env.DOMAIN}/v1"
+                }
+            }
+        }
+    }
+]
+```
+
+Response:
+
+```json
+{
+    "term": "xterm",
+    "domain": "api.server.com",
+    "url": "https://api.server.com/v1"
 }
 ```

@@ -45,8 +45,8 @@
         "phpunit/php-code-coverage": "11.*"
     },
     "scripts": {
-        "phpunit": "php -d zend.assertions=1 vendor/bin/phpunit",
-        "coverage": "XDEBUG_MODE=coverage php -d zend.assertions=1 -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
+        "phpunit": "DOMAIN=test.server.com php -d zend.assertions=1 vendor/bin/phpunit",
+        "coverage": "DOMAIN=test.server.com XDEBUG_MODE=coverage php -d zend.assertions=1 -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
         "check": "composer-require-checker check",
         "unused": "composer-unused",
         "deptrac": "deptrac analyse",

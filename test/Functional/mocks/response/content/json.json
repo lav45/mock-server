@@ -9,7 +9,10 @@
         "response": {
             "content": {
                 "json": {
-                    "id": "{env.uuid}/{faker.uuid}"
+                    "id": "{env.uuid}/{faker.uuid}",
+                    "term": "{{env.TERM}}",
+                    "domain": "{{env.DOMAIN}}",
+                    "url": "https://{env.DOMAIN}/v1"
                 }
             }
         }
