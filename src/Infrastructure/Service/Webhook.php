@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Service;
+namespace Lav45\MockServer\Infrastructure\Service;
 
 use Amp\Http\Client\Request as HttpRequest;
 use Amp\Http\Client\Response as HttpResponse;
-use lav45\MockServer\Application\Service\Webhook as WebhookService;
-use lav45\MockServer\Domain\ValueObject\Webhook as WebhookItem;
-use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Application\Service\Webhook as WebhookService;
+use Lav45\MockServer\Domain\ValueObject\Webhook as WebhookItem;
+use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 

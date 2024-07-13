@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Entity;
+namespace Lav45\MockServer\Domain\Entity;
 
-use lav45\MockServer\Domain\ValueObject\Webhook;
+use Lav45\MockServer\Domain\ValueObject\Webhook;
 
 final readonly class Mock
 {

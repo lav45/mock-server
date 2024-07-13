@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Factory;
+namespace Lav45\MockServer\Infrastructure\Factory;
 
-use lav45\MockServer\Application\Data\Mock\v1\Mock as MockData;
+use Lav45\MockServer\Application\Data\Mock\v1\Mock as MockData;
 use Sunrise\Hydrator\Hydrator;
 
 final readonly class Mock

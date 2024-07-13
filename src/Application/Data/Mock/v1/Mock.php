@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Data\Mock\v1;
+namespace Lav45\MockServer\Application\Data\Mock\v1;
 
 use Sunrise\Hydrator\Annotation\Subtype;
 

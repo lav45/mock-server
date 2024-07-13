@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Factory;
+namespace Lav45\MockServer\Infrastructure\Factory;
 
 use Amp\Http\Server\Request as HttpRequest;
-use lav45\MockServer\Application\Data\Request as RequestData;
-use lav45\MockServer\Infrastructure\Wrapper\Request as RequestWrapper;
+use Lav45\MockServer\Application\Data\Request as RequestData;
+use Lav45\MockServer\Infrastructure\Wrapper\Request as RequestWrapper;
 
 final readonly class Request
 {

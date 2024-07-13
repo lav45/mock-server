@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Handler;
+namespace Lav45\MockServer\Infrastructure\Handler;
 
-use lav45\MockServer\Application\Data\Request;
-use lav45\MockServer\Application\Data\Response;
-use lav45\MockServer\Application\Handler\Response as ResponseHandler;
-use lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
+use Lav45\MockServer\Application\Data\Request;
+use Lav45\MockServer\Application\Data\Response;
+use Lav45\MockServer\Application\Handler\Response as ResponseHandler;
+use Lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
 
 final readonly class Content implements ResponseHandler
 {

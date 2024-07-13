@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Handler;
+namespace Lav45\MockServer\Infrastructure\Handler;
 
-use lav45\MockServer\Application\Data\Request as RequestData;
-use lav45\MockServer\Application\Data\Response as ResponseData;
-use lav45\MockServer\Application\Handler\Response as ResponseHandler;
-use lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
-use lav45\MockServer\Infrastructure\Component\ArrayHelper;
+use Lav45\MockServer\Application\Data\Request as RequestData;
+use Lav45\MockServer\Application\Data\Response as ResponseData;
+use Lav45\MockServer\Application\Handler\Response as ResponseHandler;
+use Lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
+use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;

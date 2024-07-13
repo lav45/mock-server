@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Factory\Response;
+namespace Lav45\MockServer\Domain\Factory\Response;
 
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Domain\ValueObject\Response\HttpHeader;
-use lav45\MockServer\Domain\ValueObject\Response\HttpHeaders as HttpHeadersResponse;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpHeader;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpHeaders as HttpHeadersResponse;
 
 final readonly class HttpHeaders
 {

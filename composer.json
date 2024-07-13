@@ -59,12 +59,12 @@
     },
     "autoload": {
         "psr-4": {
-            "lav45\\MockServer\\": "src"
+            "Lav45\\MockServer\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "lav45\\MockServer\\test\\": "test"
+            "Lav45\\MockServer\\Test\\": "test"
         }
     },
     "minimum-stability": "stable"

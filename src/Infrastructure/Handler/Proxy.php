@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Handler;
+namespace Lav45\MockServer\Infrastructure\Handler;
 
 use Amp\Http\Client\Request as HttpRequest;
 use Amp\Http\Client\Response as HttpResponse;
 use Amp\Http\HttpStatus;
-use lav45\MockServer\Application\Data\Request;
-use lav45\MockServer\Application\Data\Response;
-use lav45\MockServer\Application\Handler\Response as ResponseHandler;
-use lav45\MockServer\Domain\Entity\Response\Proxy as ProxyEntity;
-use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Application\Data\Request;
+use Lav45\MockServer\Application\Data\Response;
+use Lav45\MockServer\Application\Handler\Response as ResponseHandler;
+use Lav45\MockServer\Domain\Entity\Response\Proxy as ProxyEntity;
+use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Throwable;
 
 final readonly class Proxy implements ResponseHandler

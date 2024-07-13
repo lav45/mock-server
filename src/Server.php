@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer;
+namespace Lav45\MockServer;
 
 use Amp;
 use Amp\ByteStream;
@@ -14,8 +14,8 @@ use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory;
 use Faker\Generator;
-use lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
-use lav45\MockServer\Infrastructure\Wrapper\HttpClient as HttpClientWrapper;
+use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
+use Lav45\MockServer\Infrastructure\Wrapper\HttpClient as HttpClientWrapper;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;

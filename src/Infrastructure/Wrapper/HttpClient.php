@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Wrapper;
+namespace Lav45\MockServer\Infrastructure\Wrapper;
 
 use Amp\Http\Client\HttpClient as Client;
 use Amp\Http\Client\Request;

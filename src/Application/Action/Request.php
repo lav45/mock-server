@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Action;
+namespace Lav45\MockServer\Application\Action;
 
-use lav45\MockServer\Application\Data\Request as RequestData;
-use lav45\MockServer\Application\Data\Response as ResponseData;
-use lav45\MockServer\Application\Factory\Handler\Response as ResponseHandlerFactory;
-use lav45\MockServer\Application\Service\Webhook as WebhookService;
-use lav45\MockServer\Domain\Entity\Mock;
+use Lav45\MockServer\Application\Data\Request as RequestData;
+use Lav45\MockServer\Application\Data\Response as ResponseData;
+use Lav45\MockServer\Application\Factory\Handler\Response as ResponseHandlerFactory;
+use Lav45\MockServer\Application\Service\Webhook as WebhookService;
+use Lav45\MockServer\Domain\Entity\Mock;
 
 final readonly class Request
 {

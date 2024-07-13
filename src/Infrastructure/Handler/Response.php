@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Handler;
+namespace Lav45\MockServer\Infrastructure\Handler;
 
-use lav45\MockServer\Application\Factory\Handler\Response as ResponseHandlerFactory;
-use lav45\MockServer\Application\Handler\Response as ResponseHandler;
-use lav45\MockServer\Domain\Entity\Response as ResponseEntity;
-use lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
-use lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
-use lav45\MockServer\Domain\Entity\Response\Proxy as ProxyEntity;
-use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Application\Factory\Handler\Response as ResponseHandlerFactory;
+use Lav45\MockServer\Application\Handler\Response as ResponseHandler;
+use Lav45\MockServer\Domain\Entity\Response as ResponseEntity;
+use Lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
+use Lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
+use Lav45\MockServer\Domain\Entity\Response\Proxy as ProxyEntity;
+use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 
 final readonly class Response implements ResponseHandlerFactory
 {

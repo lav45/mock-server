@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer;
+namespace Lav45\MockServer;
 
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\ErrorHandler;
@@ -10,9 +10,9 @@ use Amp\Http\Server\Response;
 use Faker\Generator;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use lav45\MockServer\Infrastructure\Controller\Request as RequestController;
-use lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
-use lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Infrastructure\Controller\Request as RequestController;
+use Lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
+use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
 use Psr\Log\LoggerInterface;
 
 use function FastRoute\simpleDispatcher;

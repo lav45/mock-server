@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Factory\Entity\Response;
+namespace Lav45\MockServer\Application\Factory\Entity\Response;
 
-use lav45\MockServer\Application\Data\Mock\v1\Response\Content as ContentData;
-use lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
-use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Domain\ValueObject\Response\Body;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
-use lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
+use Lav45\MockServer\Application\Data\Mock\v1\Response\Content as ContentData;
+use Lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
+use Lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\ValueObject\Response\Body;
+use Lav45\MockServer\Domain\ValueObject\Response\Delay;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
 
 final readonly class Content
 {

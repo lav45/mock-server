@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Factory\Response;
+namespace Lav45\MockServer\Domain\Factory\Response;
 
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Domain\ValueObject\Response\Body as BodyResponse;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\ValueObject\Response\Body as BodyResponse;
 
 final readonly class Body
 {

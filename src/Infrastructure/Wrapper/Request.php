@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Wrapper;
+namespace Lav45\MockServer\Infrastructure\Wrapper;
 
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request as HttpRequest;
-use lav45\MockServer\Reactor;
+use Lav45\MockServer\Reactor;
 use RuntimeException;
 
 /**

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Factory;
+namespace Lav45\MockServer\Infrastructure\Factory;
 
 use Faker\Generator;
-use lav45\MockServer\Application\Data\Request as RequestData;
-use lav45\MockServer\Domain\Service\Parser as ParserInterface;
-use lav45\MockServer\Infrastructure\Service\Parser\Faker;
-use lav45\MockServer\Infrastructure\Service\Parser\Group;
-use lav45\MockServer\Infrastructure\Service\Parser\Param;
+use Lav45\MockServer\Application\Data\Request as RequestData;
+use Lav45\MockServer\Domain\Service\Parser as ParserInterface;
+use Lav45\MockServer\Infrastructure\Service\Parser\Faker;
+use Lav45\MockServer\Infrastructure\Service\Parser\Group;
+use Lav45\MockServer\Infrastructure\Service\Parser\Param;
 
 final readonly class Parser
 {

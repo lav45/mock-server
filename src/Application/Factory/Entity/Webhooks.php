@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Factory\Entity;
+namespace Lav45\MockServer\Application\Factory\Entity;
 
-use lav45\MockServer\Application\Data\Mock\v1\Webhook as WebhookData;
-use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Domain\ValueObject\Response\Body;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
-use lav45\MockServer\Domain\ValueObject\Response\HttpMethod;
-use lav45\MockServer\Domain\ValueObject\Response\Url;
-use lav45\MockServer\Domain\ValueObject\Webhook;
+use Lav45\MockServer\Application\Data\Mock\v1\Webhook as WebhookData;
+use Lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\ValueObject\Response\Body;
+use Lav45\MockServer\Domain\ValueObject\Response\Delay;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpMethod;
+use Lav45\MockServer\Domain\ValueObject\Response\Url;
+use Lav45\MockServer\Domain\ValueObject\Webhook;
 
 final readonly class Webhooks
 {

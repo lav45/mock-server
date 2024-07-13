@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Data;
+namespace Lav45\MockServer\Application\Data;
 
 final readonly class Request
 {

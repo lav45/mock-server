@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Data\Mock\v1;
+namespace Lav45\MockServer\Application\Data\Mock\v1;
 
-use lav45\MockServer\Application\Data\Mock\v1\Response\Content;
-use lav45\MockServer\Application\Data\Mock\v1\Response\Data;
-use lav45\MockServer\Application\Data\Mock\v1\Response\Proxy;
+use Lav45\MockServer\Application\Data\Mock\v1\Response\Content;
+use Lav45\MockServer\Application\Data\Mock\v1\Response\Data;
+use Lav45\MockServer\Application\Data\Mock\v1\Response\Proxy;
 
 /**
  * @codeCoverageIgnore

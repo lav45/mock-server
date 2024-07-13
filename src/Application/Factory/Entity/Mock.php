@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Factory\Entity;
+namespace Lav45\MockServer\Application\Factory\Entity;
 
-use lav45\MockServer\Domain\Entity\Mock as MockEntity;
-use lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\Entity\Mock as MockEntity;
+use Lav45\MockServer\Domain\Service\Parser;
 
 final readonly class Mock
 {

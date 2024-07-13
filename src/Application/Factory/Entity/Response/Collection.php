@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Application\Factory\Entity\Response;
+namespace Lav45\MockServer\Application\Factory\Entity\Response;
 
-use lav45\MockServer\Application\Data\Mock\v1\Response\Data as DataData;
-use lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
-use lav45\MockServer\Domain\Factory\Response\Body as BodyFactory;
-use lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Domain\ValueObject\Response\Body;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
-use lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
-use lav45\MockServer\Domain\ValueObject\Response\Pagination;
+use Lav45\MockServer\Application\Data\Mock\v1\Response\Data as DataData;
+use Lav45\MockServer\Domain\Entity\Response\Collection as CollectionEntity;
+use Lav45\MockServer\Domain\Factory\Response\Body as BodyFactory;
+use Lav45\MockServer\Domain\Factory\Response\HttpHeaders as HttpHeadersFactory;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Domain\ValueObject\Response\Body;
+use Lav45\MockServer\Domain\ValueObject\Response\Delay;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
+use Lav45\MockServer\Domain\ValueObject\Response\Pagination;
 
 final readonly class Collection
 {

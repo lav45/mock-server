@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Service\Parser;
+namespace Lav45\MockServer\Infrastructure\Service\Parser;
 
 use DateTime;
 use Faker\Generator;
-use lav45\MockServer\Domain\Service\Parser;
-use lav45\MockServer\Infrastructure\Component\ArrayHelper;
+use Lav45\MockServer\Domain\Service\Parser;
+use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
 final readonly class Faker implements Parser
 {

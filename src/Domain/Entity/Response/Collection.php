@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Entity\Response;
+namespace Lav45\MockServer\Domain\Entity\Response;
 
-use lav45\MockServer\Domain\Entity\Response;
-use lav45\MockServer\Domain\Factory\Response\Body;
-use lav45\MockServer\Domain\Factory\Response\HttpHeaders;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
-use lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
-use lav45\MockServer\Domain\ValueObject\Response\Pagination;
+use Lav45\MockServer\Domain\Entity\Response;
+use Lav45\MockServer\Domain\Factory\Response\Body;
+use Lav45\MockServer\Domain\Factory\Response\HttpHeaders;
+use Lav45\MockServer\Domain\ValueObject\Response\Delay;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
+use Lav45\MockServer\Domain\ValueObject\Response\Pagination;
 
 final readonly class Collection implements Response
 {

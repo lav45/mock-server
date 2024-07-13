@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Service;
+namespace Lav45\MockServer\Domain\Service;
 
 interface Parser
 {

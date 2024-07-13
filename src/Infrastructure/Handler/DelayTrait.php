@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Infrastructure\Handler;
+namespace Lav45\MockServer\Infrastructure\Handler;
 
 use function Amp\delay;
 

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace lav45\MockServer\Domain\Entity\Response;
+namespace Lav45\MockServer\Domain\Entity\Response;
 
-use lav45\MockServer\Domain\Entity\Response;
-use lav45\MockServer\Domain\ValueObject\Response\Body;
-use lav45\MockServer\Domain\ValueObject\Response\Delay;
-use lav45\MockServer\Domain\ValueObject\Response\HttpHeaders;
-use lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
+use Lav45\MockServer\Domain\Entity\Response;
+use Lav45\MockServer\Domain\ValueObject\Response\Body;
+use Lav45\MockServer\Domain\ValueObject\Response\Delay;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpHeaders;
+use Lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
 
 final readonly class Content implements Response
 {

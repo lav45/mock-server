@@ -6,8 +6,8 @@
          colors="true">
     <testsuites>
         <testsuite name="Mock Server - Functional testing">
-            <directory>test/functional/suite</directory>
-            <directory>test/unit/suite</directory>
+            <directory>test/Functional/Suite</directory>
+            <directory>test/Unit/Suite</directory>
         </testsuite>
     </testsuites>
     <source>
