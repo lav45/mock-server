@@ -84,7 +84,8 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 -e DOMAIN=api.server
                 "json": {
                     "term": "{{env.TERM}}",
                     "domain": "{{env.DOMAIN}}",
-                    "url": "https://{env.DOMAIN}/v1"
+                    "url": "https://{env.DOMAIN}/v1",
+                    "undefined": "{{env.SSS}}"
                 }
             }
         }
@@ -98,6 +99,7 @@ Response:
 {
     "term": "xterm",
     "domain": "api.server.com",
-    "url": "https://api.server.com/v1"
+    "url": "https://api.server.com/v1",
+    "undefined": null
 }
 ```
