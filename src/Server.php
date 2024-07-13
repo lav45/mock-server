@@ -14,6 +14,7 @@ use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory;
 use Faker\Generator;
+use Lav45\MockServer\Infrastructure\Controller\RequestFactory;
 use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
 use Lav45\MockServer\Infrastructure\Wrapper\HttpClient as HttpClientWrapper;
 use Monolog\Level;
@@ -29,60 +30,69 @@ final readonly class Server
         private string $mocksPath = '/app/mocks',
         private string $locale = 'en_US',
         private string $logLevel = 'info',
+        private float  $fileWatchTimeout = 0.2,
     ) {}
 
     public function start(): void
     {
-        $logHandler = $this->getLogHandler();
-        $logger = $this->getLogger($logHandler);
-        $server = $this->getServer($logger);
-        $errorHandler = $this->getErrorHandler();
+        $logger = $this->getLogger();
+
         $faker = $this->getFakerFactory();
         $httpClient = $this->getHttpClient($logger);
+        $requestFactory = new RequestFactory($faker, $httpClient, $logger);
+        $watcher = $this->runWatcher($logger, $requestFactory);
 
+        $errorHandler = $this->getErrorHandler();
         $reactor = new Reactor(
-            mocksPath: $this->mocksPath,
             errorHandler: $errorHandler,
-            faker: $faker,
-            logger: $logger,
-            httpClient: $httpClient,
+            watcher: $watcher,
         );
 
+        $server = $this->getServer($logger);
+        $server->expose(new Socket\InternetAddress($this->host, $this->port));
         $server->start($reactor, $errorHandler);
         $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop(); // @codeCoverageIgnore
     }
 
-    protected function getHttpClient(LoggerInterface $logger): HttpClientWrapper
+    private function runWatcher(LoggerInterface $logger, RequestFactory $requestFactory): Watcher
+    {
+        $watcher = new Watcher(
+            requestFactory: $requestFactory,
+            watchDir: $this->mocksPath,
+            logger: $logger,
+        );
+        $watcher->init();
+
+        if ($this->fileWatchTimeout > 0) {
+            Amp\async(fn() => $watcher->run($this->fileWatchTimeout));
+        }
+        return $watcher;
+    }
+
+    private function getHttpClient(LoggerInterface $logger): HttpClientWrapper
     {
         return HttpClientFactory::create($logger);
     }
 
-    protected function getFakerFactory(): Generator
+    private function getFakerFactory(): Generator
     {
         return Factory::create($this->locale);
     }
 
-    protected function getErrorHandler(): ErrorHandler
+    private function getErrorHandler(): ErrorHandler
     {
         return new DefaultErrorHandler();
     }
 
-    protected function getServer(LoggerInterface $logger): HttpServer
+    private function getServer(LoggerInterface $logger): HttpServer
     {
         $serverSocketFactory = new Socket\ResourceServerSocketFactory();
         $clientFactory = new SocketClientFactory($logger);
-        $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
-        $server->expose(new Socket\InternetAddress($this->host, $this->port));
-        return $server;
+        return new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
     }
 
-    protected function getLogger(StreamHandler $handler, string $name = 'mock-server'): LoggerInterface
-    {
-        return (new Logger($name))->pushHandler($handler);
-    }
-
-    protected function getLogHandler(): StreamHandler
+    private function getLogger(): LoggerInterface
     {
         $handler = new StreamHandler(ByteStream\getStdout());
         $handler->setLevel(Level::fromName($this->logLevel));
@@ -93,6 +103,7 @@ final readonly class Server
             allowInlineLineBreaks: true,
             ignoreEmptyContextAndExtra: true,
         ));
-        return $handler;
+
+        return (new Logger('mock-server'))->pushHandler($handler);
     }
 }

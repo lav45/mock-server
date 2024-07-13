@@ -8,4 +8,5 @@ require __DIR__ . '/vendor/autoload.php';
     mocksPath: getenv('MOCKS_PATH') ?: '/app/mocks',
     locale: getenv('LOCALE') ?: 'en_US',
     logLevel: getenv('LOG_LEVEL') ?: 'info',
+    fileWatchTimeout: (float)(getenv('FILE_WATCH_TIMEOUT') ?: 0.2)
 ))->start();

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Infrastructure\Factory;
+namespace Lav45\MockServer\Infrastructure\Factory\Data;
 
 use Amp\Http\Server\Request as HttpRequest;
 use Lav45\MockServer\Application\Data\Request as RequestData;

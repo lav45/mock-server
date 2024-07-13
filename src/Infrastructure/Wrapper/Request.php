@@ -4,7 +4,6 @@ namespace Lav45\MockServer\Infrastructure\Wrapper;
 
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request as HttpRequest;
-use Lav45\MockServer\Reactor;
 use RuntimeException;
 
 /**
@@ -12,6 +11,8 @@ use RuntimeException;
  */
 final class Request
 {
+    public const string URL_PARAMS = 'URL_PARAMS';
+
     private string $body;
     private array $get;
 
@@ -27,7 +28,7 @@ final class Request
 
     public function getUrlParams(): array
     {
-        return $this->request->getAttribute(Reactor::class);
+        return $this->request->getAttribute(self::URL_PARAMS);
     }
 
     public function get(): array

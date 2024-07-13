@@ -5,14 +5,14 @@ namespace Lav45\MockServer\Infrastructure\Controller;
 use Amp\Http\Server\Request as HttpRequest;
 use Amp\Http\Server\RequestHandler as HttpRequestHandler;
 use Amp\Http\Server\Response as HttpResponse;
-use Faker\Generator;
+use Faker\Generator as Faker;
 use Lav45\MockServer\Application\Action\Request as RequestAction;
 use Lav45\MockServer\Application\Data\Mock\v1\Mock as MockData;
 use Lav45\MockServer\Application\Factory\Entity\Mock as MockFactory;
 use Lav45\MockServer\Application\Factory\Entity\Response as ResponseFactory;
 use Lav45\MockServer\Application\Factory\Entity\Webhooks as WebhookFactory;
+use Lav45\MockServer\Infrastructure\Factory\Data\Request as RequestFactory;
 use Lav45\MockServer\Infrastructure\Factory\Parser as ParserFactory;
-use Lav45\MockServer\Infrastructure\Factory\Request as RequestFactory;
 use Lav45\MockServer\Infrastructure\Handler\Response as ResponseHandler;
 use Lav45\MockServer\Infrastructure\Service\Webhook as WebhookService;
 use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
@@ -25,7 +25,7 @@ final readonly class Request implements HttpRequestHandler
     private MockFactory $mockFactory;
 
     public function __construct(
-        private Generator       $faker,
+        private Faker           $faker,
         private LoggerInterface $logger,
         private HttpClient      $httpClient,
         private MockData        $mockData,

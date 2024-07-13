@@ -22,6 +22,7 @@
         "php": ">=8.3",
         "ext-pcntl": "*",
         "ext-filter": "*",
+        "ext-inotify": "*",
         "amphp/amp": "v3.0.*",
         "amphp/log": "v2.0.*",
         "amphp/sync": "v2.2.*",
@@ -37,7 +38,8 @@
         "yiisoft/data": "1.0.*",
         "league/uri": "7.4.*",
         "psr/log": "3.0.*",
-        "sunrise/hydrator": "v3.10.*"
+        "sunrise/hydrator": "v3.10.*",
+        "lav45/watcher": "1.0.*"
     },
     "require-dev": {
         "ext-posix": "*",

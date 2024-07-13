@@ -12,9 +12,7 @@ final readonly class ParsingHelper
          * @example fn(array $matches) => $this->getValue($matches)
          */
         private \Closure $value,
-    )
-    {
-    }
+    ) {}
 
     public function replace(mixed $data): mixed
     {

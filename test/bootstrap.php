@@ -16,5 +16,6 @@ Amp\async(function () {
         port: 80,
         mocksPath: '/app/test/Functional/mocks',
         logLevel: 'error',
+        fileWatchTimeout: 0,
     ))->start();
 });
