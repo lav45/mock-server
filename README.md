@@ -3,19 +3,20 @@
 HTTP mocking application for testing and fast prototyping
 
 ## Features
-- [Env](./docs/env.md) - storage of variables that can be used in the Response and WebHooks
-  - [faker](./docs/env.md#faker) - generate random data
+- [Env](./docs/env.md) - Storage of variables that can be used in the Response and WebHooks
+  - [Faker](./docs/env.md#faker) - Generate random data
 - [Request](./docs/request.md)
-  - [routing](./docs/request.md#requesturl)
+  - [Routing](./docs/request.md#requesturl)
 - [Response](./docs/response.md)
-  - [delay](./docs/response.md#responsedelay)
-  - [content](./docs/response.md#content)
-  - [proxy](./docs/response.md#proxy)
-  - [faker](./docs/response.md#faker) - generate random data
-  - [data provider](./docs/response.md#data-provider)
-  - [request parameters](./docs/response.md#request-parameters) - You can get data from your request and use it in the response
+  - [Delay](./docs/response.md#responsedelay)
+  - [Content](./docs/response.md#content)
+  - [Proxy](./docs/response.md#proxy)
+  - [Faker](./docs/response.md#faker) - Generate random data
+  - [Server environment](./docs/env.md#server-environment) - Server environment
+  - [Data provider](./docs/response.md#data-provider)
+  - [Request parameters](./docs/response.md#request-parameters) - You can get data from your request and use it in the response
 - [WebHooks](./docs/webhooks.md)
-  - [faker](./docs/webhooks.md#faker) - generate random data
+  - [Faker](./docs/webhooks.md#faker) - Generate random data
 - Load a new mock file without restarting the server
 
 ## Quick start
