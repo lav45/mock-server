@@ -49,7 +49,7 @@
         "coverage": "DOMAIN=test.server.com XDEBUG_MODE=coverage php -d zend.assertions=1 -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
         "check": "composer-require-checker check",
         "unused": "composer-unused",
-        "deptrac": "deptrac analyse",
+        "deptrac": "deptrac --cache-file=.cache/.deptrac.cache analyse",
         "code-style": "php-cs-fixer fix",
         "test": [
             "@deptrac",

@@ -2,9 +2,5 @@
 .DS_Store
 vendor
 phpunit.xml
-.phpunit.result.cache
-.phpunit.cache
 .composer
 .draft
-.deptrac.cache
-.php_cs.cache
