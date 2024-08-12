@@ -1,12 +1,12 @@
 [
-    {
-        "request": {
-            "url": "/response/data/status"
-        },
-        "response": {
-            "data": {
-                "status": 418
-            }
-        }
+  {
+    "request": {
+      "url": "/response/data/status"
+    },
+    "response": {
+      "data": {
+        "status": 418
+      }
     }
+  }
 ]
