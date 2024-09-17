@@ -8,12 +8,12 @@ namespace Lav45\MockServer\Application\Data\Mock\v1;
 final readonly class Webhook
 {
     public function __construct(
-        public string      $url,
-        public mixed       $delay = 0,
-        public string      $method = 'POST',
-        public array       $headers = [],
-        public array|null  $json = null,
-        public string|null $text = null,
-        public array       $options = [],
+        public string       $url,
+        public float|string $delay = 0.0,
+        public string       $method = 'POST',
+        public array        $headers = [],
+        public array|null   $json = null,
+        public string|null  $text = null,
+        public array        $options = [],
     ) {}
 }

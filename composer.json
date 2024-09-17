@@ -25,7 +25,7 @@
         "ext-inotify": "*",
         "amphp/amp": "v3.0.*",
         "amphp/log": "v2.0.*",
-        "amphp/sync": "v2.2.*",
+        "amphp/sync": "v2.3.*",
         "amphp/http": "v2.1.*",
         "amphp/http-client": "v5.1.*",
         "amphp/http-server": "v3.3.*",
@@ -38,7 +38,6 @@
         "yiisoft/data": "1.0.*",
         "league/uri": "7.4.*",
         "psr/log": "3.0.*",
-        "sunrise/hydrator": "v3.10.*",
         "lav45/watcher": "1.0.*"
     },
     "require-dev": {

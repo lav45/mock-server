@@ -15,7 +15,6 @@ final readonly class Response
         public Content|null $content = null,
         public Proxy|null   $proxy = null,
         public Data|null    $data = null,
-        /** @var float|string */
-        public mixed        $delay = 0.0,
+        public float|string $delay = 0.0,
     ) {}
 }

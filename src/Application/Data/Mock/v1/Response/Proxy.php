@@ -8,10 +8,9 @@ namespace Lav45\MockServer\Application\Data\Mock\v1\Response;
 final readonly class Proxy
 {
     public function __construct(
-        public string $url,
-        /** @var array|string|null */
-        public mixed  $content = null,
-        public array  $headers = [],
-        public array  $options = [],
+        public string            $url,
+        public array|string|null $content = null,
+        public array             $headers = [],
+        public array             $options = [],
     ) {}
 }

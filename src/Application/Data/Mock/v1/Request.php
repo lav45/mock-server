@@ -8,8 +8,7 @@ namespace Lav45\MockServer\Application\Data\Mock\v1;
 final readonly class Request
 {
     public function __construct(
-        public string $url = '/',
-        /** @var array|string */
-        public mixed $method = ['GET'],
+        public string       $url = '/',
+        public array|string $method = ['GET'],
     ) {}
 }

@@ -8,7 +8,7 @@ namespace Lav45\MockServer\Application\Data\Mock\v1\Response;
 final readonly class Content
 {
     public function __construct(
-        public mixed      $status = 200,
+        public int|string $status = 200,
         public array      $headers = [],
         public string     $text = '',
         public array|null $json = null,

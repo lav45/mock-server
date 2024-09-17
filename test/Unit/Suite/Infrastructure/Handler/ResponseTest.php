@@ -13,7 +13,7 @@ final class ResponseTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $data = new class () implements ResponseEntity {};
+        $data = new class implements ResponseEntity {};
 
         (new Response(HttpClientFactory::create()))->create($data);
     }

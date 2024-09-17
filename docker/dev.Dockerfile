@@ -10,11 +10,11 @@ RUN apk add --no-cache \
     php83-xdebug \
     php83-posix
 
-RUN wget https://getcomposer.org/download/latest-stable/composer.phar -O /usr/local/bin/composer && chmod a+x /usr/local/bin/composer
+RUN wget https://getcomposer.org/download/2.7.7/composer.phar -O /usr/local/bin/composer && chmod a+x /usr/local/bin/composer
 RUN wget https://github.com/maglnet/ComposerRequireChecker/releases/latest/download/composer-require-checker.phar -O /usr/local/bin/composer-require-checker && chmod a+x /usr/local/bin/composer-require-checker
 RUN wget https://github.com/composer-unused/composer-unused/releases/latest/download/composer-unused.phar -O /usr/local/bin/composer-unused && chmod a+x /usr/local/bin/composer-unused
 RUN wget https://github.com/qossmic/deptrac/releases/download/2.0.1/deptrac.phar -O /usr/local/bin/deptrac && chmod a+x /usr/local/bin/deptrac
-RUN wget https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/download/v3.59.3/php-cs-fixer.phar -O /usr/local/bin/php-cs-fixer && chmod a+x /usr/local/bin/php-cs-fixer
+RUN wget https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/download/v3.64.0/php-cs-fixer.phar -O /usr/local/bin/php-cs-fixer && chmod a+x /usr/local/bin/php-cs-fixer
 
 WORKDIR /app
 ENTRYPOINT ["php"]

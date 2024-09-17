@@ -10,11 +10,11 @@ use Lav45\MockServer\Application\Data\Mock\v1\Response\Data\Pagination;
 final readonly class Data
 {
     public function __construct(
-        public Pagination  $pagination,
-        public mixed       $status = 200,
-        public array       $headers = [],
-        public mixed       $result = '{{response.data.items}}',
-        public array       $json = [],
-        public string|null $file = null,
+        public Pagination   $pagination,
+        public int|string   $status = 200,
+        public array        $headers = [],
+        public array|string $result = '{{response.data.items}}',
+        public array        $json = [],
+        public string|null  $file = null,
     ) {}
 }
