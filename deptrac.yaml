@@ -6,17 +6,17 @@ deptrac:
     - name: Infrastructure
       collectors:
         - type: classNameRegex
-          value: ~^Infrastructure\\.*~
+          value: ~^Lav45\\MockServer\\Infrastructure\\.*~
 
     - name: Application
       collectors:
         - type: classNameRegex
-          value: ~^Application\\.*~
+          value: ~^Lav45\\MockServer\\Application\\.*~
 
     - name: Domain
       collectors:
         - type: classNameRegex
-          value: ~^Domain\\.*~
+          value: ~^Lav45\\MockServer\\Domain\\.*~
 
   ruleset:
     Infrastructure:
