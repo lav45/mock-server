@@ -1,13 +1,13 @@
 [
-  {
-    "request": {
-      "url": "/response/content/status"
-    },
-    "response": {
-      "content": {
-        "status": 401,
-        "text": "Unauthorized"
-      }
+    {
+        "request": {
+            "url": "/response/content/status"
+        },
+        "response": {
+            "content": {
+                "status": 401,
+                "text": "Unauthorized"
+            }
+        }
     }
-  }
 ]

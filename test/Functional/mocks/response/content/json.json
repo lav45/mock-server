@@ -1,20 +1,20 @@
 [
-  {
-    "request": {
-      "url": "/response/content/json"
-    },
-    "env": {
-      "uuid": "{{faker.uuid}}"
-    },
-    "response": {
-      "content": {
-        "json": {
-          "id": "{env.uuid}/{faker.uuid}",
-          "term": "{{env.TERM}}",
-          "domain": "{{env.DOMAIN}}",
-          "url": "https://{env.DOMAIN}/v1"
+    {
+        "request": {
+            "url": "/response/content/json"
+        },
+        "env": {
+            "uuid": "{{faker.uuid}}"
+        },
+        "response": {
+            "content": {
+                "json": {
+                    "id": "{env.uuid}/{faker.uuid}",
+                    "term": "{{env.TERM}}",
+                    "domain": "{{env.DOMAIN}}",
+                    "url": "https://{env.DOMAIN}/v1"
+                }
+            }
         }
-      }
     }
-  }
 ]

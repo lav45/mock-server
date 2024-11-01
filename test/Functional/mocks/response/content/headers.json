@@ -1,15 +1,15 @@
 [
-  {
-    "request": {
-      "url": "/response/content/headers"
-    },
-    "response": {
-      "content": {
-        "headers": {
-          "X-Type": "content",
-          "X-Id": "100"
+    {
+        "request": {
+            "url": "/response/content/headers"
+        },
+        "response": {
+            "content": {
+                "headers": {
+                    "X-Type": "content",
+                    "X-Id": "100"
+                }
+            }
         }
-      }
     }
-  }
 ]

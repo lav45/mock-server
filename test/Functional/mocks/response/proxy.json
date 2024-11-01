@@ -1,68 +1,68 @@
 [
-  {
-    "request": {
-      "method": "POST",
-      "url": "/response/proxy/array-content"
-    },
-    "response": {
-      "proxy": {
-        "url": "http://127.0.0.1:8000/content?n=1",
-        "content": [
-          {
-            "id": 1,
-            "name": "name 1"
-          },
-          {
-            "id": 2,
-            "name": "name 2"
-          },
-          {
-            "id": 3,
-            "name": "name 3"
-          },
-          {
-            "id": 4,
-            "name": "name 4"
-          },
-          {
-            "id": 5,
-            "name": "name 5"
-          },
-          {
-            "id": 6,
-            "name": "name 6"
-          }
-        ]
-      }
-    }
-  },
-  {
-    "request": {
-      "method": "POST",
-      "url": "/response/proxy/string-content"
-    },
-    "response": {
-      "proxy": {
-        "url": "http://127.0.0.1:8000/content",
-        "content": "{\"id\": 100}"
-      }
-    }
-  },
-  {
-    "request": {
-      "method": [
-        "GET",
-        "POST"
-      ],
-      "url": "/response/proxy/{path:.+}"
-    },
-    "response": {
-      "proxy": {
-        "url": "http://127.0.0.1:8000/{request.urlParams.path}",
-        "headers": {
-          "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
+    {
+        "request": {
+            "method": "POST",
+            "url": "/response/proxy/array-content"
+        },
+        "response": {
+            "proxy": {
+                "url": "http://127.0.0.1:8000/content?n=1",
+                "content": [
+                    {
+                        "id": 1,
+                        "name": "name 1"
+                    },
+                    {
+                        "id": 2,
+                        "name": "name 2"
+                    },
+                    {
+                        "id": 3,
+                        "name": "name 3"
+                    },
+                    {
+                        "id": 4,
+                        "name": "name 4"
+                    },
+                    {
+                        "id": 5,
+                        "name": "name 5"
+                    },
+                    {
+                        "id": 6,
+                        "name": "name 6"
+                    }
+                ]
+            }
         }
-      }
+    },
+    {
+        "request": {
+            "method": "POST",
+            "url": "/response/proxy/string-content"
+        },
+        "response": {
+            "proxy": {
+                "url": "http://127.0.0.1:8000/content",
+                "content": "{\"id\": 100}"
+            }
+        }
+    },
+    {
+        "request": {
+            "method": [
+                "GET",
+                "POST"
+            ],
+            "url": "/response/proxy/{path:.+}"
+        },
+        "response": {
+            "proxy": {
+                "url": "http://127.0.0.1:8000/{request.urlParams.path}",
+                "headers": {
+                    "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
+                }
+            }
+        }
     }
-  }
 ]
