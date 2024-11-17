@@ -5,5 +5,5 @@ docker run --rm -it \
   -v $(pwd):/app \
   -w /app \
   -e COMPOSER_HOME=/app/.composer \
-  --entrypoint composer \
-  mock-server-dev:latest $@
+  --entrypoint php \
+  mock-server-dev:latest -d opcache.enable_cli=off -d zend_extension=xdebug.so /usr/local/bin/composer $@

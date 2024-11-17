@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     php83-xdebug \
     php83-posix
 
-RUN wget https://getcomposer.org/installer -O - | php -- --version=2.7.7 --install-dir=/usr/local/bin --filename=composer
+RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 RUN wget https://github.com/maglnet/ComposerRequireChecker/releases/latest/download/composer-require-checker.phar -O /usr/local/bin/composer-require-checker && chmod a+x /usr/local/bin/composer-require-checker
 RUN wget https://github.com/composer-unused/composer-unused/releases/latest/download/composer-unused.phar -O /usr/local/bin/composer-unused && chmod a+x /usr/local/bin/composer-unused
 RUN wget https://github.com/qossmic/deptrac/releases/download/2.0.2/deptrac.phar -O /usr/local/bin/deptrac && chmod a+x /usr/local/bin/deptrac
