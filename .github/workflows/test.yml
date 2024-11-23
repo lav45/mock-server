@@ -1,0 +1,59 @@
+name: testing
+
+on:
+  - push
+  - pull_request
+
+env:
+  REGISTRY: "localhost:5000/"
+  PLATFORMS: "linux/amd64,linux/arm64"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
+    steps:
+      - name: Checkout.
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up docker buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Build and push to local registry base image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          network: host
+          file: ./docker/base.Dockerfile
+          platforms: ${{ env.PLATFORMS }}
+          tags: ${{ env.REGISTRY }}mock-server-base:latest
+
+      - name: Build and push dev image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          network: host
+          file: ./docker/dev.Dockerfile
+          platforms: ${{ env.PLATFORMS }}
+          build-args: REGISTRY=${{ env.REGISTRY }}
+          tags: ${{ env.REGISTRY }}mock-server-dev:latest
+
+      - name: Install composer with dev dependencies
+        run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress
+
+      - run: ./composer check
+      - run: ./composer deptrac
+      - run: ./composer phpunit
+      - run: ./composer unused
