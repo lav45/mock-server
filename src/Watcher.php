@@ -5,9 +5,7 @@ namespace Lav45\MockServer;
 use FastRoute\BadRouteException;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Lav45\MockServer\Application\Data\Mock\v1\Mock;
-use Lav45\MockServer\Infrastructure\Controller\RequestFactory;
-use Lav45\MockServer\Infrastructure\Factory\Mock as MockFactory;
+use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Lav45\MockServer\Infrastructure\Service\FileSystem;
 use Lav45\Watcher\Event;
 use Lav45\Watcher\Listener;
@@ -17,40 +15,48 @@ use Psr\Log\LoggerInterface;
 use function Amp\delay;
 use function FastRoute\simpleDispatcher;
 
-final class Watcher
+final class Watcher implements WatcherInterface
 {
     private Dispatcher $dispatcher;
     /** @var array<string,array<array>> */
-    private array $fileMocks = [];
-
-    private bool $flashMocks = false;
+    private array $mocksData = [];
 
     public function __construct(
-        private readonly RequestFactory       $requestFactory,
-        private readonly string               $watchDir,
-        private readonly LoggerInterface|null $logger = null,
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly string                  $watchDir,
+        private readonly LoggerInterface         $logger,
     ) {}
 
     public function init(): void
     {
         $files = $this->getFileList($this->watchDir);
-        $this->fileMocks = $this->parseFiles($files);
+        $this->mocksData = $this->parseFiles($files);
         $this->initDispatcher();
     }
 
     public function run(float $timeout = 0.2): void
     {
+        $flashMocks = false;
+
         $watcher = (new FileWatcher(new Listener()))
-            ->on(IN_CREATE | IN_MOVED_TO, fn(Event $event) => $this->onSetFile('Create ' . $event->path, $event->path))
-            ->on(IN_DELETE | IN_MOVED_FROM, fn(Event $event) => $this->onDeleteFile('Delete ' . $event->path, $event->path))
-            ->on(IN_CLOSE_WRITE, fn(Event $event) => $this->onSetFile('Update ' . $event->path, $event->path))
+            ->on(IN_CREATE | IN_MOVED_TO, function (Event $event) use (&$flashMocks) {
+                $this->onSetFile($flashMocks, 'Create ' . $event->path, $event->path);
+            })
+            ->on(IN_DELETE | IN_MOVED_FROM, function (Event $event) use (&$flashMocks) {
+                $this->onDeleteFile($flashMocks, 'Delete ' . $event->path, $event->path);
+            })
+            ->on(IN_CLOSE_WRITE, function (Event $event) use (&$flashMocks) {
+                $this->onSetFile($flashMocks, 'Update ' . $event->path, $event->path);
+            })
             ->withFilter(fn(Event $event): bool => $this->getFileFilter($event->path))
             ->watchDirs(FileSystem::getDirList($this->watchDir));
 
         while (true) {
-            $this->flashMocks = false;
             $watcher->read();
-            $this->flashMocks && $this->initDispatcher();
+            if ($flashMocks) {
+                $this->initDispatcher();
+                $flashMocks = false;
+            }
             delay($timeout);
         }
     }
@@ -62,69 +68,44 @@ final class Watcher
 
     private function initDispatcher(): void
     {
-        $this->logger?->debug('Init dispatcher');
+        $this->logger->debug('Init dispatcher');
         try {
-            $mocks = $this->createMocks($this->fileMocks);
-            $routes = $this->createRouters($mocks);
-            $this->dispatcher = $this->createDispatcher($routes);
+            $this->dispatcher = $this->createDispatcher($this->mocksData);
         } catch (BadRouteException $exception) {
-            $this->logger?->error($exception);
-        }
-    }
-
-    private function createDispatcher(iterable $routes): Dispatcher
-    {
-        return simpleDispatcher(function (RouteCollector $router) use ($routes): void {
-            foreach ($routes as [$method, $url, $handler]) {
-                $router->addRoute($method, $url, $handler);
-            }
-        });
-    }
-
-    /**
-     * @param Mock[] $mocks
-     */
-    private function createRouters(iterable $mocks): iterable
-    {
-        foreach ($mocks as $mock) {
-            yield [
-                $mock->request->method,
-                $mock->request->url,
-                $this->requestFactory->create($mock),
-            ];
+            $this->logger->error($exception);
         }
     }
 
     /**
-     * @param array<string,array<array>> $files
-     * @return Mock[]
+     * @param array<string,array<array>> $data
      */
-    private function createMocks(array $files): iterable
+    private function createDispatcher(iterable $data): Dispatcher
     {
-        foreach ($files as $items) {
-            foreach ($items as $item) {
-                try {
-                    yield MockFactory::create($item);
-                } catch (\Throwable $exception) {
-                    $this->logger?->error($exception);
-                    continue;
+        return simpleDispatcher(function (RouteCollector $router) use ($data): void {
+            foreach ($data as $mocks) {
+                foreach ($mocks as $mock) {
+                    $router->addRoute(
+                        ArrayHelper::getValue($mock, 'request.method', ['GET']),
+                        ArrayHelper::getValue($mock, 'request.url', '/'),
+                        $this->requestFactory->create($mock),
+                    );
                 }
             }
-        }
+        });
     }
 
     /**
      * @param string[] $files
      * @return array<string,array<array>>
      */
-    private function parseFiles(array $files): array
+    private function parseFiles(iterable $files): array
     {
         $result = [];
         foreach ($files as $file) {
             try {
                 $result[$file] = $this->parseFile($file);
             } catch (\Throwable $exception) {
-                $this->logger?->error($exception);
+                $this->logger->error($exception);
                 continue;
             }
         }
@@ -148,21 +129,21 @@ final class Watcher
         return FileSystem::getFileList($dir, fn(string $filename) => $this->getFileFilter($filename));
     }
 
-    private function onSetFile(string $log, string $file): void
+    private function onSetFile(bool &$flashMocks, string $log, string $file): void
     {
-        $this->logger?->debug($log);
+        $this->logger->debug($log);
         try {
-            $this->fileMocks[$file] = $this->parseFile($file);
-            $this->flashMocks = true;
+            $this->mocksData[$file] = $this->parseFile($file);
+            $flashMocks = true;
         } catch (\Throwable $exception) {
-            $this->logger?->error($exception);
+            $this->logger->error($exception);
         }
     }
 
-    private function onDeleteFile(string $log, string $file): void
+    private function onDeleteFile(bool &$flashMocks, string $log, string $file): void
     {
-        $this->logger?->debug($log);
-        unset($this->fileMocks[$file]);
-        $this->flashMocks = true;
+        $this->logger->debug($log);
+        unset($this->mocksData[$file]);
+        $flashMocks = true;
     }
 }

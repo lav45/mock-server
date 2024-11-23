@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Domain\ValueObject\Response;
 
-use Lav45\MockServer\Domain\ValueObject\Response\Body;
+use Lav45\MockServer\Domain\Model\Response\Body;
 use PHPUnit\Framework\TestCase;
 
 final class BodyTest extends TestCase
@@ -10,7 +10,7 @@ final class BodyTest extends TestCase
     public function testToString(): void
     {
         $text = 'content';
-        $result = (string)Body::new($text);
+        $result = Body::new($text)->toString();
         $this->assertEquals($text, $result);
     }
 }

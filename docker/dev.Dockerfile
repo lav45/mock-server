@@ -17,5 +17,5 @@ RUN wget https://github.com/qossmic/deptrac/releases/download/2.0.2/deptrac.phar
 RUN wget https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/download/v3.64.0/php-cs-fixer.phar -O /usr/local/bin/php-cs-fixer && chmod a+x /usr/local/bin/php-cs-fixer
 
 WORKDIR /app
-ENTRYPOINT ["php"]
+ENTRYPOINT ["php", "-d", "opcache.enable_cli=off", "-d", "zend_extension=xdebug.so"]
 CMD ["mock-server.php"]

@@ -2,9 +2,9 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Infrastructure\Handler;
 
-use Lav45\MockServer\Domain\Entity\Response as ResponseEntity;
-use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Handler\Response;
+use Lav45\MockServer\Domain\Model\Response as ResponseEntity;
+use Lav45\MockServer\Infrastructure\Handler\ResponseFabric;
+use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
 use PHPUnit\Framework\TestCase;
 
 final class ResponseTest extends TestCase
@@ -15,6 +15,6 @@ final class ResponseTest extends TestCase
 
         $data = new class implements ResponseEntity {};
 
-        (new Response(HttpClientFactory::create()))->create($data);
+        (new ResponseFabric(HttpClientFactory::create()))->create($data);
     }
 }

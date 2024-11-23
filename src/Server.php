@@ -6,17 +6,13 @@ use Amp;
 use Amp\ByteStream;
 use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\SocketClientFactory;
-use Amp\Http\Server\ErrorHandler;
 use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
-use Faker\Factory;
-use Faker\Generator;
-use Lav45\MockServer\Infrastructure\Controller\RequestFactory;
-use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Wrapper\HttpClient as HttpClientWrapper;
+use Faker\Factory as FakerFactory;
+use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -37,12 +33,12 @@ final readonly class Server
     {
         $logger = $this->getLogger();
 
-        $faker = $this->getFakerFactory();
-        $httpClient = $this->getHttpClient($logger);
+        $faker = FakerFactory::create($this->locale);
+        $httpClient = HttpClientFactory::create($logger);
         $requestFactory = new RequestFactory($faker, $httpClient, $logger);
         $watcher = $this->runWatcher($logger, $requestFactory);
 
-        $errorHandler = $this->getErrorHandler();
+        $errorHandler = new DefaultErrorHandler();
         $reactor = new Reactor(
             errorHandler: $errorHandler,
             watcher: $watcher,
@@ -68,21 +64,6 @@ final readonly class Server
             Amp\async(fn() => $watcher->run($this->fileWatchTimeout));
         }
         return $watcher;
-    }
-
-    private function getHttpClient(LoggerInterface $logger): HttpClientWrapper
-    {
-        return HttpClientFactory::create($logger);
-    }
-
-    private function getFakerFactory(): Generator
-    {
-        return Factory::create($this->locale);
-    }
-
-    private function getErrorHandler(): ErrorHandler
-    {
-        return new DefaultErrorHandler();
     }
 
     private function getServer(LoggerInterface $logger): HttpServer

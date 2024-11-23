@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Test\Functional\Server;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
-use Lav45\MockServer\Infrastructure\Wrapper\Request as RequestWrapper;
+use Lav45\MockServer\Presenter\Service\Request as RequestWrapper;
 use Lav45\MockServer\Test\Functional\Server\Component\Storage;
 use Lav45\MockServer\Test\Functional\Server\Controller\Content as ContentController;
 use Lav45\MockServer\Test\Functional\Server\Controller\Storage as StorageController;

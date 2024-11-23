@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Domain\ValueObject\Response;
 
-use Lav45\MockServer\Domain\ValueObject\Response\HttpStatus;
+use Lav45\MockServer\Domain\Model\Response\HttpStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

@@ -1,8 +1,20 @@
 deptrac:
   paths:
     - ./src
+    - ./vendor
+
+  analyser:
+    types:
+      - "use"
+      - "file"
+      - "function_call"
 
   layers:
+    - name: Presenter
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Presenter\\.*~
+
     - name: Infrastructure
       collectors:
         - type: classNameRegex
@@ -18,9 +30,19 @@ deptrac:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Domain\\.*~
 
+    - name: Vendor
+      collectors:
+        - type: directory
+          value: ./vendor
+
   ruleset:
+    Presenter:
+      - Application
+      - Domain
+      - Vendor
     Infrastructure:
       - Application
       - Domain
+      - Vendor
     Application:
       - Domain

@@ -8,13 +8,13 @@ use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
-use Lav45\MockServer\Infrastructure\Wrapper\Request as RequestWrapper;
+use Lav45\MockServer\Presenter\Service\Request as RequestWrapper;
 
 final readonly class Reactor implements RequestHandlerInterface
 {
     public function __construct(
-        private ErrorHandler $errorHandler,
-        private Watcher      $watcher,
+        private ErrorHandler     $errorHandler,
+        private WatcherInterface $watcher,
     ) {}
 
     public function handleRequest(Request $request): Response

@@ -3,13 +3,13 @@
 namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
 
 use Amp\Http\Client\Form;
-use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
+use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class ProxyTest extends TestCase
 {
-    private HttpClient $HttpClient;
+    private HttpClientInterface $HttpClient;
 
     protected function setUp(): void
     {
@@ -33,6 +33,8 @@ class ProxyTest extends TestCase
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertEquals([], $content[0]['get']);
         $this->assertEquals($data, $content[0]['post']);
+
+        //        var_dump($content);
 
         $this->assertArrayHasKey('content-type', $content[0]['headers']);
         $this->assertEquals('application/json', $content[0]['headers']['content-type'][0]);

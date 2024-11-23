@@ -2,10 +2,9 @@
 
 namespace Lav45\MockServer\Infrastructure\Handler;
 
-use Lav45\MockServer\Application\Data\Request;
-use Lav45\MockServer\Application\Data\Response;
-use Lav45\MockServer\Application\Handler\Response as ResponseHandler;
-use Lav45\MockServer\Domain\Entity\Response\Content as ContentEntity;
+use Lav45\MockServer\Application\Query\Request\Response;
+use Lav45\MockServer\Application\Query\Request\ResponseHandler;
+use Lav45\MockServer\Domain\Model\Response\Content as ContentEntity;
 
 final readonly class Content implements ResponseHandler
 {
@@ -13,13 +12,13 @@ final readonly class Content implements ResponseHandler
 
     public function __construct(private ContentEntity $data) {}
 
-    public function handle(Request $request): Response
+    public function execute(): Response
     {
-        $this->delay($request->start, $this->data->delay->value);
+        $this->delay($this->data->start->value, $this->data->delay->value);
 
         return new Response(
             status: $this->data->status->value,
-            headers: $this->data->headers->all(),
+            headers: $this->data->headers->toArray(),
             body: $this->data->body->toString(),
         );
     }

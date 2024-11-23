@@ -2,13 +2,13 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite\Mock;
 
-use Lav45\MockServer\Infrastructure\Factory\HttpClient as HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Wrapper\HttpClient;
+use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
+use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTest extends TestCase
 {
-    private HttpClient $HttpClient;
+    private HttpClientInterface $HttpClient;
 
     protected function setUp(): void
     {
