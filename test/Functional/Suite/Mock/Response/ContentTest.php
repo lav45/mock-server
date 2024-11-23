@@ -35,8 +35,6 @@ class ContentTest extends TestCase
         $this->assertMatchesRegularExpression($uuidPattern, $ids[0]);
         $this->assertMatchesRegularExpression($uuidPattern, $ids[1]);
 
-        $this->assertArrayHasKey('term', $content);
-        $this->assertEquals('xterm', $content['term']);
         $this->assertArrayHasKey('domain', $content);
         $this->assertEquals('test.server.com', $content['domain']);
         $this->assertArrayHasKey('url', $content);

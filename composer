@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-docker run --rm -it \
+if ! [ $PLATFORMS ] ; then
+  DOCKER_ARG='-t'
+fi
+
+docker run --rm -i ${DOCKER_ARG} \
   -u $(id -u):$(id -g) \
   -v $(pwd):/app \
   -w /app \
   -e COMPOSER_HOME=/app/.composer \
-  mock-server-dev:latest /usr/local/bin/composer $@
+  ${REGISTRY}mock-server-dev:latest /usr/local/bin/composer $@

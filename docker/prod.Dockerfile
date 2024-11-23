@@ -1,5 +1,5 @@
 ARG REGISTRY
-FROM ${REGISTRY}/mock-server-base:latest
+FROM ${REGISTRY}mock-server-base:latest
 
 RUN mkdir /app
 
