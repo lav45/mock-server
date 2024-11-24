@@ -1,8 +1,24 @@
 name: testing
 
 on:
-  - push
-  - pull_request
+  push:
+    paths-ignore:
+      - 'docs/*'
+      - 'mocks/*'
+      - 'README.md'
+      - '.gitattributes'
+      - '.gitignore'
+      - '.php-cs-fixer.dist.php'
+      - 'build.sh'
+  pull_request:
+    paths-ignore:
+      - 'docs/*'
+      - 'mocks/*'
+      - 'README.md'
+      - '.gitattributes'
+      - '.gitignore'
+      - '.php-cs-fixer.dist.php'
+      - 'build.sh'
 
 env:
   REGISTRY: "localhost:5000/"
