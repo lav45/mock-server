@@ -8,13 +8,11 @@ use Lav45\MockServer\Domain\Model\Response\Content as ContentEntity;
 
 final readonly class Content implements ResponseHandler
 {
-    use DelayTrait;
-
     public function __construct(private ContentEntity $data) {}
 
     public function execute(): Response
     {
-        $this->delay($this->data->start->value, $this->data->delay->value);
+        DelayHelper::delay($this->data->start->value, $this->data->delay->value);
 
         return new Response(
             status: $this->data->status->value,

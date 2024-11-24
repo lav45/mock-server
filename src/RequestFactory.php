@@ -24,8 +24,7 @@ final readonly class RequestFactory implements RequestFactoryInterface
         private Faker           $faker,
         private HttpClient      $httpClient,
         private LoggerInterface $logger,
-    )
-    {
+    ) {
         $this->webHookHandler = new WebHookHandler($this->logger, $this->httpClient);
         $this->responseFabric = new ResponseFabricHandler($this->httpClient);
     }

@@ -20,8 +20,7 @@ final readonly class WebHook implements WebHookInterface
     public function __construct(
         private LoggerInterface $logger,
         HttpClientInterface     $httpClient,
-    )
-    {
+    ) {
         $this->httpClient = $httpClient->withLogMessage(static function (HttpRequest $request, HttpResponse $response) {
             return "WebHook: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
         });
@@ -31,7 +30,9 @@ final readonly class WebHook implements WebHookInterface
     {
         async(function () use ($webHooks) {
             foreach ($webHooks as $webHook) {
-                delay($webHook->delay->value);
+                if ($webHook->delay->value > 0) {
+                    delay($webHook->delay->value);
+                }
                 $this->request($webHook);
             }
         });

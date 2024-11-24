@@ -13,8 +13,6 @@ use Throwable;
 
 final readonly class Proxy implements ResponseHandler
 {
-    use DelayTrait;
-
     private HttpClientInterface $httpClient;
 
     public function __construct(
@@ -44,7 +42,7 @@ final readonly class Proxy implements ResponseHandler
             );
         } // @codeCoverageIgnoreEnd
 
-        $this->delay($this->data->start->value, $this->data->delay->value);
+        DelayHelper::delay($this->data->start->value, $this->data->delay->value);
 
         return new Response(
             status: $response->getStatus(),

@@ -4,10 +4,13 @@ namespace Lav45\MockServer\Infrastructure\Handler;
 
 use function Amp\delay;
 
-trait DelayTrait
+final readonly class DelayHelper
 {
-    public function delay(float $start, float $delay): void
+    public static function delay(float $start, float $delay): void
     {
+        if ($delay === 0.0) {
+            return;
+        }
         $end = \microtime(true);
         $timeout = $delay - ($end - $start);
 
