@@ -15,10 +15,11 @@ final readonly class ParserFactory
     public function create(Request $request): GroupParser
     {
         $fakerParser = new FakerParser($this->faker);
-
         $env = $fakerParser->replace($this->env);
 
-        $envParser = new EnvParser($env);
+        $envParser = new EnvParser();
+        $env = $envParser->replace($env);
+        $envParser = $envParser->withData($env);
 
         $paramParser = new ParamParser([
             'request' => (array)$request,

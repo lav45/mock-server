@@ -2,7 +2,8 @@
     {
         "env": {
             "webhook": {
-                "token": "e71ad173-dacf-493c-be55-643074fdf41c"
+                "token": "e71ad173-dacf-493c-be55-643074fdf41c",
+                "url": "{env.URL}/storage"
             },
             "uuid": "{{faker.uuid}}",
             "correlationId": "{{faker.numerify('############')}}"
@@ -13,11 +14,11 @@
         },
         "webhooks": [
             {
-                "url": "http://127.0.0.1:8000/storage"
+                "url": "{{env.webhook.url}}"
             },
             {
                 "delay": 0.5,
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "Content-Type": "application/json"
                 },
@@ -42,7 +43,7 @@
             },
             {
                 "method": "PUT",
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 },
@@ -74,14 +75,14 @@
             },
             {
                 "method": "DELETE",
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 }
             },
             {
                 "method": "POST",
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
@@ -89,14 +90,14 @@
             },
             {
                 "method": "POST",
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "Content-Type": "multipart/form-data; boundary=FB"
                 },
                 "text": "--FB\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nJohn\r\n--FB\r\nContent-Disposition: form-data; name=\"age\"\r\n\r\n12\r\n--FB--\r\n"
             },
             {
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "options": {
                     "headers": {
                         "X-API-Token": "{{env.webhook.token}}"
@@ -109,7 +110,7 @@
                 }
             },
             {
-                "url": "http://127.0.0.1:8000/storage",
+                "url": "{{env.webhook.url}}",
                 "headers": {
                     "Content-Type": "application/json"
                 },

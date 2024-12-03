@@ -34,8 +34,6 @@ class ProxyTest extends TestCase
         $this->assertEquals([], $content[0]['get']);
         $this->assertEquals($data, $content[0]['post']);
 
-        //        var_dump($content);
-
         $this->assertArrayHasKey('content-type', $content[0]['headers']);
         $this->assertEquals('application/json', $content[0]['headers']['content-type'][0]);
 

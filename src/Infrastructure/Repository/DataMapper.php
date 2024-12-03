@@ -166,8 +166,6 @@ final readonly class DataMapper
 
         $withJson = isset($data['proxy']['content']) && \is_array($data['proxy']['content']);
 
-        //        var_dump($request->headers);
-
         $headers = (new HeadersFactory(
             parser: $this->parser,
             withJson: $withJson,
