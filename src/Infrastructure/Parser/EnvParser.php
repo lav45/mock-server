@@ -27,7 +27,7 @@ final readonly class EnvParser implements Parser
         return $this->parser->replace($data);
     }
 
-    private function getValue(array $matches): null|string
+    private function getValue(array $matches): mixed
     {
         if ($value = \getenv($matches[2])) {
             return $value;

@@ -4,14 +4,16 @@
             "url": "/response/content/json"
         },
         "env": {
-            "uuid": "{{faker.uuid}}"
+            "uuid": "{{faker.uuid}}",
+            "value": 1.2
         },
         "response": {
             "content": {
                 "json": {
                     "id": "{env.uuid}/{faker.uuid}",
                     "domain": "{{env.DOMAIN}}",
-                    "url": "https://{env.DOMAIN}/v1"
+                    "url": "https://{env.DOMAIN}/v1",
+                    "value": "{{env.value}}"
                 }
             }
         }

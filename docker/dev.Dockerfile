@@ -7,7 +7,6 @@ RUN apk add --no-cache \
     php83-zip \
     php83-xml \
     php83-xmlwriter \
-    php83-tokenizer \
     php83-xdebug \
     php83-posix
 
