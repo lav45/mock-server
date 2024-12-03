@@ -2,6 +2,8 @@ name: testing
 
 on:
   push:
+    branches:
+      - '**'
     paths-ignore:
       - 'docs/*'
       - 'mocks/*'
@@ -25,7 +27,7 @@ env:
   PLATFORMS: "linux/amd64,linux/arm64"
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
     services:
       registry:
