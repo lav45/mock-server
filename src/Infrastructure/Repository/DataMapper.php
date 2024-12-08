@@ -176,10 +176,10 @@ final readonly class DataMapper
             optionPath: 'proxy.options.headers',
         );
 
-        if ($request->body) {
-            $body = Body::fromText($request->body);
-        } else {
+        if (isset($data['proxy']['content'])) {
             $body = (new BodyFactory($this->parser))->from($data, 'proxy.content');
+        } else {
+            $body = Body::fromText($request->body);
         }
 
         return new Response\Proxy(

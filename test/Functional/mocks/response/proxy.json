@@ -53,6 +53,22 @@
     },
     {
         "request": {
+            "method": "POST",
+            "url": "/response/proxy/faker-content"
+        },
+        "response": {
+            "proxy": {
+                "url": "{env.URL}/content",
+                "content": {
+                    "company": {
+                        "id": "{{faker.uuid}}"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "request": {
             "method": [
                 "GET",
                 "POST"

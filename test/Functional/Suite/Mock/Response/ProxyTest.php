@@ -102,6 +102,7 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: 'http://127.0.0.1/response/proxy/string-content',
             method: 'POST',
+            body: '{"name": "Company"}',
             headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
@@ -117,6 +118,34 @@ class ProxyTest extends TestCase
         $this->assertEquals([], $content['get']);
 
         $this->assertEquals(['id' => 100], $content['post']);
+
+        $this->assertArrayHasKey('content-type', $content['headers']);
+        $this->assertEquals('application/json', $content['headers']['content-type'][0]);
+    }
+
+    public function testFakerContent(): void
+    {
+        $response = $this->HttpClient->request(
+            uri: 'http://127.0.0.1/response/proxy/faker-content',
+            method: 'POST',
+            body: '{"name": "Company"}',
+            headers: ['content-type' => 'application/json'],
+        );
+        $this->assertEquals(200, $response->getStatus());
+
+        $headers = $response->getHeaders();
+        $this->assertArrayHasKey('authorization', $headers);
+        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
+
+        $content = $response->getBody()->buffer();
+        $content = \json_decode($content, true);
+
+        $this->assertEquals('POST', $content['method']);
+        $this->assertEquals([], $content['get']);
+
+        $this->assertTrue(isset($content['post']['company']['id']));
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
+        $this->assertMatchesRegularExpression($uuidPattern, $content['post']['company']['id']);
 
         $this->assertArrayHasKey('content-type', $content['headers']);
         $this->assertEquals('application/json', $content['headers']['content-type'][0]);
