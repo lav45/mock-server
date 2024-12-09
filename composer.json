@@ -50,7 +50,7 @@
         "check": "composer-require-checker check",
         "unused": "composer-unused",
         "deptrac": "deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "code-style": "php-cs-fixer fix",
+        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix",
         "test": [
             "@check",
             "@deptrac",
