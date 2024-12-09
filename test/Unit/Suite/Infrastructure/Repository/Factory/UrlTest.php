@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Domain\Factory\Response;
+namespace Lav45\MockServer\Test\Unit\Suite\Infrastructure\Repository\Factory;
 
 use Lav45\MockServer\Infrastructure\Parser\Parser;
 use Lav45\MockServer\Infrastructure\Repository\Factory\UrlFactory;

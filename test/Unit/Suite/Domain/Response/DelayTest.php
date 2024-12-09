@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Domain\ValueObject\Response;
+namespace Lav45\MockServer\Test\Unit\Suite\Domain\Response;
 
 use Lav45\MockServer\Domain\Model\Response\Delay;
 use PHPUnit\Framework\TestCase;
