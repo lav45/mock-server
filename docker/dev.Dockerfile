@@ -2,13 +2,13 @@ ARG REGISTRY
 FROM ${REGISTRY}mock-server-base:latest
 
 RUN apk add --no-cache \
-    php83-phar \
-    php83-curl \
-    php83-zip \
-    php83-xml \
-    php83-xmlwriter \
-    php83-xdebug \
-    php83-posix
+    php84-phar \
+    php84-curl \
+    php84-zip \
+    php84-xml \
+    php84-xmlwriter \
+    php84-xdebug \
+    php84-posix
 
 RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 RUN wget https://github.com/maglnet/ComposerRequireChecker/releases/latest/download/composer-require-checker.phar -O /usr/local/bin/composer-require-checker && chmod a+x /usr/local/bin/composer-require-checker

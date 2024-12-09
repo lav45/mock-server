@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-pcntl": "*",
         "ext-filter": "*",
         "ext-inotify": "*",
@@ -27,7 +27,7 @@
         "amphp/log": "v2.0.*",
         "amphp/sync": "v2.3.*",
         "amphp/http": "v2.1.*",
-        "amphp/http-client": "v5.1.*",
+        "amphp/http-client": "v5.2.*",
         "amphp/http-server": "v3.3.*",
         "amphp/http-server-form-parser": "v2.0.*",
         "amphp/byte-stream": "v2.1.*",
@@ -36,7 +36,6 @@
         "monolog/monolog": "3.8.*",
         "fakerphp/faker": "v1.24.*",
         "yiisoft/data": "1.0.*",
-        "league/uri": "7.4.*",
         "psr/log": "3.0.*",
         "lav45/watcher": "1.0.*"
     },

@@ -1,35 +1,35 @@
-FROM alpine:3.20 AS build
+FROM alpine:3.21 AS build
 
-RUN apk add --no-cache php83-pear php83-openssl php83-dev gcc musl-dev make
-RUN pecl install inotify
+RUN apk add --no-cache php84-pear php84-openssl php84-dev gcc musl-dev make
+RUN pecl84 install inotify
 
-FROM alpine:3.20
+FROM alpine:3.21
 
 RUN apk upgrade --no-cache --available
 RUN apk add --no-cache  \
-    php83 \
-    php83-pcntl \
-    php83-openssl \
-    php83-intl \
-    php83-fileinfo \
-    php83-ctype \
-    php83-dom \
-    php83-iconv \
-    php83-mbstring \
-    php83-tokenizer \
-    php83-gmp \
-    php83-opcache
+    php84 \
+    php84-pcntl \
+    php84-openssl \
+    php84-intl \
+    php84-fileinfo \
+    php84-ctype \
+    php84-dom \
+    php84-iconv \
+    php84-mbstring \
+    php84-tokenizer \
+    php84-gmp \
+    php84-opcache
 
-RUN ln -s /etc/php83 /etc/php
+RUN ln -s /usr/bin/php84 /bin/php
 
-RUN echo 'opcache.enable=on' >> /etc/php/conf.d/00_opcache.ini
-RUN echo 'opcache.enable_cli=on' >> /etc/php/conf.d/00_opcache.ini
-RUN echo 'opcache.jit_buffer_size=-1' >> /etc/php/conf.d/00_opcache.ini
-RUN echo 'opcache.jit=1255' >> /etc/php/conf.d/00_opcache.ini
+RUN echo 'opcache.enable=on' >> /etc/php84/conf.d/00_opcache.ini
+RUN echo 'opcache.enable_cli=on' >> /etc/php84/conf.d/00_opcache.ini
+RUN echo 'opcache.jit_buffer_size=64M' >> /etc/php84/conf.d/00_opcache.ini
+RUN echo 'opcache.jit=tracing' >> /etc/php84/conf.d/00_opcache.ini
 
-RUN sed -i 's|memory_limit = .*|memory_limit = -1|' /etc/php/php.ini
+RUN sed -i 's|memory_limit = .*|memory_limit = -1|' /etc/php84/php.ini
 
-COPY --from=build /usr/lib/php83/modules/inotify.so /usr/lib/php83/modules
-RUN echo 'extension=inotify.so' > /etc/php/conf.d/00_inotify.ini
+COPY --from=build /usr/lib/php84/modules/inotify.so /usr/lib/php84/modules
+RUN echo 'extension=inotify.so' > /etc/php84/conf.d/10_inotify.ini
 RUN echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
 RUN echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
