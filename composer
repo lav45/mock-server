@@ -8,5 +8,5 @@ docker run --rm -i ${DOCKER_ARG} \
   -u $(id -u):$(id -g) \
   -v $(pwd):/app \
   -w /app \
-  -e COMPOSER_HOME=/app/.composer \
+  -e COMPOSER_HOME=/app/.cache/.composer \
   ${REGISTRY}mock-server-dev:latest /usr/local/bin/composer $@

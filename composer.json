@@ -40,17 +40,27 @@
         "lav45/watcher": "1.0.*"
     },
     "require-dev": {
-        "ext-posix": "*",
-        "phpunit/phpunit": "11.*",
-        "phpunit/php-code-coverage": "11.*"
+        "bamarni/composer-bin-plugin": "^1.8"
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": true,
+            "target-directory": "tools",
+            "forward-command": true
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
     },
     "scripts": {
         "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 vendor/bin/phpunit",
         "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 XDEBUG_MODE=coverage php -d zend.assertions=1 -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
-        "check": "composer-require-checker check",
-        "unused": "composer-unused",
-        "deptrac": "deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix",
+        "check": "vendor/bin/composer-require-checker check",
+        "unused": "vendor/bin/composer-unused",
+        "deptrac": "vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
+        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix",
         "test": [
             "@check",
             "@deptrac",

@@ -3,5 +3,4 @@
 .DS_Store
 vendor
 phpunit.xml
-.composer
 .draft
