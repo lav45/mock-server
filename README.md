@@ -30,6 +30,10 @@ Create mock file `./mocks/index.json` and put the content in it
 ```json
 [
     {
+        "request": {
+            "method": "GET",
+            "url": "/"
+        },
         "response": {
             "content": {
                 "text": "Hello world!"
