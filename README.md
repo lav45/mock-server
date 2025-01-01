@@ -2,6 +2,8 @@
 
 HTTP mocking application for testing and fast prototyping
 
+[Docker image](https://hub.docker.com/r/lav45/mock-server)
+
 ## Features
 
 - [Env](./docs/env.md) - Storage of variables that can be used in the Response and WebHooks
@@ -37,7 +39,7 @@ Create mock file `./mocks/index.json` and put the content in it
 ]
 ```
 
-Run the Mock Server ( [Image](https://hub.docker.com/r/lav45/mock-server) )
+Run the Mock Server
 
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
