@@ -14,4 +14,4 @@ RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/loca
 
 WORKDIR /app
 ENTRYPOINT ["php", "-d", "opcache.enable_cli=off", "-d", "zend_extension=xdebug.so"]
-CMD ["mock-server.php"]
+CMD ["/app/bin/mock-server"]

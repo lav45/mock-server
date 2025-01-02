@@ -14,7 +14,6 @@ on:
       - composer.json
       - composer.lock
       - deptrac.yaml
-      - mock-server.php
       - phpunit.xml.dist
   pull_request:
     paths:
@@ -27,7 +26,6 @@ on:
       - composer.json
       - composer.lock
       - deptrac.yaml
-      - mock-server.php
       - phpunit.xml.dist
 
 env:
@@ -77,7 +75,7 @@ jobs:
           tags: ${{ env.REGISTRY }}mock-server-dev:latest
 
       - name: Install composer with dev dependencies
-        run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress
+        run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --ansi
 
       - run: ./composer check
       - run: ./composer deptrac

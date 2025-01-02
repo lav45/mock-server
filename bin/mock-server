@@ -1,6 +1,7 @@
-<?php
+#!/usr/bin/env php
+<?php declare(strict_types=1);
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 (new Lav45\MockServer\Server(
     host: getenv('HOST') ?: '0.0.0.0',

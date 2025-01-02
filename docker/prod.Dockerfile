@@ -3,7 +3,7 @@ FROM ${REGISTRY}mock-server-base:latest
 
 RUN mkdir /app
 
-COPY mock-server.php /app
+COPY bin /app/bin
 COPY vendor /app/vendor
 COPY src /app/src
 COPY migrates /app/migrates
@@ -11,4 +11,4 @@ COPY migrates /app/migrates
 ARG DEBUG
 WORKDIR /app
 ENTRYPOINT ["php", "-d", "zend.assertions=${DEBUG:-0}"]
-CMD ["mock-server.php"]
+CMD ["/app/bin/mock-server"]
