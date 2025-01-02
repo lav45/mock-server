@@ -10,7 +10,7 @@ final readonly class FileSystem
         $items = \glob($directory . '/*');
         foreach ($items as $path) {
             if (\is_dir($path)) {
-                $list += self::getFileList($path);
+                $list += self::getFileList($path, $filter);
             } elseif ($filter === null || $filter($path) === true) {
                 $list[$path] = $path;
             }

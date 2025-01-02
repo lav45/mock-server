@@ -119,15 +119,25 @@ final class Watcher implements WatcherInterface
         return \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
     }
 
-    private function getFileFilter(string $filename): bool
+    private function getFileFilter(string $path): bool
     {
+        $folders = \explode(DIRECTORY_SEPARATOR, $path);
+        $folders = \array_splice($folders, 1, -1);
+
+        foreach ($folders as $folder) {
+            if (\str_starts_with($folder, '__')) {
+                return false;
+            }
+        }
+
+        $filename = \basename($path);
         return \str_ends_with($filename, '.json')
             && \str_starts_with($filename, '.') === false;
     }
 
     private function getFileList(string $dir): array
     {
-        return FileSystem::getFileList($dir, fn(string $filename) => $this->getFileFilter($filename));
+        return FileSystem::getFileList($dir, fn(string $path): bool => $this->getFileFilter($path));
     }
 
     private function onSetFile(bool &$flashMocks, string $log, string $file): void

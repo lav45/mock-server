@@ -12,7 +12,8 @@ $jsonEncodeFlags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_S
 
 // ----------------------------------------------------------------------------
 
-$migrateList = scanDir($migratePath, static function (string $filename): bool {
+$migrateList = scanDir($migratePath, static function (string $path): bool {
+    $filename = \basename($path);
     return \str_ends_with($filename, '.php');
 });
 $migrates = [];
@@ -20,7 +21,17 @@ foreach ($migrateList as $file) {
     $migrates[] = include $file;
 }
 
-$mocksList = scanDir($mocksPath, static function (string $filename): bool {
+$mocksList = scanDir($mocksPath, static function (string $path): bool {
+    $folders = \explode(DIRECTORY_SEPARATOR, $path);
+    $folders = \array_splice($folders, 1, -1);
+
+    foreach ($folders as $folder) {
+        if (\str_starts_with($folder, '__')) {
+            return false;
+        }
+    }
+
+    $filename = \basename($path);
     return \str_ends_with($filename, '.json')
         && \str_starts_with($filename, '.') === false;
 });
@@ -45,7 +56,7 @@ function scanDir(string $baseDir, \Closure $checker): iterable
     foreach ($items as $path) {
         if (\is_dir($path)) {
             yield from scanDir($path, $checker);
-        } elseif (\is_file($path) && $checker(\basename($path))) {
+        } elseif (\is_file($path) && $checker($path)) {
             yield $path;
         }
     }
