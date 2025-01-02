@@ -35,9 +35,7 @@ Create mock file `./mocks/index.json` and put the content in it
             "url": "/"
         },
         "response": {
-            "content": {
-                "text": "Hello world!"
-            }
+            "text": "Hello world!"
         }
     }
 ]

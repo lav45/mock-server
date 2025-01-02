@@ -8,5 +8,14 @@
                 "status": 418
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/data/status2"
+        },
+        "response": {
+            "type": "data",
+            "status": 418
+        }
     }
 ]

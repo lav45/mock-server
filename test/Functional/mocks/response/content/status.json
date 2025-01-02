@@ -9,5 +9,15 @@
                 "text": "Unauthorized"
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/content/status2"
+        },
+        "response": {
+            "type": "content",
+            "status": 401,
+            "text": "Unauthorized"
+        }
     }
 ]

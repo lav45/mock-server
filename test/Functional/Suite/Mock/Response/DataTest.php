@@ -26,9 +26,61 @@ class DataTest extends TestCase
         $this->assertEquals('application/json', $headers['content-type'][0]);
     }
 
+    public function testIndex2(): void
+    {
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data2');
+        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals('[]', $response->getBody()->buffer());
+
+        $headers = $response->getHeaders();
+        $this->assertArrayHasKey('content-type', $headers);
+        $this->assertEquals('application/json', $headers['content-type'][0]);
+    }
+
     public function testJson(): void
     {
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json');
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $response->getBody()->buffer();
+        $content = \json_decode($content, true);
+
+        $this->assertArrayHasKey('data', $content);
+        $this->assertCount(6, $content['data']);
+
+        $expected = ['id' => 3, 'name' => 'name 3'];
+        $this->assertEquals($expected, $content['data'][2]);
+
+        $this->assertArrayHasKey('pagination', $content);
+        $expectedPagination = [
+            'totalItems' => 12,
+            'currentPage' => 1,
+            'totalPages' => 2,
+            'pageSize' => 6,
+        ];
+        $this->assertEquals($expectedPagination, $content['pagination']);
+
+        $this->assertArrayHasKey('info', $content);
+        $expected = [
+            'X-Pagination-Total-Count' => $expectedPagination['totalItems'],
+            'X-Pagination-Current-Page' => $expectedPagination['currentPage'],
+            'X-Pagination-Page-Count' => $expectedPagination['totalPages'],
+            'X-Pagination-Per-Page' => $expectedPagination['pageSize'],
+        ];
+        $this->assertEquals($expected, $content['info']);
+
+        $this->assertHeaders($response->getHeaders(), [
+            'content-type' => 'application/json',
+            'x-pagination-total-count' => $expectedPagination['totalItems'],
+            'x-pagination-current-page' => $expectedPagination['currentPage'],
+            'x-pagination-page-count' => $expectedPagination['totalPages'],
+            'x-pagination-per-page' => $expectedPagination['pageSize'],
+        ]);
+    }
+
+    public function testJson2(): void
+    {
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/json2');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -259,9 +311,58 @@ class DataTest extends TestCase
         ]);
     }
 
+    public function testFile2(): void
+    {
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/file2?_p=2&_s=5');
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $response->getBody()->buffer();
+        $content = \json_decode($content, true);
+
+        $this->assertArrayHasKey('data', $content);
+        $this->assertCount(5, $content['data']);
+
+        $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
+        $this->assertMatchesRegularExpression($uuidPattern, $content['data'][1]['id']);
+        $this->assertArrayHasKey('name', $content['data'][1]);
+
+        $this->assertArrayHasKey('pagination', $content);
+        $expectedPagination = [
+            'totalItems' => 30,
+            'currentPage' => 2,
+            'totalPages' => 6,
+            'pageSize' => 5,
+        ];
+        $this->assertEquals($expectedPagination, $content['pagination']);
+
+        $this->assertArrayHasKey('info', $content);
+        $expected = [
+            'X-Pagination-Total-Count' => $expectedPagination['totalItems'],
+            'X-Pagination-Current-Page' => $expectedPagination['currentPage'],
+            'X-Pagination-Page-Count' => $expectedPagination['totalPages'],
+            'X-Pagination-Per-Page' => $expectedPagination['pageSize'],
+        ];
+        $this->assertEquals($expected, $content['info']);
+
+        $this->assertHeaders($response->getHeaders(), [
+            'content-type' => 'application/json',
+            'x-pagination-total-count' => $expectedPagination['totalItems'],
+            'x-pagination-current-page' => $expectedPagination['currentPage'],
+            'x-pagination-page-count' => $expectedPagination['totalPages'],
+            'x-pagination-per-page' => $expectedPagination['pageSize'],
+        ]);
+    }
+
     public function testStatus(): void
     {
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/status');
+        $this->assertEquals(418, $response->getStatus());
+        $this->assertEquals('[]', $response->getBody()->buffer());
+    }
+
+    public function testStatus2(): void
+    {
+        $response = $this->HttpClient->request('http://127.0.0.1/response/data/status2');
         $this->assertEquals(418, $response->getStatus());
         $this->assertEquals('[]', $response->getBody()->buffer());
     }

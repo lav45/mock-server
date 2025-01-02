@@ -29,5 +29,35 @@
                 }
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/data/file2"
+        },
+        "response": {
+            "type": "data",
+            "headers": {
+                "X-Pagination-Total-Count": "{response.pagination.totalItems}",
+                "X-Pagination-Current-Page": "{response.pagination.currentPage}",
+                "X-Pagination-Page-Count": "{response.pagination.totalPages}",
+                "X-Pagination-Per-Page": "{response.pagination.pageSize}"
+            },
+            "pagination": {
+                "pageParam": "_p",
+                "pageSizeParam": "_s",
+                "defaultPageSize": 5
+            },
+            "file": "/app/test/Functional/mocks/response/data/__data/items.json",
+            "result": {
+                "data": "{{response.items}}",
+                "pagination": "{{response.pagination}}",
+                "info": {
+                    "X-Pagination-Total-Count": "{response.pagination.totalItems}",
+                    "X-Pagination-Current-Page": "{response.pagination.currentPage}",
+                    "X-Pagination-Page-Count": "{response.pagination.totalPages}",
+                    "X-Pagination-Per-Page": "{response.pagination.pageSize}"
+                }
+            }
+        }
     }
 ]

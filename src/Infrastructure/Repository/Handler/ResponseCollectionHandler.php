@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Infrastructure\Repository\Middleware;
+namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
@@ -16,35 +16,49 @@ use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 
-final readonly class CollectionMiddleware implements Middleware
+final readonly class ResponseCollectionHandler implements Handler
 {
+    public const string TYPE = 'data';
+
     public function __construct(
         private Parser          $parser,
         private LoggerInterface $logger,
     ) {}
 
-    public function handle(array $data, Request $request, \Closure $next): Response
+    private function getData(array $data): array
     {
         $response = ArrayHelper::getValue($data, 'response', []);
-        if (isset($response['data'])) {
-            return $this->createResponseCollection($response, $request);
+        if (isset($response['type']) && $response['type'] === self::TYPE) {
+            return $response;
         }
-        return $next($data, $request);
+        if (isset($response[self::TYPE])) { // TODO deprecated
+            $this->logger->info("Data:\n" . \json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+            $this->logger->warning("Option `response." . self::TYPE . "` is deprecated, you can use `response.type` = '" . self::TYPE . "' or run `upgrade` script.");
+
+            $result = $response[self::TYPE];
+            if (isset($response['delay'])) {
+                $result['delay'] = $response['delay'];
+            }
+            return $result;
+        }
+        throw new \InvalidArgumentException('Invalid data type!');
     }
 
-    private function createResponseCollection(array $data, Request $request): Response
+    public function handle(array $data, Request $request): Response
     {
+        $data = $this->getData($data);
+
         $start = new Response\Start($request->start);
 
         $delay = (new DelayFactory($this->parser))->create($data, 'delay');
 
-        $status = (new StatusFactory($this->parser))->create($data, 'data.status');
+        $status = (new StatusFactory($this->parser))->create($data, 'status');
 
-        $dataItems = (new ItemsFactory($this->parser))->from($data, 'data.json', 'data.file');
+        $dataItems = (new ItemsFactory($this->parser))->from($data, 'json', 'file');
 
-        $pageParam = ArrayHelper::getValue($data, 'data.pagination.pageParam', 'page');
-        $pageSizeParam = ArrayHelper::getValue($data, 'data.pagination.pageSizeParam', 'per-page');
-        $defaultPageSize = ArrayHelper::getValue($data, 'data.pagination.defaultPageSize', 20);
+        $pageParam = ArrayHelper::getValue($data, 'pagination.pageParam', 'page');
+        $pageSizeParam = ArrayHelper::getValue($data, 'pagination.pageSizeParam', 'per-page');
+        $defaultPageSize = ArrayHelper::getValue($data, 'pagination.defaultPageSize', 20);
 
         $pageSize = (int)ArrayHelper::getValue($request->get, $pageSizeParam, $defaultPageSize);
         $currentPage = (int)(ArrayHelper::getValue($request->get, $pageParam) ?: 1);
@@ -68,7 +82,7 @@ final readonly class CollectionMiddleware implements Middleware
 
         $parser = $this->parser->withData([
             'response' => [
-                'data' => [
+                'data' => [ // TODO deprecated
                     'items' => $items,
                     'pagination' => [
                         'totalItems' => $totalItems,
@@ -76,6 +90,13 @@ final readonly class CollectionMiddleware implements Middleware
                         'totalPages' => $totalPages,
                         'pageSize' => $pageSize,
                     ],
+                ],
+                'items' => $items,
+                'pagination' => [
+                    'totalItems' => $totalItems,
+                    'currentPage' => $currentPage,
+                    'totalPages' => $totalPages,
+                    'pageSize' => $pageSize,
                 ],
             ],
         ]);
@@ -86,10 +107,10 @@ final readonly class CollectionMiddleware implements Middleware
             withJson: true,
         ))->create(
             data: $data,
-            path: 'data.headers',
+            path: 'headers',
         );
 
-        $result = ArrayHelper::getValue($data, 'data.result', '{{response.data.items}}');
+        $result = ArrayHelper::getValue($data, 'result', '{{response.items}}');
         $result = $parser->replace($result);
         $body = Body::new($result);
 

@@ -11,5 +11,17 @@
                 }
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/content/headers2"
+        },
+        "response": {
+            "type": "content",
+            "headers": {
+                "X-Type": "content",
+                "X-Id": "100"
+            }
+        }
     }
 ]

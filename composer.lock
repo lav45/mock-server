@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ac8d774c670f789b3b1ee4ac6d46d92",
+    "content-hash": "bbef89ed7a15b74ae9e285fae3a32432",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1393,16 +1393,16 @@
         },
         {
             "name": "lav45/watcher",
-            "version": "1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lav45/watcher.git",
-                "reference": "c13e8cbecae48a5b0d345b7f598d0775b1c108d8"
+                "reference": "8ca02af7aa45f7854e659672fb75bbfa837ae290"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lav45/watcher/zipball/c13e8cbecae48a5b0d345b7f598d0775b1c108d8",
-                "reference": "c13e8cbecae48a5b0d345b7f598d0775b1c108d8",
+                "url": "https://api.github.com/repos/lav45/watcher/zipball/8ca02af7aa45f7854e659672fb75bbfa837ae290",
+                "reference": "8ca02af7aa45f7854e659672fb75bbfa837ae290",
                 "shasum": ""
             },
             "require": {
@@ -1412,7 +1412,13 @@
             "require-dev": {
                 "phpunit/phpunit": "11.*"
             },
+            "default-branch": true,
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Lav45\\Watcher\\": "src"
@@ -1437,9 +1443,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lav45/watcher/issues",
-                "source": "https://github.com/lav45/watcher/tree/1.0.0"
+                "source": "https://github.com/lav45/watcher/tree/master"
             },
-            "time": "2024-08-27T22:38:28+00:00"
+            "time": "2025-01-02T18:56:58+00:00"
         },
         {
             "name": "league/uri",
@@ -2463,7 +2469,8 @@
         "amphp/http-server-form-parser": 20,
         "amphp/log": 20,
         "amphp/socket": 20,
-        "amphp/sync": 20
+        "amphp/sync": 20,
+        "lav45/watcher": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

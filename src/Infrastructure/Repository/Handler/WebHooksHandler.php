@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Infrastructure\Repository\Middleware;
+namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Domain\Model\Response\Body;
 use Lav45\MockServer\Domain\Model\WebHook;
@@ -38,7 +38,7 @@ final readonly class WebHooksHandler
 
         $method = (new MethodFactory($this->parser))->create($item, 'method', 'POST');
 
-        $json = ArrayHelper::getValue($item, 'options.json'); // deprecated
+        $json = ArrayHelper::getValue($item, 'options.json'); // TODO deprecated
         if ($json === null) {
             $json = ArrayHelper::getValue($item, 'json');
         } else {
@@ -54,10 +54,10 @@ final readonly class WebHooksHandler
         ))->create(
             data: $item,
             path: 'headers',
-            optionPath: 'options.headers', // deprecated
+            optionPath: 'options.headers', // TODO deprecated
         );
 
-        $text = ArrayHelper::getValue($item, 'options.text'); // deprecated
+        $text = ArrayHelper::getValue($item, 'options.text'); // TODO deprecated
         if ($text === null) {
             $text = ArrayHelper::getValue($item, 'text');
         } else {

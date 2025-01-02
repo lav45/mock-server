@@ -1,6 +1,6 @@
 {
     "name": "lav45/mock-server",
-    "version": "3.1.0",
+    "version": "3.1.5",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [
@@ -32,12 +32,12 @@
         "amphp/http-server-form-parser": "2.x-dev",
         "amphp/byte-stream": "2.x-dev",
         "amphp/socket": "2.x-dev",
-        "nikic/fast-route": "v1.3.*",
-        "monolog/monolog": "3.8.*",
-        "fakerphp/faker": "v1.24.*",
-        "yiisoft/data": "1.0.*",
-        "psr/log": "3.0.*",
-        "lav45/watcher": "1.0.*"
+        "nikic/fast-route": "^v1.3",
+        "monolog/monolog": "^3.8",
+        "fakerphp/faker": "^v1.24",
+        "yiisoft/data": "^1.0",
+        "psr/log": "^3.0",
+        "lav45/watcher": "1.0.x-dev"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8"

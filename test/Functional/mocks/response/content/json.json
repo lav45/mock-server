@@ -17,5 +17,23 @@
                 }
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/content/json2"
+        },
+        "env": {
+            "uuid": "{{faker.uuid}}",
+            "value": 1.2
+        },
+        "response": {
+            "type": "content",
+            "json": {
+                "id": "{env.uuid}/{faker.uuid}",
+                "domain": "{{env.DOMAIN}}",
+                "url": "https://{env.DOMAIN}/v1",
+                "value": "{{env.value}}"
+            }
+        }
     }
 ]

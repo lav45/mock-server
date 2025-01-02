@@ -11,5 +11,17 @@
                 "text": "OK"
             }
         }
+    },
+    {
+        "request": {
+            "url": "/response/content/text2"
+        },
+        "response": {
+            "type": "content",
+            "headers": {
+                "content-type": "text/plain; charset=utf-8"
+            },
+            "text": "OK"
+        }
     }
 ]
