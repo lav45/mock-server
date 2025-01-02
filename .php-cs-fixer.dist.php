@@ -40,6 +40,11 @@ $config = (new \PhpCsFixer\Config('mock-server'))
         'psr_autoloading' => ['dir' => __DIR__ . '/src'],
         'return_type_declaration' => ['space_before' => 'none'],
         'short_scalar_cast' => true,
+        'global_namespace_import' => [
+            'import_classes' => false,
+            'import_functions' => false,
+            'import_constants' => false,
+        ],
     ]);
 
 $config->getFinder()

@@ -3,7 +3,6 @@
 namespace Lav45\MockServer\Infrastructure\Service;
 
 use Amp\Http\Client\Response;
-use Closure;
 
 interface HttpClientInterface
 {
@@ -15,7 +14,7 @@ interface HttpClientInterface
     ): Response;
 
     /**
-     * @param Closure $message => fn (Request $request, Response $response): string { ... }
+     * @param \Closure $message => fn (Request $request, Response $response): string { ... }
      */
-    public function withLogMessage(Closure $message): self;
+    public function withLogMessage(\Closure $message): self;
 }

@@ -6,12 +6,11 @@ use Amp\Http\Client\HttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Http\HttpStatus;
-use Closure;
 use Psr\Log\LoggerInterface;
 
 final class HttpClient implements HttpClientInterface
 {
-    private Closure|null $logMessage = null;
+    private \Closure|null $logMessage = null;
 
     public function __construct(
         private readonly Client          $client,
@@ -55,9 +54,9 @@ final class HttpClient implements HttpClientInterface
     }
 
     /**
-     * @param Closure $message => fn (Request $request, Response $response): string { ... }
+     * @param \Closure $message => fn (Request $request, Response $response): string { ... }
      */
-    public function withLogMessage(Closure $message): self
+    public function withLogMessage(\Closure $message): self
     {
         $new = clone $this;
         $new->logMessage = $message;

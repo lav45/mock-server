@@ -4,7 +4,6 @@ namespace Lav45\MockServer\Presenter\Service;
 
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request as HttpRequest;
-use RuntimeException;
 
 /**
  * @mixin HttpRequest
@@ -24,7 +23,7 @@ final class Request
         if (\method_exists($this->request, $name)) {
             return \call_user_func_array([$this->request, $name], $args);
         }
-        throw new RuntimeException('Calling unknown method: ' . self::class . "::{$name}()");
+        throw new \RuntimeException('Calling unknown method: ' . self::class . "::{$name}()");
     }
 
     public function getUrlParams(): array

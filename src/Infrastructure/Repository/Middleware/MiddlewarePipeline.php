@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Infrastructure\Repository\Middleware;
 
-use Closure;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
 
@@ -19,7 +18,7 @@ final readonly class MiddlewarePipeline
     {
         $chain = \array_reduce(
             \array_reverse($this->middlewares),
-            static function (Closure $next, Middleware $middleware): Closure {
+            static function (\Closure $next, Middleware $middleware): \Closure {
                 return static fn($data, Request $request): Response => $middleware->handle($data, $request, $next);
             },
             static function () {

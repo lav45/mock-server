@@ -2,8 +2,6 @@
 
 namespace Lav45\MockServer\Infrastructure\Component;
 
-use Closure;
-
 final class ArrayHelper
 {
     public static function getValue(
@@ -22,7 +20,7 @@ final class ArrayHelper
         return $data;
     }
 
-    public static function map(array $data, Closure $fn): array
+    public static function map(array $data, \Closure $fn): array
     {
         $result = [];
         foreach ($data as $key => $value) {

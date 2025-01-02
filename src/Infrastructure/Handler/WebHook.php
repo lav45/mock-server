@@ -8,7 +8,6 @@ use Lav45\MockServer\Application\Query\Request\WebHook as WebHookInterface;
 use Lav45\MockServer\Domain\Model\WebHook as WebHookItem;
 use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 
 use function Amp\async;
 use function Amp\delay;
@@ -48,7 +47,7 @@ final readonly class WebHook implements WebHookInterface
                 headers: $webHook->headers->toArray(),
             );
         } // @codeCoverageIgnoreStart
-        catch (RuntimeException $exception) {
+        catch (\RuntimeException $exception) {
             $this->logger->error($exception->getMessage());
         } // @codeCoverageIgnoreEnd
     }

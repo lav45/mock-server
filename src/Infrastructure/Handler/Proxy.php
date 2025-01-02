@@ -9,7 +9,6 @@ use Lav45\MockServer\Application\Query\Request\Response;
 use Lav45\MockServer\Application\Query\Request\ResponseHandler;
 use Lav45\MockServer\Domain\Model\Response\Proxy as ProxyEntity;
 use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
-use Throwable;
 
 final readonly class Proxy implements ResponseHandler
 {
@@ -35,7 +34,7 @@ final readonly class Proxy implements ResponseHandler
             );
             $responseBody = $response->getBody()->read() ?: '';
         } // @codeCoverageIgnoreStart
-        catch (Throwable $exception) {
+        catch (\Throwable $exception) {
             return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
                 body: $exception->getMessage(),

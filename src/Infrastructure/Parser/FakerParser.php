@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Infrastructure\Parser;
 
-use DateTime;
 use Faker\Generator;
 
 final readonly class FakerParser implements Parser
@@ -33,7 +32,7 @@ final readonly class FakerParser implements Parser
         $arguments = isset($matches[3]) ? $this->parseArgs($matches[3]) : [];
         $result = $this->faker->format($format, $arguments);
 
-        if ($result instanceof DateTime) {
+        if ($result instanceof \DateTime) {
             $func = [$result, $matches[5]];
             $args = $this->parseArgs($matches[6]);
             return \call_user_func_array($func, $args);

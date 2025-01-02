@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Infrastructure\Repository\Middleware;
 
-use Closure;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
 use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
@@ -18,7 +17,7 @@ final readonly class ContentMiddleware implements Middleware
         private Parser $parser,
     ) {}
 
-    public function handle(array $data, Request $request, Closure $next): Response
+    public function handle(array $data, Request $request, \Closure $next): Response
     {
         $response = ArrayHelper::getValue($data, 'response', []);
         return $this->createResponseContent($response, $request);
