@@ -33,7 +33,7 @@ final readonly class RequestFactory implements RequestFactoryInterface
     {
         $env = ArrayHelper::getValue($mock, 'env', []);
         $parserFactory = new ParserFactory($this->faker, $env);
-        $repository = new Repository($parserFactory, $mock);
+        $repository = new Repository($parserFactory, $this->logger, $mock);
 
         return new Request(
             repository: $repository,

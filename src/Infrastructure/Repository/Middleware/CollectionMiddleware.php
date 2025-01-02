@@ -11,6 +11,7 @@ use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\ItemsFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\StatusFactory;
+use Psr\Log\LoggerInterface;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
@@ -18,7 +19,8 @@ use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 final readonly class CollectionMiddleware implements Middleware
 {
     public function __construct(
-        private Parser $parser,
+        private Parser          $parser,
+        private LoggerInterface $logger,
     ) {}
 
     public function handle(array $data, Request $request, \Closure $next): Response
@@ -80,6 +82,7 @@ final readonly class CollectionMiddleware implements Middleware
 
         $headers = (new HeadersFactory(
             parser: $parser,
+            logger: $this->logger,
             withJson: true,
         ))->create(
             data: $data,

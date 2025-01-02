@@ -12,11 +12,13 @@ use Lav45\MockServer\Infrastructure\Repository\Factory\BodyFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\UrlFactory;
+use Psr\Log\LoggerInterface;
 
 final readonly class ProxyMiddleware implements Middleware
 {
     public function __construct(
-        private Parser $parser,
+        private Parser          $parser,
+        private LoggerInterface $logger,
     ) {}
 
     public function handle(array $data, Request $request, \Closure $next): Response
@@ -42,12 +44,13 @@ final readonly class ProxyMiddleware implements Middleware
 
         $headers = (new HeadersFactory(
             parser: $this->parser,
+            logger: $this->logger,
             withJson: $withJson,
             appendHeaders: $request->headers,
         ))->create(
             data: $data,
             path: 'proxy.headers',
-            optionPath: 'proxy.options.headers',
+            optionPath: 'proxy.options.headers', // deprecated
         );
 
         if (isset($data['proxy']['content'])) {

@@ -10,21 +10,23 @@ use Lav45\MockServer\Infrastructure\Repository\Middleware\ContentMiddleware;
 use Lav45\MockServer\Infrastructure\Repository\Middleware\MiddlewarePipeline;
 use Lav45\MockServer\Infrastructure\Repository\Middleware\ProxyMiddleware;
 use Lav45\MockServer\Infrastructure\Repository\Middleware\WebHooksHandler;
+use Psr\Log\LoggerInterface;
 
 final readonly class DataMapper
 {
     public function __construct(
-        private Parser $parser,
+        private Parser          $parser,
+        private LoggerInterface $logger,
     ) {}
 
     public function toModel(array $data, Request $request): Mock
     {
-        $webHooks = (new WebHooksHandler($this->parser))->handle($data);
+        $webHooks = (new WebHooksHandler($this->parser, $this->logger))->handle($data);
 
         $response = (new MiddlewarePipeline(
-            new ProxyMiddleware($this->parser),
-            new CollectionMiddleware($this->parser),
-            new ContentMiddleware($this->parser),
+            new ProxyMiddleware($this->parser, $this->logger),
+            new CollectionMiddleware($this->parser, $this->logger),
+            new ContentMiddleware($this->parser, $this->logger),
         ))->handle($data, $request);
 
         return new Mock(

@@ -104,6 +104,7 @@ final class Watcher implements WatcherInterface
         foreach ($files as $file) {
             try {
                 $result[$file] = $this->parseFile($file);
+                $this->logger->debug("Parse: {$file}");
             } catch (\Throwable $exception) {
                 $this->logger->error($exception);
                 continue;

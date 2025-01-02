@@ -10,11 +10,13 @@ use Lav45\MockServer\Infrastructure\Repository\Factory\BodyFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\StatusFactory;
+use Psr\Log\LoggerInterface;
 
 final readonly class ContentMiddleware implements Middleware
 {
     public function __construct(
-        private Parser $parser,
+        private Parser          $parser,
+        private LoggerInterface $logger,
     ) {}
 
     public function handle(array $data, Request $request, \Closure $next): Response
@@ -33,6 +35,7 @@ final readonly class ContentMiddleware implements Middleware
 
         $headers = (new HeadersFactory(
             parser: $this->parser,
+            logger: $this->logger,
             withJson: isset($data['content']['json']),
         ))->create(
             data: $data,

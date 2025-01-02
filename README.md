@@ -43,30 +43,37 @@ Create mock file `./mocks/index.json` and put the content in it
 ]
 ```
 
-Run the Mock Server
+### Run the Mock Server
 
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
-Checking
+### Checking
 
 ```shell
 curl http://127.0.0.1:8080/
 ```
 
-Build containers
+### Upgrade mocks data
+
+```shell
+docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest bin/upgrade
+```
+
+## Build containers
+
 ```shell
 ./build.sh
 ```
 
-Run in development mode
+## Run in development mode
 
 ```shell
-docker run --rm -it -v $(pwd):/app -p 8080:8080 -e DEBUG=1 mock-server-prod:latest
+docker run --rm -it -v $(pwd):/app -p 8080:8080 -e DEBUG=1 -e LOG_LEVEL=debug mock-server-prod:latest
 ```
 
-Testing
+## Testing
 
 ```shell
 ./composer test

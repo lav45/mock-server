@@ -6,6 +6,7 @@ RUN mkdir /app
 COPY mock-server.php /app
 COPY vendor /app/vendor
 COPY src /app/src
+COPY migrates /app/migrates
 
 ARG DEBUG
 WORKDIR /app

@@ -1,0 +1,54 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+namespace Lav45\MockServer\Bin;
+
+$mocksPath = getenv('MOCKS_PATH') ?: '/app/mocks';
+$mocksPath = rtrim($mocksPath, '/');
+
+$migratePath = __DIR__ . '/../migrates';
+
+$jsonEncodeFlags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR;
+
+// ----------------------------------------------------------------------------
+
+$migrateList = scanDir($migratePath, static function (string $filename): bool {
+    return \str_ends_with($filename, '.php');
+});
+$migrates = [];
+foreach ($migrateList as $file) {
+    $migrates[] = include $file;
+}
+
+$mocksList = scanDir($mocksPath, static function (string $filename): bool {
+    return \str_ends_with($filename, '.json')
+        && \str_starts_with($filename, '.') === false;
+});
+
+foreach ($mocksList as $path) {
+    $data = \json_decode(\file_get_contents($path), true);
+    $result = [];
+    foreach ($data as $item) {
+        foreach ($migrates as $migrate) {
+            $result[] = $migrate($item);
+        }
+    }
+    if ($data !== $result) {
+        \file_put_contents($path, \json_encode($result, $jsonEncodeFlags));
+        echo '.';
+    }
+}
+
+function scanDir(string $baseDir, \Closure $checker): iterable
+{
+    $items = \glob($baseDir . '/*');
+    foreach ($items as $path) {
+        if (\is_dir($path)) {
+            yield from scanDir($path, $checker);
+        } elseif (\is_file($path) && $checker(\basename($path))) {
+            yield $path;
+        }
+    }
+}
+
+echo "\n";
