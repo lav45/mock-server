@@ -19,8 +19,7 @@ final readonly class EnvParser implements Parser
 
     public function withData(array $data): self
     {
-        $data = \array_merge_recursive($this->data, $data);
-        return new self($data);
+        return $this;
     }
 
     public function replace(mixed $data): mixed

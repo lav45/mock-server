@@ -19,10 +19,10 @@ final readonly class ParserFactory
 
         $envParser = new EnvParser();
         $env = $envParser->replace($env);
-        $envParser = $envParser->withData($env);
 
         $paramParser = new ParamParser([
             'request' => (array)$request,
+            'env' => $env,
         ]);
 
         return new GroupParser(
