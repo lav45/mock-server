@@ -5,6 +5,8 @@ set -e
 docker build --pull -f docker/base.Dockerfile -t mock-server-base .
 docker build -f docker/dev.Dockerfile -t mock-server-dev .
 
-./composer install --prefer-dist --ansi
+./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-dev --ansi
 
 docker build -f docker/prod.Dockerfile -t mock-server-prod .
+
+./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --ansi
