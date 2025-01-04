@@ -11,13 +11,11 @@ use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\MethodFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\UrlFactory;
-use Psr\Log\LoggerInterface;
 
 final readonly class WebHooksHandler
 {
     public function __construct(
-        private Parser          $parser,
-        private LoggerInterface $logger,
+        private Parser $parser,
     ) {}
 
     public function handle(array $data): WebHooks
@@ -38,32 +36,18 @@ final readonly class WebHooksHandler
 
         $method = (new MethodFactory($this->parser))->create($item, 'method', 'POST');
 
-        $json = ArrayHelper::getValue($item, 'options.json'); // TODO deprecated
-        if ($json === null) {
-            $json = ArrayHelper::getValue($item, 'json');
-        } else {
-            $this->logger->info("Data:\n" . \json_encode($item, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
-            $this->logger->warning("Option 'options.json' is deprecated, you can use 'json' or run `upgrade` script.");
-        }
+        $json = ArrayHelper::getValue($item, 'json');
         $json = $this->parser->replace($json);
 
         $headers = (new HeadersFactory(
             parser: $this->parser,
-            logger: $this->logger,
             withJson: isset($json),
         ))->create(
             data: $item,
             path: 'headers',
-            optionPath: 'options.headers', // TODO deprecated
         );
 
-        $text = ArrayHelper::getValue($item, 'options.text'); // TODO deprecated
-        if ($text === null) {
-            $text = ArrayHelper::getValue($item, 'text');
-        } else {
-            $this->logger->info("Data:\n" . \json_encode($item, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
-            $this->logger->warning("Option 'options.text' is deprecated, you can use 'text' or run `upgrade` script.");
-        }
+        $text = ArrayHelper::getValue($item, 'text');
         $text = $this->parser->replace($text);
 
         if ($json) {

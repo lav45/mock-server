@@ -8,74 +8,6 @@
             "url": "http://127.0.0.1:8000"
         },
         "response": {
-            "proxy": {
-                "url": "{env.url}/content?n=1",
-                "content": [
-                    {
-                        "id": 1,
-                        "name": "name 1"
-                    },
-                    {
-                        "id": 2,
-                        "name": "name 2"
-                    },
-                    {
-                        "id": 3,
-                        "name": "name 3"
-                    },
-                    {
-                        "id": 4,
-                        "name": "name 4"
-                    },
-                    {
-                        "id": 5,
-                        "name": "name 5"
-                    },
-                    {
-                        "id": 6,
-                        "name": "name 6"
-                    }
-                ]
-            }
-        }
-    },
-    {
-        "request": {
-            "method": "POST",
-            "url": "/response/proxy/string-content"
-        },
-        "response": {
-            "proxy": {
-                "url": "{env.URL}/content",
-                "content": "{\"id\": 100}"
-            }
-        }
-    },
-    {
-        "request": {
-            "method": "POST",
-            "url": "/response/proxy/faker-content"
-        },
-        "response": {
-            "proxy": {
-                "url": "{env.URL}/content",
-                "content": {
-                    "company": {
-                        "id": "{{faker.uuid}}"
-                    }
-                }
-            }
-        }
-    },
-    {
-        "request": {
-            "method": "POST",
-            "url": "/response/proxy/array-content2"
-        },
-        "env": {
-            "url": "http://127.0.0.1:8000"
-        },
-        "response": {
             "type": "proxy",
             "url": "{env.url}/content?n=1",
             "content": [
@@ -109,7 +41,7 @@
     {
         "request": {
             "method": "POST",
-            "url": "/response/proxy/string-content2"
+            "url": "/response/proxy/string-content"
         },
         "response": {
             "type": "proxy",
@@ -120,7 +52,7 @@
     {
         "request": {
             "method": "POST",
-            "url": "/response/proxy/faker-content2"
+            "url": "/response/proxy/faker-content"
         },
         "response": {
             "type": "proxy",
@@ -141,11 +73,10 @@
             "url": "/response/proxy/{path:.+}"
         },
         "response": {
-            "proxy": {
-                "url": "{env.URL}/{request.urlParams.path}",
-                "headers": {
-                    "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
-                }
+            "type": "proxy",
+            "url": "{env.URL}/{request.urlParams.path}",
+            "headers": {
+                "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
             }
         }
     }

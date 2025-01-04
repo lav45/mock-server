@@ -7,21 +7,19 @@ use Lav45\MockServer\Domain\Model\Mock;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
 use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseHandlerFactory;
 use Lav45\MockServer\Infrastructure\Repository\Handler\WebHooksHandler;
-use Psr\Log\LoggerInterface;
 
 final readonly class DataMapper
 {
     public function __construct(
-        private Parser          $parser,
-        private LoggerInterface $logger,
+        private Parser $parser,
     ) {}
 
     public function toModel(array $data, Request $request): Mock
     {
-        $webHooks = (new WebHooksHandler($this->parser, $this->logger))->handle($data);
+        $webHooks = (new WebHooksHandler($this->parser))->handle($data);
 
         $response = ResponseHandlerFactory::fromData($data)
-            ->create($this->parser, $this->logger)
+            ->create($this->parser)
             ->handle($data, $request);
 
         return new Mock(

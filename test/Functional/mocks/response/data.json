@@ -4,14 +4,6 @@
             "url": "/response/data"
         },
         "response": {
-            "data": {}
-        }
-    },
-    {
-        "request": {
-            "url": "/response/data2"
-        },
-        "response": {
             "type": "data"
         }
     }

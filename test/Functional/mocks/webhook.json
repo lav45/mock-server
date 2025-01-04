@@ -98,15 +98,13 @@
             },
             {
                 "url": "{{env.webhook.url}}",
-                "options": {
-                    "headers": {
-                        "X-API-Token": "{{env.webhook.token}}"
-                    },
-                    "json": {
-                        "id": "{{faker.bothify('TEST####')}}",
-                        "correlationId": "{{env.correlationId}}",
-                        "uuid": "{{env.uuid}}"
-                    }
+                "json": {
+                    "id": "{{faker.bothify('TEST####')}}",
+                    "correlationId": "{{env.correlationId}}",
+                    "uuid": "{{env.uuid}}"
+                },
+                "headers": {
+                    "X-API-Token": "{{env.webhook.token}}"
                 }
             },
             {
@@ -114,9 +112,7 @@
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "options": {
-                    "text": "{\"text\": \"OK\"}"
-                }
+                "text": "{\"text\": \"OK\"}"
             }
         ]
     }

@@ -10,39 +10,18 @@ use Lav45\MockServer\Infrastructure\Repository\Factory\BodyFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
 use Lav45\MockServer\Infrastructure\Repository\Factory\StatusFactory;
-use Psr\Log\LoggerInterface;
 
 final readonly class ResponseContentHandler implements Handler
 {
     public const string TYPE = 'content';
 
     public function __construct(
-        private Parser          $parser,
-        private LoggerInterface $logger,
+        private Parser $parser,
     ) {}
-
-    private function getData(array $data): array
-    {
-        $response = ArrayHelper::getValue($data, 'response', []);
-        if (isset($response['type']) && $response['type'] === self::TYPE) {
-            return $response;
-        }
-        if (isset($response[self::TYPE])) { // TODO deprecated
-            $this->logger->info("Data:\n" . \json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
-            $this->logger->warning("Option `response." . self::TYPE . "` is deprecated, you can use `response.type` = '" . self::TYPE . "' or run `upgrade` script.");
-
-            $result = $response[self::TYPE];
-            if (isset($response['delay'])) {
-                $result['delay'] = $response['delay'];
-            }
-            return $result;
-        }
-        return $response;
-    }
 
     public function handle(array $data, Request $request): Response
     {
-        $data = $this->getData($data);
+        $data = ArrayHelper::getValue($data, 'response', []);
 
         $start = new Response\Start($request->start);
 
@@ -52,7 +31,6 @@ final readonly class ResponseContentHandler implements Handler
 
         $headers = (new HeadersFactory(
             parser: $this->parser,
-            logger: $this->logger,
             withJson: isset($data['json']),
         ))->create(
             data: $data,
