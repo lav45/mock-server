@@ -55,7 +55,7 @@ curl http://127.0.0.1:8080/
 ### Upgrade mocks data
 
 ```shell
-docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest bin/upgrade
+docker run --rm -it -v $(pwd)/mocks:/app/mocks -e MOCKS_PATH=/app/mocks lav45/mock-server:latest bin/upgrade
 ```
 
 ## Build containers
