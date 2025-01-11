@@ -4,28 +4,25 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 final readonly class GroupParser implements Parser
 {
-    /** @var Parser[] */
-    private array $parsers;
-
-    public function __construct(Parser ...$parser)
-    {
-        $this->parsers = $parser;
-    }
+    public function __construct(
+        private EnvParser   $envParser,
+        private FakerParser $fakerParser,
+        private ParamParser $paramParser,
+    ) {}
 
     public function replace(mixed $data): mixed
     {
-        foreach ($this->parsers as $parser) {
-            $data = $parser->replace($data);
-        }
-        return $data;
+        $data = $this->envParser->replace($data);
+        $data = $this->fakerParser->replace($data);
+        return $this->paramParser->replace($data);
     }
 
     public function withData(array $data): self
     {
-        $items = [];
-        foreach ($this->parsers as $parser) {
-            $items[] = $parser->withData($data);
-        }
-        return new self(...$items);
+        return new self(
+            $this->envParser,
+            $this->fakerParser,
+            $this->paramParser->withData($data),
+        );
     }
 }

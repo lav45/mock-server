@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
-final readonly class ParamParser implements Parser
+final readonly class ParamParser
 {
     private ParserHelper $parser;
 

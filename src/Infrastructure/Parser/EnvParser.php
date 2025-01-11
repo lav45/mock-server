@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
-final readonly class EnvParser implements Parser
+final readonly class EnvParser
 {
     private ParserHelper $parser;
 
@@ -15,11 +15,6 @@ final readonly class EnvParser implements Parser
             pattern: 'env\.([.\w]+)',
             value: fn(array $matches) => $this->getValue($matches),
         );
-    }
-
-    public function withData(array $data): self
-    {
-        return $this;
     }
 
     public function replace(mixed $data): mixed

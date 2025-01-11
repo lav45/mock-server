@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Faker\Generator;
 
-final readonly class FakerParser implements Parser
+final readonly class FakerParser
 {
     private ParserHelper $parser;
 
@@ -14,11 +14,6 @@ final readonly class FakerParser implements Parser
             pattern: 'faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?',
             value: fn(array $matches) => $this->getValue($matches),
         );
-    }
-
-    public function withData(array $data): self
-    {
-        return $this;
     }
 
     public function replace(mixed $data): mixed
