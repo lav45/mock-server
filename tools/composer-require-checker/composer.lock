@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/maglnet/ComposerRequireChecker.git",
-                "reference": "f0f86e4ec89bff6ad79cd7790317f4e69bba8e17"
+                "reference": "5109aed7b4695e6d772c4e748030c92da69a7f81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maglnet/ComposerRequireChecker/zipball/f0f86e4ec89bff6ad79cd7790317f4e69bba8e17",
-                "reference": "f0f86e4ec89bff6ad79cd7790317f4e69bba8e17",
+                "url": "https://api.github.com/repos/maglnet/ComposerRequireChecker/zipball/5109aed7b4695e6d772c4e748030c92da69a7f81",
+                "reference": "5109aed7b4695e6d772c4e748030c92da69a7f81",
                 "shasum": ""
             },
             "require": {
@@ -34,11 +34,11 @@
                 "doctrine/coding-standard": "^12.0.0",
                 "ext-zend-opcache": "*",
                 "phing/phing": "^2.17.4",
-                "phpstan/phpstan": "^1.12.14",
-                "phpunit/phpunit": "^10.5.40",
+                "phpstan/phpstan": "^1.12.16",
+                "phpunit/phpunit": "^10.5.41",
                 "psalm/plugin-phpunit": "^0.19.0",
                 "roave/infection-static-analysis-plugin": "^1.35.0",
-                "spatie/temporary-directory": "^2.2.1",
+                "spatie/temporary-directory": "^2.3.0",
                 "vimeo/psalm": "^5.26.1"
             },
             "default-branch": true,
@@ -85,9 +85,9 @@
             ],
             "support": {
                 "issues": "https://github.com/maglnet/ComposerRequireChecker/issues",
-                "source": "https://github.com/maglnet/ComposerRequireChecker/tree/4.15.x"
+                "source": "https://github.com/maglnet/ComposerRequireChecker/tree/4.15.0"
             },
-            "time": "2025-01-01T02:23:23+00:00"
+            "time": "2025-01-28T06:35:41+00:00"
         },
         {
             "name": "nikic/php-parser",
