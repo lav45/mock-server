@@ -51,6 +51,12 @@ jobs:
           build-args: REGISTRY=${{ env.REGISTRY }}
           tags: ${{ env.REGISTRY }}mock-server-dev:latest
 
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
       - name: Install composer dependencies
         run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --no-dev --ansi
 
