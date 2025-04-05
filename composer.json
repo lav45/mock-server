@@ -33,7 +33,7 @@
         "amphp/byte-stream": "2.x-dev",
         "amphp/socket": "2.x-dev",
         "nikic/fast-route": "^v1.3",
-        "monolog/monolog": "^3.8",
+        "monolog/monolog": "^3.9",
         "fakerphp/faker": "^v1.24",
         "yiisoft/data": "^1.0",
         "psr/log": "^3.0",
