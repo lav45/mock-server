@@ -1,7 +1,7 @@
 {
     "require-dev": {
         "ext-posix": "*",
-        "phpunit/phpunit": "11.*",
-        "phpunit/php-code-coverage": "11.*"
+        "phpunit/phpunit": "^12",
+        "phpunit/php-code-coverage": "^12"
     }
 }
