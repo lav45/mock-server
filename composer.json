@@ -20,6 +20,7 @@
     ],
     "require": {
         "php": ">=8.4",
+        "ext-intl": "*",
         "ext-pcntl": "*",
         "ext-filter": "*",
         "ext-inotify": "*",
@@ -61,6 +62,7 @@
         "unused": "vendor/bin/composer-unused",
         "deptrac": "vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
         "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix",
+        "psalm": "vendor/bin/psalm",
         "test": [
             "@check",
             "@deptrac",

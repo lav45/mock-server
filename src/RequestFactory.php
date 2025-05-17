@@ -21,12 +21,12 @@ final readonly class RequestFactory implements RequestFactoryInterface
     private ResponseFabric $responseFabric;
 
     public function __construct(
-        private Faker           $faker,
-        private HttpClient      $httpClient,
-        private LoggerInterface $logger,
+        private Faker   $faker,
+        HttpClient      $httpClient,
+        LoggerInterface $logger,
     ) {
-        $this->webHookHandler = new WebHookHandler($this->logger, $this->httpClient);
-        $this->responseFabric = new ResponseFabricHandler($this->httpClient);
+        $this->webHookHandler = new WebHookHandler($logger, $httpClient);
+        $this->responseFabric = new ResponseFabricHandler($httpClient);
     }
 
     public function create(array $mock): Request

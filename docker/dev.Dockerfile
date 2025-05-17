@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     php84-xml \
     php84-xmlwriter \
     php84-xdebug \
-    php84-posix
+    php84-posix \
+    php84-simplexml
 
 RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 
