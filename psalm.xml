@@ -1,16 +1,27 @@
 <?xml version="1.0"?>
 <psalm
     errorLevel="1"
+    ensureOverrideAttribute="false"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
+    findUnusedVariablesAndParams="true"
+    findUnusedPsalmSuppress="true"
+    resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config tools/psalm/vendor/vimeo/psalm/config.xsd"
     cacheDirectory=".cache"
 >
     <projectFiles>
-        <directory name="bin" />
         <file name="bin/mock-server" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <MixedAssignment errorLevel="suppress" />
+        <RiskyTruthyFalsyComparison errorLevel="suppress" />
+        <MissingClassConstType errorLevel="suppress" />
+        <ClassMustBeFinal errorLevel="suppress" />
+    </issueHandlers>
 </psalm>
