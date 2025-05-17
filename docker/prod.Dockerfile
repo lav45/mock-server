@@ -1,7 +1,7 @@
 ARG REGISTRY
 FROM ${REGISTRY}mock-server-base:latest
 
-RUN mkdir /app
+RUN mkdir -p /app/mocks
 
 COPY bin /app/bin
 COPY vendor /app/vendor

@@ -20,6 +20,7 @@
     ],
     "require": {
         "php": ">=8.4",
+        "ext-intl": "*",
         "ext-pcntl": "*",
         "ext-filter": "*",
         "ext-inotify": "*",
@@ -55,12 +56,13 @@
         }
     },
     "scripts": {
-        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 vendor/bin/phpunit",
-        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 XDEBUG_MODE=coverage php -d zend.assertions=1 -d opcache.enable_cli=off -d zend_extension=xdebug.so vendor/bin/phpunit --coverage-html test/coverage",
-        "check": "vendor/bin/composer-require-checker check",
-        "unused": "vendor/bin/composer-unused",
-        "deptrac": "vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix",
+        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off vendor/bin/phpunit",
+        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
+        "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
+        "check": "php -d opcache.enable_cli=off vendor/bin/composer-require-checker check",
+        "unused": "php -d opcache.enable_cli=off vendor/bin/composer-unused",
+        "deptrac": "php -d opcache.enable_cli=off vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
+        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php -d opcache.enable_cli=off vendor/bin/php-cs-fixer fix",
         "test": [
             "@check",
             "@deptrac",

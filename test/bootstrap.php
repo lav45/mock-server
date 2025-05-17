@@ -3,7 +3,7 @@
 require(__DIR__ . '/../vendor/autoload.php');
 
 // Fake proxy server
-Amp\async(function () {
+Amp\async(static function () {
     (new Lav45\MockServer\Test\Functional\Server(
         port: 8000,
         logLevel: 'error',
@@ -11,11 +11,12 @@ Amp\async(function () {
 });
 
 // Test mock server
-Amp\async(function () {
-    (new Lav45\MockServer\Server(
-        port: 80,
-        mocksPath: '/app/test/Functional/mocks',
-        logLevel: 'error',
-        fileWatchTimeout: 0,
-    ))->start();
+Amp\async(static function () {
+    $config = (new Lav45\MockServer\Config())
+        ->listen(port: 80)
+        ->mocks('/app/test/Functional/mocks')
+        ->log('error')
+        ->fileWatch(0);
+
+    (new Lav45\MockServer\Server($config))->start();
 });
