@@ -91,3 +91,12 @@ jobs:
       - run: ./composer deptrac
       - run: ./composer phpunit
       - run: ./composer unused
+
+      - name: Run tests with phpunit and code coverage
+        run: ./composer codecov
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml

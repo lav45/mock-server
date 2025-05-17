@@ -7,11 +7,13 @@ RUN apk add --no-cache \
     php84-zip \
     php84-xml \
     php84-xmlwriter \
-    php84-xdebug \
+    php84-pecl-pcov \
     php84-posix
 
-RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
+RUN wget https://getcomposer.org/installer -O - | php -d opcache.enable_cli=off -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
-ENTRYPOINT ["php", "-d", "opcache.enable_cli=off", "-d", "zend_extension=xdebug.so"]
+
+ENTRYPOINT ["php", "-d", "opcache.enable_cli=off"]
+
 CMD ["/app/bin/mock-server"]

@@ -4,3 +4,4 @@
 vendor
 phpunit.xml
 .draft
+coverage.xml
