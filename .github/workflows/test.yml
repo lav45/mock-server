@@ -5,6 +5,7 @@ on:
     branches:
       - '**'
     paths:
+      - .github/workflows/test.yml
       - docker/base.Dockerfile
       - docker/dev.Dockerfile
       - src/**
@@ -16,6 +17,7 @@ on:
       - phpunit.xml.dist
   pull_request:
     paths:
+      - .github/workflows/test.yml
       - docker/base.Dockerfile
       - docker/dev.Dockerfile
       - src/**
@@ -78,18 +80,17 @@ jobs:
           path: ./vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('./composer.lock') }}
 
-      - name: Install composer with dev dependencies
-        run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --ansi
-
       - name: Cache tools
         uses: actions/cache@v4
         with:
           path: ./tools
-          key: ${{ runner.os }}-tools-${{ hashFiles('./tools/**/composer.lock') }}
+          key: ${{ runner.os }}-tools-${{ hashFiles('./tools/*/composer.lock') }}
+
+      - name: Install composer with dev dependencies
+        run: ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --ansi
 
       - run: ./composer check
       - run: ./composer deptrac
-      - run: ./composer phpunit
       - run: ./composer unused
 
       - name: Run tests with phpunit and code coverage
