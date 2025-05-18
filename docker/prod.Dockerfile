@@ -9,6 +9,9 @@ COPY src /app/src
 COPY migrates /app/migrates
 
 ARG DEBUG
+
 WORKDIR /app
-ENTRYPOINT ["php", "-d", "zend.assertions=${DEBUG:-0}"]
+
+ENTRYPOINT ["php", "-d", "zend.assertions=${DEBUG:-0}", "-d", "opcache.enable_cli=on"]
+
 CMD ["/app/bin/mock-server"]

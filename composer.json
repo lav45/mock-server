@@ -1,6 +1,6 @@
 {
     "name": "lav45/mock-server",
-    "version": "3.2.3",
+    "version": "3.2.4",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [
@@ -56,18 +56,18 @@
         }
     },
     "scripts": {
-        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off vendor/bin/phpunit",
-        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
-        "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d opcache.enable_cli=off -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
-        "check": "php -d opcache.enable_cli=off vendor/bin/composer-require-checker check",
-        "unused": "php -d opcache.enable_cli=off vendor/bin/composer-unused",
-        "deptrac": "php -d opcache.enable_cli=off vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php -d opcache.enable_cli=off vendor/bin/php-cs-fixer fix",
+        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 vendor/bin/phpunit",
+        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
+        "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
+        "check": "php vendor/bin/composer-require-checker check",
+        "unused": "php vendor/bin/composer-unused",
+        "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
+        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix",
         "test": [
             "@check",
+            "@unused",
             "@deptrac",
-            "@phpunit",
-            "@unused"
+            "@phpunit"
         ]
     },
     "autoload": {

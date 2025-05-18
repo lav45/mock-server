@@ -23,7 +23,7 @@ RUN apk add --no-cache  \
 RUN ln -s /usr/bin/php84 /bin/php
 
 RUN echo 'opcache.enable=on' >> /etc/php84/conf.d/00_opcache.ini
-RUN echo 'opcache.enable_cli=on' >> /etc/php84/conf.d/00_opcache.ini
+RUN echo 'opcache.enable_cli=off' >> /etc/php84/conf.d/00_opcache.ini
 RUN echo 'opcache.jit_buffer_size=64M' >> /etc/php84/conf.d/00_opcache.ini
 RUN echo 'opcache.jit=tracing' >> /etc/php84/conf.d/00_opcache.ini
 

@@ -10,10 +10,10 @@ RUN apk add --no-cache \
     php84-pecl-pcov \
     php84-posix
 
-RUN wget https://getcomposer.org/installer -O - | php -d opcache.enable_cli=off -- --install-dir=/usr/local/bin --filename=composer
+RUN wget https://getcomposer.org/installer -O - | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
 
-ENTRYPOINT ["php", "-d", "opcache.enable_cli=off"]
+ENTRYPOINT ["php"]
 
 CMD ["/app/bin/mock-server"]
