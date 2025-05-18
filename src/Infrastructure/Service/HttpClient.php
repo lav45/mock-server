@@ -6,6 +6,7 @@ use Amp\Http\Client\HttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Http\HttpStatus;
+use Monolog\Level;
 use Psr\Log\LoggerInterface;
 
 final class HttpClient implements HttpClientInterface
@@ -15,8 +16,8 @@ final class HttpClient implements HttpClientInterface
     public function __construct(
         private readonly Client          $client,
         private readonly LoggerInterface $logger,
-        private readonly mixed           $logLevelOk = null,
-        private readonly mixed           $logLevelError = null,
+        private readonly Level           $logLevelOk,
+        private readonly Level           $logLevelError,
     ) {}
 
     public function request(
@@ -47,7 +48,7 @@ final class HttpClient implements HttpClientInterface
 
         $loggerLevel = match ($response->getStatus()) {
             HttpStatus::OK => $this->logLevelOk,
-            default => $this->logLevelError,
+            default => $this->logLevelError, // @codeCoverageIgnore
         };
 
         $this->logger->log($loggerLevel, $message);

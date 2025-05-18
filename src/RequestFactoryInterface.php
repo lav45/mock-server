@@ -2,9 +2,9 @@
 
 namespace Lav45\MockServer;
 
-use Lav45\MockServer\Presenter\Handler\Request;
+use Amp\Http\Server\RequestHandler;
 
 interface RequestFactoryInterface
 {
-    public function create(array $mock): Request;
+    public function create(array $mock): RequestHandler;
 }

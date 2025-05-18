@@ -6,12 +6,15 @@ use Amp;
 use Amp\ByteStream;
 use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\SocketClientFactory;
+use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory as FakerFactory;
 use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
+use Lav45\Watcher\Listener;
+use Lav45\Watcher\Watcher as FileWatcher;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
@@ -29,7 +32,8 @@ final readonly class Server
         $faker = FakerFactory::create($this->config->getLocale());
         $httpClient = HttpClientFactory::create($logger);
         $requestFactory = new RequestFactory($faker, $httpClient, $logger);
-        $watcher = $this->runWatcher($logger, $requestFactory);
+        $dispatcherFactory = new DispatcherFactory($requestFactory);
+        $watcher = $this->runWatcher($logger, $dispatcherFactory);
 
         $errorHandler = new DefaultErrorHandler();
         $reactor = new Reactor(
@@ -44,22 +48,29 @@ final readonly class Server
         $server->stop(); // @codeCoverageIgnore
     }
 
-    private function runWatcher(LoggerInterface $logger, RequestFactory $requestFactory): Watcher
+    private function runWatcher(LoggerInterface $logger, DispatcherFactoryInterface $dispatcherFactory): WatcherInterface
     {
         $watcher = new Watcher(
-            requestFactory: $requestFactory,
+            dispatcherFactory: $dispatcherFactory,
             watchDir: $this->config->getMocksPath(),
             logger: $logger,
         );
         $watcher->init();
 
         if ($timeout = $this->config->getFileWatchTimeout()) {
-            Amp\async(fn() => $watcher->run($timeout));
+            // @codeCoverageIgnoreStart
+            Amp\async(
+                static fn() => $watcher->run(
+                    new FileWatcher(new Listener()),
+                    static fn() => Amp\delay($timeout),
+                ),
+            );
+            // @codeCoverageIgnoreEnd
         }
         return $watcher;
     }
 
-    private function getServer(LoggerInterface $logger): SocketHttpServer
+    private function getServer(LoggerInterface $logger): HttpServer
     {
         $serverSocketFactory = new Socket\ResourceServerSocketFactory();
         $clientFactory = new SocketClientFactory($logger);

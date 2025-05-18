@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52a57c945e4a293ad875c5afcc7bb9eb",
+    "content-hash": "6830077164b46ebf1ac0f467c13c38c5",
     "packages": [
         {
             "name": "amphp/amp",
@@ -562,12 +562,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/http-server.git",
-                "reference": "c60cde9a1e331f539b7ef5a7705f42092e646f90"
+                "reference": "7aa962b0569f664af3ba23bc819f2a69884329cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/http-server/zipball/c60cde9a1e331f539b7ef5a7705f42092e646f90",
-                "reference": "c60cde9a1e331f539b7ef5a7705f42092e646f90",
+                "url": "https://api.github.com/repos/amphp/http-server/zipball/7aa962b0569f664af3ba23bc819f2a69884329cd",
+                "reference": "7aa962b0569f664af3ba23bc819f2a69884329cd",
                 "shasum": ""
             },
             "require": {
@@ -644,7 +644,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/http-server/issues",
-                "source": "https://github.com/amphp/http-server/tree/v3.4.2"
+                "source": "https://github.com/amphp/http-server/tree/v3.4.3"
             },
             "funding": [
                 {
@@ -652,7 +652,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-31T16:35:28+00:00"
+            "time": "2025-05-18T15:43:42+00:00"
         },
         {
             "name": "amphp/http-server-form-parser",
@@ -1400,12 +1400,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/lav45/watcher.git",
-                "reference": "8ca02af7aa45f7854e659672fb75bbfa837ae290"
+                "reference": "85e6abdde920025eac5c4d6eff0cc2227d4afb6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lav45/watcher/zipball/8ca02af7aa45f7854e659672fb75bbfa837ae290",
-                "reference": "8ca02af7aa45f7854e659672fb75bbfa837ae290",
+                "url": "https://api.github.com/repos/lav45/watcher/zipball/85e6abdde920025eac5c4d6eff0cc2227d4afb6c",
+                "reference": "85e6abdde920025eac5c4d6eff0cc2227d4afb6c",
                 "shasum": ""
             },
             "require": {
@@ -1413,11 +1413,16 @@
                 "php": ">=8.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "11.*"
+                "bamarni/composer-bin-plugin": "^1.8"
             },
             "default-branch": true,
             "type": "library",
             "extra": {
+                "bamarni-bin": {
+                    "bin-links": true,
+                    "forward-command": true,
+                    "target-directory": "tools"
+                },
                 "branch-alias": {
                     "dev-master": "1.0.x-dev"
                 }
@@ -1446,9 +1451,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lav45/watcher/issues",
-                "source": "https://github.com/lav45/watcher/tree/master"
+                "source": "https://github.com/lav45/watcher/tree/1.0.1"
             },
-            "time": "2025-01-02T18:56:58+00:00"
+            "time": "2025-05-18T15:30:41+00:00"
         },
         {
             "name": "league/uri",
