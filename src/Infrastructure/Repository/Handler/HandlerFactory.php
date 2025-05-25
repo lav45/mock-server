@@ -4,13 +4,13 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Infrastructure\Parser\Parser;
 
-enum ResponseHandlerFactory: string
+enum HandlerFactory: string
 {
     case Content = ResponseContentHandler::TYPE;
     case Proxy = ResponseProxyHandler::TYPE;
     case Data = ResponseCollectionHandler::TYPE;
 
-    public static function fromData(array $data): ResponseHandlerFactory
+    public static function fromData(array $data): self
     {
         if (isset($data['response']['type'])) {
             return self::from($data['response']['type']);

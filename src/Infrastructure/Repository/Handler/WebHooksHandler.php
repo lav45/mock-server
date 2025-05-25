@@ -5,12 +5,7 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 use Lav45\MockServer\Domain\Model\Response\Body;
 use Lav45\MockServer\Domain\Model\WebHook;
 use Lav45\MockServer\Domain\Model\WebHooks;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\MethodFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\UrlFactory;
 
 final readonly class WebHooksHandler
 {
@@ -21,7 +16,7 @@ final readonly class WebHooksHandler
     public function handle(array $data): WebHooks
     {
         $items = [];
-        $webHooks = ArrayHelper::getValue($data, 'webhooks', []);
+        $webHooks = $data['webhooks'] ?? [];
         foreach ($webHooks as $webHook) {
             $items[] = $this->createItem($webHook);
         }
@@ -30,24 +25,18 @@ final readonly class WebHooksHandler
 
     private function createItem(array $item): WebHook
     {
-        $delay = (new DelayFactory($this->parser))->create($item, 'delay');
+        $factory = new AttributeFactory($this->parser, $item);
 
-        $url = (new UrlFactory($this->parser))->create($item, 'url');
+        $delay = $factory->createDelay();
+        $url = $factory->createUrl();
+        $method = $factory->createMethod();
 
-        $method = (new MethodFactory($this->parser))->create($item, 'method', 'POST');
-
-        $json = ArrayHelper::getValue($item, 'json');
+        $json = $item['json'] ?? null;
         $json = $this->parser->replace($json);
 
-        $headers = (new HeadersFactory(
-            parser: $this->parser,
-            withJson: isset($json),
-        ))->create(
-            data: $item,
-            path: 'headers',
-        );
+        $headers = $factory->createHeaders(isset($json));
 
-        $text = ArrayHelper::getValue($item, 'text');
+        $text = $item['text'] ?? null;
         $text = $this->parser->replace($text);
 
         if ($json) {

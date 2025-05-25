@@ -3,7 +3,7 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Infrastructure\Repository\Factory;
 
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Factory\UrlFactory;
+use Lav45\MockServer\Infrastructure\Repository\Handler\AttributeFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -17,15 +17,14 @@ final class UrlTest extends TestCase
             {
                 return $data;
             }
+
             public function withData(array $data): Parser
             {
                 return $this;
             }
         };
 
-        $newUrl = (new UrlFactory($parser))
-            ->create(['url' => $url], 'url', $get)
-            ->value;
+        $newUrl = (new AttributeFactory($parser, ['url' => $url]))->createUrl($get)->value;
 
         $this->assertEquals($expected, $newUrl);
     }

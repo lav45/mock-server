@@ -5,7 +5,6 @@ namespace Lav45\MockServer;
 use Faker\Generator as Faker;
 use Lav45\MockServer\Application\Query\Request\ResponseFabric;
 use Lav45\MockServer\Application\Query\Request\WebHook;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Lav45\MockServer\Infrastructure\Handler\ResponseFabric as ResponseFabricHandler;
 use Lav45\MockServer\Infrastructure\Handler\WebHook as WebHookHandler;
 use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
@@ -31,7 +30,7 @@ final readonly class RequestFactory implements RequestFactoryInterface
 
     public function create(array $mock): Request
     {
-        $env = ArrayHelper::getValue($mock, 'env', []);
+        $env = $mock['env'] ?? [];
         $parserFactory = new ParserFactory($this->faker, $env);
         $repository = new Repository($parserFactory, $mock);
 

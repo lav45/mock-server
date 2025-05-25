@@ -5,12 +5,7 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
 use Lav45\MockServer\Domain\Model\Response\Body;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\ItemsFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\StatusFactory;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
@@ -25,22 +20,21 @@ final readonly class ResponseCollectionHandler implements Handler
 
     public function handle(array $data, Request $request): Response
     {
-        $data = ArrayHelper::getValue($data, 'response', []);
+        $data = $data['response'] ?? [];
+
+        $factory = new AttributeFactory($this->parser, $data);
 
         $start = new Response\Start($request->start);
+        $delay = $factory->createDelay();
+        $status = $factory->createStatus();
+        $dataItems = $factory->createItems();
 
-        $delay = (new DelayFactory($this->parser))->create($data, 'delay');
+        $pageParam = $data['pagination']['pageParam'] ?? 'page';
+        $pageSizeParam = $data['pagination']['pageSizeParam'] ?? 'per-page';
+        $defaultPageSize = $data['pagination']['defaultPageSize'] ?? 20;
 
-        $status = (new StatusFactory($this->parser))->create($data, 'status');
-
-        $dataItems = (new ItemsFactory($this->parser))->from($data, 'json', 'file');
-
-        $pageParam = ArrayHelper::getValue($data, 'pagination.pageParam', 'page');
-        $pageSizeParam = ArrayHelper::getValue($data, 'pagination.pageSizeParam', 'per-page');
-        $defaultPageSize = ArrayHelper::getValue($data, 'pagination.defaultPageSize', 20);
-
-        $pageSize = (int)ArrayHelper::getValue($request->get, $pageSizeParam, $defaultPageSize);
-        $currentPage = (int)(ArrayHelper::getValue($request->get, $pageParam) ?: 1);
+        $pageSize = (int)($request->get[$pageSizeParam] ?? $defaultPageSize);
+        $currentPage = (int)(($request->get[$pageParam] ?? null) ?: 1);
 
         $dataProvider = (new OffsetPaginator(new IterableDataReader($dataItems)))
             ->withPageSize($pageSize)
@@ -71,15 +65,9 @@ final readonly class ResponseCollectionHandler implements Handler
             ],
         ]);
 
-        $headers = (new HeadersFactory(
-            parser: $parser,
-            withJson: true,
-        ))->create(
-            data: $data,
-            path: 'headers',
-        );
+        $headers = (new AttributeFactory($parser, $data))->createHeaders(true);
 
-        $result = ArrayHelper::getValue($data, 'result', '{{response.items}}');
+        $result = $data['result'] ?? '{{response.items}}';
         $result = $parser->replace($result);
         $body = Body::new($result);
 

@@ -4,12 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Factory\BodyFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\DelayFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\HeadersFactory;
-use Lav45\MockServer\Infrastructure\Repository\Factory\StatusFactory;
 
 final readonly class ResponseContentHandler implements Handler
 {
@@ -21,23 +16,15 @@ final readonly class ResponseContentHandler implements Handler
 
     public function handle(array $data, Request $request): Response
     {
-        $data = ArrayHelper::getValue($data, 'response', []);
+        $data = $data['response'] ?? [];
+
+        $factory = new AttributeFactory($this->parser, $data);
 
         $start = new Response\Start($request->start);
-
-        $delay = (new DelayFactory($this->parser))->create($data, 'delay');
-
-        $status = (new StatusFactory($this->parser))->create($data, 'status');
-
-        $headers = (new HeadersFactory(
-            parser: $this->parser,
-            withJson: isset($data['json']),
-        ))->create(
-            data: $data,
-            path: 'headers',
-        );
-
-        $body = (new BodyFactory($this->parser))->fromContent($data, 'text', 'json');
+        $delay = $factory->createDelay();
+        $status = $factory->createStatus();
+        $headers = $factory->createHeaders(isset($data['json']));
+        $body = $factory->createBodyContent();
 
         return new Response\Content(
             start: $start,

@@ -5,7 +5,7 @@ namespace Lav45\MockServer\Infrastructure\Repository;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Mock;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseHandlerFactory;
+use Lav45\MockServer\Infrastructure\Repository\Handler\HandlerFactory;
 use Lav45\MockServer\Infrastructure\Repository\Handler\WebHooksHandler;
 
 final readonly class DataMapper
@@ -18,7 +18,7 @@ final readonly class DataMapper
     {
         $webHooks = (new WebHooksHandler($this->parser))->handle($data);
 
-        $response = ResponseHandlerFactory::fromData($data)
+        $response = HandlerFactory::fromData($data)
             ->create($this->parser)
             ->handle($data, $request);
 

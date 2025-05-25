@@ -4,7 +4,6 @@ namespace Lav45\MockServer;
 
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
 use function FastRoute\simpleDispatcher;
 
@@ -20,8 +19,8 @@ final readonly class DispatcherFactory implements DispatcherFactoryInterface
             foreach ($data as $mocks) {
                 foreach ($mocks as $mock) {
                     $router->addRoute(
-                        ArrayHelper::getValue($mock, 'request.method', ['GET']),
-                        ArrayHelper::getValue($mock, 'request.url', '/'),
+                        $mock['request']['method'] ?? ['GET'],
+                        $mock['request']['url'] ?? '/',
                         $this->requestFactory->create($mock),
                     );
                 }
