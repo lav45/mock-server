@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6252283d22835109c89c93514d0478e",
+    "content-hash": "a98a6d7867b6a49be3910e72aaba035f",
     "packages": [],
     "packages-dev": [
         {
-            "name": "qossmic/deptrac",
-            "version": "2.0.x-dev",
+            "name": "deptrac/deptrac",
+            "version": "3.0.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://github.com/qossmic/deptrac.git",
-                "reference": "9fbc71c7ff484a9b9d3d5a2b8f367ec59bdc1512"
+                "url": "https://github.com/deptrac/deptrac.git",
+                "reference": "a098a510ce6e75671912401641b0ed278624d9ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/qossmic/deptrac/zipball/9fbc71c7ff484a9b9d3d5a2b8f367ec59bdc1512",
-                "reference": "9fbc71c7ff484a9b9d3d5a2b8f367ec59bdc1512",
+                "url": "https://api.github.com/repos/deptrac/deptrac/zipball/a098a510ce6e75671912401641b0ed278624d9ea",
+                "reference": "a098a510ce6e75671912401641b0ed278624d9ea",
                 "shasum": ""
             },
             "require": {
@@ -30,8 +30,7 @@
             },
             "default-branch": true,
             "bin": [
-                "bin/deptrac",
-                "deptrac.phar"
+                "bin/deptrac"
             ],
             "type": "library",
             "autoload": {
@@ -51,16 +50,16 @@
                 "static analysis"
             ],
             "support": {
-                "source": "https://github.com/qossmic/deptrac/tree/2.0.x"
+                "issues": "https://github.com/deptrac/deptrac/issues",
+                "source": "https://github.com/deptrac/deptrac/tree/3.0.x"
             },
-            "abandoned": "deptrac/deptrac",
-            "time": "2025-02-17T13:46:05+00:00"
+            "time": "2025-02-16T22:49:48+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "qossmic/deptrac": 20
+        "deptrac/deptrac": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
