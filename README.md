@@ -12,6 +12,7 @@ HTTP mocking application for testing and fast prototyping
 ## Features
 
 - [Env](docs/env.md) - Storage of variables that can be used in the Response and WebHooks
+    - [Server environment](docs/env.md#server-environment) - Server environment
     - [Faker](docs/env.md#faker) - Generate random data
 - [Request](docs/request.md)
     - [Routing](docs/request.md#requesturl)
@@ -21,11 +22,10 @@ HTTP mocking application for testing and fast prototyping
       - [Faker](docs/response/content.md#faker) - Generate random data
       - [Request parameters](docs/response/content.md#request-parameters) - You can get data from your request and use it in the response
     - [Proxy](docs/response/proxy.md)
-    - [Server environment](docs/env.md#server-environment) - Server environment
     - [Data provider](docs/response/data.md)
 - [WebHooks](docs/webhooks.md)
     - [Faker](docs/webhooks.md#faker) - Generate random data
-- Auto reload mock file without restarting the server
+- **Auto reload mock file without restarting the server**
 
 ## Quick start
 
@@ -39,6 +39,7 @@ Create mock file `./mocks/index.json` and put the content in it
             "url": "/"
         },
         "response": {
+            "type": "content",
             "text": "Hello world!"
         }
     }
