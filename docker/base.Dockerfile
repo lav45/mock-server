@@ -1,9 +1,9 @@
-FROM alpine:3.21 AS build
+FROM alpine:3.22 AS build
 
 RUN apk add --no-cache php84-pear php84-openssl php84-dev gcc musl-dev make autoconf
 RUN pecl84 channel-update pecl.php.net && pecl84 install inotify
 
-FROM alpine:3.21
+FROM alpine:3.22
 
 RUN apk upgrade --no-cache --available
 RUN apk add --no-cache  \

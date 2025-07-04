@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a98a6d7867b6a49be3910e72aaba035f",
+    "content-hash": "6272a5c366ab6bd7a933caaf1ae0ca23",
     "packages": [],
     "packages-dev": [
         {
             "name": "deptrac/deptrac",
-            "version": "3.0.x-dev",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/deptrac/deptrac.git",
-                "reference": "a098a510ce6e75671912401641b0ed278624d9ea"
+                "reference": "605ee322f273ade1727f5ff2db3b47566140f4bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deptrac/deptrac/zipball/a098a510ce6e75671912401641b0ed278624d9ea",
-                "reference": "a098a510ce6e75671912401641b0ed278624d9ea",
+                "url": "https://api.github.com/repos/deptrac/deptrac/zipball/605ee322f273ade1727f5ff2db3b47566140f4bf",
+                "reference": "605ee322f273ade1727f5ff2db3b47566140f4bf",
                 "shasum": ""
             },
             "require": {
@@ -28,9 +28,9 @@
             "suggest": {
                 "ext-dom": "For using the JUnit output formatter"
             },
-            "default-branch": true,
             "bin": [
-                "bin/deptrac"
+                "bin/deptrac",
+                "deptrac.phar"
             ],
             "type": "library",
             "autoload": {
@@ -51,16 +51,14 @@
             ],
             "support": {
                 "issues": "https://github.com/deptrac/deptrac/issues",
-                "source": "https://github.com/deptrac/deptrac/tree/3.0.x"
+                "source": "https://github.com/deptrac/deptrac/tree/3.0.0"
             },
-            "time": "2025-02-16T22:49:48+00:00"
+            "time": "2025-02-17T08:20:48+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "deptrac/deptrac": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
