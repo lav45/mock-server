@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 
-$config = (new \PhpCsFixer\Config('mock-server'))
+use PhpCsFixer\Config;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
+$config = (new Config('mock-server'))
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRiskyAllowed(true)
     ->setLineEnding("\n")
     ->setRules([
