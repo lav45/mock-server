@@ -2,9 +2,8 @@
 
 set -e
 
-docker build --no-cache -f docker/base.Dockerfile -t mock-server-base .
-docker build --no-cache -f docker/dev.Dockerfile -t mock-server-dev .
+docker build --progress=plain --target tool -t mock-server:tool .
 
 ./composer install --optimize-autoloader --classmap-authoritative --prefer-dist --no-progress --ansi
 
-docker build --no-cache -f docker/prod.Dockerfile -t mock-server-prod .
+docker build --progress=plain --target server -t mock-server:server .

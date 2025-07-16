@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if ! [ $PLATFORMS ] ; then
+if ! [ $GITHUB_ACTIONS ] ; then
   DOCKER_ARG='-t'
 fi
 
@@ -9,4 +9,4 @@ docker run --rm -i ${DOCKER_ARG} \
   -v $(pwd):/app \
   -w /app \
   -e COMPOSER_HOME=/app/.cache/.composer \
-  ${REGISTRY}mock-server-dev:latest /usr/local/bin/composer $@
+  mock-server:tool composer $@

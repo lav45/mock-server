@@ -56,9 +56,9 @@
         }
     },
     "scripts": {
-        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 vendor/bin/phpunit",
-        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
-        "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d zend.assertions=1 -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
+        "phpunit": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php vendor/bin/phpunit",
+        "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
+        "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",
         "unused": "php vendor/bin/composer-unused",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
