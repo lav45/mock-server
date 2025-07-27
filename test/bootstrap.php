@@ -13,7 +13,7 @@ Amp\async(static function () {
 // Test mock server
 Amp\async(static function () {
     $config = (new Lav45\MockServer\Config())
-        ->listen(port: 80)
+        ->port(80)
         ->mocks('/app/test/Functional/mocks')
         ->log('error')
         ->fileWatch(0);

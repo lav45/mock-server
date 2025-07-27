@@ -42,7 +42,7 @@ final readonly class Server
         );
 
         $server = $this->getServer($logger);
-        $server->expose(new Socket\InternetAddress($this->config->getHost(), $this->config->getPort()));
+        $server->expose(new Socket\InternetAddress('0.0.0.0', $this->config->getPort()));
         $server->start($reactor, $errorHandler);
         $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
         $server->stop(); // @codeCoverageIgnore

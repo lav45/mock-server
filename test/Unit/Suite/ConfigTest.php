@@ -18,7 +18,6 @@ final class ConfigTest extends TestCase
 
     public function testDefaultValues(): void
     {
-        $this->assertSame('0.0.0.0', $this->config->getHost());
         $this->assertSame(8080, $this->config->getPort());
         $this->assertSame('/app/mocks', $this->config->getMocksPath());
         $this->assertSame('en_US', $this->config->getLocale());
@@ -28,49 +27,11 @@ final class ConfigTest extends TestCase
 
     public function testListenWithValidValues(): void
     {
-        $this->config->listen('127.0.0.1', 9090);
-        $this->assertSame('127.0.0.1', $this->config->getHost());
+        $this->config->port(9090);
         $this->assertSame(9090, $this->config->getPort());
 
-        $this->config->listen('192.168.1.1', '8888');
-        $this->assertSame('192.168.1.1', $this->config->getHost());
+        $this->config->port('8888');
         $this->assertSame(8888, $this->config->getPort());
-    }
-
-    public function testListenWithFalseValuesDoesNotChangeDefaults(): void
-    {
-        $initialHost = $this->config->getHost();
-        $initialPort = $this->config->getPort();
-
-        $this->config->listen();
-        $this->assertSame($initialHost, $this->config->getHost());
-        $this->assertSame($initialPort, $this->config->getPort());
-
-        $this->config->listen(host: '127.0.0.1');
-        $this->assertSame('127.0.0.1', $this->config->getHost());
-        $this->assertSame($initialPort, $this->config->getPort());
-
-        $this->config->listen(port: 8000);
-        $this->assertSame('127.0.0.1', $this->config->getHost());
-        $this->assertSame(8000, $this->config->getPort());
-    }
-
-    #[DataProvider('invalidHostProvider')]
-    public function testListenWithInvalidHostThrowsException(string $invalidHost): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid host');
-        $this->config->listen(host: $invalidHost);
-    }
-
-    public static function invalidHostProvider(): array
-    {
-        return [
-            ['localhost'],
-            ['not_an_ip'],
-            ['256.0.0.1'],
-            ['127.0.0.1.1'],
-        ];
     }
 
     #[DataProvider('invalidPortProvider')]
@@ -78,7 +39,7 @@ final class ConfigTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid port');
-        $this->config->listen(port: $invalidPort);
+        $this->config->port(port: $invalidPort);
     }
 
     public static function invalidPortProvider(): array
@@ -108,13 +69,6 @@ final class ConfigTest extends TestCase
                 \rmdir($tempDir);
             }
         }
-    }
-
-    public function testMocksWithFalseValueDoesNotChangeDefault(): void
-    {
-        $initialPath = $this->config->getMocksPath();
-        $this->config->mocks();
-        $this->assertSame($initialPath, $this->config->getMocksPath());
     }
 
     #[DataProvider('invalidMocksPathProvider')]
@@ -156,13 +110,6 @@ final class ConfigTest extends TestCase
         $this->assertSame('en_US', $this->config->getLocale());
     }
 
-    public function testLocaleWithFalseValueDoesNotChangeDefault(): void
-    {
-        $initialLocale = $this->config->getLocale();
-        $this->config->locale();
-        $this->assertSame($initialLocale, $this->config->getLocale());
-    }
-
     public function testLocaleWithInvalidValueThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -191,13 +138,6 @@ final class ConfigTest extends TestCase
             ['DEBUG', Level::Debug],
             ['InFo', Level::Info],
         ];
-    }
-
-    public function testLogWithFalseValueDoesNotChangeDefault(): void
-    {
-        $initialLevel = $this->config->getLogLevel();
-        $this->config->log();
-        $this->assertSame($initialLevel, $this->config->getLogLevel());
     }
 
     public function testLogWithInvalidLevelThrowsException(): void
@@ -229,13 +169,6 @@ final class ConfigTest extends TestCase
         ];
     }
 
-    public function testFileWatchWithFalseValueDoesNotChangeDefault(): void
-    {
-        $initialTimeout = $this->config->getFileWatchTimeout();
-        $this->config->fileWatch();
-        $this->assertSame($initialTimeout, $this->config->getFileWatchTimeout());
-    }
-
     #[DataProvider('invalidFileWatchTimeoutProvider')]
     public function testFileWatchWithInvalidTimeoutThrowsException(mixed $invalidTimeout): void
     {
@@ -251,28 +184,5 @@ final class ConfigTest extends TestCase
             [-0.1],
             ["-1.5"],
         ];
-    }
-
-    public function testFluentInterface(): void
-    {
-        $returnedInstance = $this->config->listen();
-        $this->assertInstanceOf(Config::class, $returnedInstance);
-        $this->assertSame($this->config, $returnedInstance);
-
-        $returnedInstance = $this->config->mocks();
-        $this->assertInstanceOf(Config::class, $returnedInstance);
-        $this->assertSame($this->config, $returnedInstance);
-
-        $returnedInstance = $this->config->locale();
-        $this->assertInstanceOf(Config::class, $returnedInstance);
-        $this->assertSame($this->config, $returnedInstance);
-
-        $returnedInstance = $this->config->log();
-        $this->assertInstanceOf(Config::class, $returnedInstance);
-        $this->assertSame($this->config, $returnedInstance);
-
-        $returnedInstance = $this->config->fileWatch();
-        $this->assertInstanceOf(Config::class, $returnedInstance);
-        $this->assertSame($this->config, $returnedInstance);
     }
 }

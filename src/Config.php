@@ -6,8 +6,6 @@ use Monolog\Level;
 
 final class Config
 {
-    private string $host = '0.0.0.0';
-
     private int $port = 8080;
 
     private string $mocksPath = '/app/mocks';
@@ -18,15 +16,8 @@ final class Config
 
     private float $fileWatchTimeout = 0.2;
 
-    public function listen(string|false $host = false, string|int|false $port = false): self
+    public function port(string|int|false $port): self
     {
-        if ($host) {
-            if (\filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-                $this->host = $host;
-            } else {
-                throw new \InvalidArgumentException('Invalid host');
-            }
-        }
         if ($port || $port === 0) {
             $options = [
                 'options' => [
@@ -43,7 +34,7 @@ final class Config
         return $this;
     }
 
-    public function mocks(string|false $path = false): self
+    public function mocks(string|false $path): self
     {
         if ($path) {
             if (\is_dir($path) && \is_readable($path)) {
@@ -55,7 +46,7 @@ final class Config
         return $this;
     }
 
-    public function locale(string|false $locale = false): self
+    public function locale(string|false $locale): self
     {
         if ($locale) {
             $canonicalLocale = \Locale::canonicalize($locale);
@@ -68,7 +59,7 @@ final class Config
         return $this;
     }
 
-    public function log(string|false $level = false): self
+    public function log(string|false $level): self
     {
         if ($level) {
             try {
@@ -80,7 +71,7 @@ final class Config
         return $this;
     }
 
-    public function fileWatch(string|float|false $timeout = false): self
+    public function fileWatch(string|float|false $timeout): self
     {
         if ($timeout !== false && $timeout !== '') {
             $validatedTimeout = \filter_var($timeout, FILTER_VALIDATE_FLOAT);
@@ -94,11 +85,6 @@ final class Config
             }
         }
         return $this;
-    }
-
-    public function getHost(): string
-    {
-        return $this->host;
     }
 
     public function getPort(): int
