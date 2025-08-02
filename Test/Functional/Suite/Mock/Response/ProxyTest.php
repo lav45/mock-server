@@ -3,8 +3,8 @@
 namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
 
 use Amp\Http\Client\Form;
-use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
+use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class ProxyTest extends TestCase

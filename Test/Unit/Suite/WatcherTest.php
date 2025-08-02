@@ -2,6 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite;
 
+use FastRoute\BadRouteException;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Lav45\MockServer\DispatcherFactoryInterface;
@@ -129,12 +130,12 @@ final class WatcherTest extends TestCase
             ['request' => ['url' => '/bad', 'method' => ['INVALID METHOD']]],
         ]));
 
-        $this->fakeDispatcherFactory->throwExceptionOnCreate = new \FastRoute\BadRouteException('Test BadRouteException');
+        $this->fakeDispatcherFactory->throwExceptionOnCreate = new BadRouteException('Test BadRouteException');
 
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock->expects($this->once())
             ->method('error')
-            ->with($this->isInstanceOf(\FastRoute\BadRouteException::class));
+            ->with($this->isInstanceOf(BadRouteException::class));
 
         $watcher = new Watcher($this->fakeDispatcherFactory, $this->watchDir, $loggerMock);
         $watcher->init();

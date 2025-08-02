@@ -53,7 +53,7 @@ $config = (new Config('mock-server'))
 
 $config->getFinder()
     ->in(__DIR__ . '/src')
-    ->in(__DIR__ . '/test')
+    ->in(__DIR__ . '/Test')
     ->in(__DIR__ . '/migrates');
 
 $config->setCacheFile(__DIR__ . '/.cache/.php_cs.cache');

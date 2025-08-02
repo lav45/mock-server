@@ -12,7 +12,7 @@ use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
 use Amp\Socket;
 use Faker\Factory as FakerFactory;
-use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
+use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
 use Lav45\Watcher\Listener;
 use Lav45\Watcher\Watcher as FileWatcher;
 use Monolog\Logger;

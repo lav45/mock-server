@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Infrastructure\Service;
+namespace Lav45\MockServer\Infrastructure\HttpClient;
 
 use Amp\Http\Client\Response;
 
@@ -11,10 +11,6 @@ interface HttpClientInterface
         string      $method = 'GET',
         null|string $body = null,
         null|array  $headers = null,
+        null|string $logLabel = null,
     ): Response;
-
-    /**
-     * @param \Closure $message => fn (Request $request, Response $response): string { ... }
-     */
-    public function withLogMessage(\Closure $message): self;
 }

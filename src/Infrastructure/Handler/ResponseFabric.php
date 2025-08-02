@@ -7,7 +7,7 @@ use Lav45\MockServer\Application\Query\Request\ResponseHandler;
 use Lav45\MockServer\Domain\Model\Response as ResponseModel;
 use Lav45\MockServer\Domain\Model\Response\Content as ContentEntity;
 use Lav45\MockServer\Domain\Model\Response\Proxy as ProxyEntity;
-use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
+use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
 
 final readonly class ResponseFabric implements ResponseFabricInterface
 {

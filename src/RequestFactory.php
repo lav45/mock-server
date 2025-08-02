@@ -7,9 +7,9 @@ use Lav45\MockServer\Application\Query\Request\ResponseFabric;
 use Lav45\MockServer\Application\Query\Request\WebHook;
 use Lav45\MockServer\Infrastructure\Handler\ResponseFabric as ResponseFabricHandler;
 use Lav45\MockServer\Infrastructure\Handler\WebHook as WebHookHandler;
+use Lav45\MockServer\Infrastructure\HttpClient\HttpClient;
 use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
 use Lav45\MockServer\Infrastructure\Repository\Repository;
-use Lav45\MockServer\Infrastructure\Service\HttpClient;
 use Lav45\MockServer\Presenter\Handler\Request;
 use Psr\Log\LoggerInterface;
 

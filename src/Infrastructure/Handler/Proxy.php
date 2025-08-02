@@ -2,26 +2,18 @@
 
 namespace Lav45\MockServer\Infrastructure\Handler;
 
-use Amp\Http\Client\Request as HttpRequest;
-use Amp\Http\Client\Response as HttpResponse;
 use Amp\Http\HttpStatus;
 use Lav45\MockServer\Application\Query\Request\Response;
 use Lav45\MockServer\Application\Query\Request\ResponseHandler;
 use Lav45\MockServer\Domain\Model\Response\Proxy as ProxyEntity;
-use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
+use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
 
 final readonly class Proxy implements ResponseHandler
 {
-    private HttpClientInterface $httpClient;
-
     public function __construct(
-        private ProxyEntity $data,
-        HttpClientInterface $httpClient,
-    ) {
-        $this->httpClient = $httpClient->withLogMessage(static function (HttpRequest $request, HttpResponse $response) {
-            return "Proxy: {$response->getStatus()} {$request->getMethod()} {$request->getUri()}";
-        });
-    }
+        private ProxyEntity         $data,
+        private HttpClientInterface $httpClient,
+    ) {}
 
     public function execute(): Response
     {
@@ -31,6 +23,7 @@ final readonly class Proxy implements ResponseHandler
                 method: $this->data->method->value,
                 body: $this->data->body->toString(),
                 headers: $this->data->headers->toArray(),
+                logLabel: 'Proxy',
             );
             $responseBody = $response->getBody()->read() ?: '';
         } // @codeCoverageIgnoreStart

@@ -6,13 +6,13 @@
          displayDetailsOnTestsThatTriggerNotices="true"
          displayDetailsOnTestsThatTriggerWarnings="true"
          displayDetailsOnPhpunitDeprecations="true"
-         bootstrap="test/bootstrap.php"
+         bootstrap="Test/bootstrap.php"
          cacheDirectory=".cache/.phpunit.cache"
          colors="true">
     <testsuites>
         <testsuite name="Mock Server - Functional testing">
-            <directory>test/Functional/Suite</directory>
-            <directory>test/Unit/Suite</directory>
+            <directory>Test/Functional/Suite</directory>
+            <directory>Test/Unit/Suite</directory>
         </testsuite>
     </testsuites>
     <source>

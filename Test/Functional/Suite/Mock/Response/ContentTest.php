@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
 
-use Lav45\MockServer\Infrastructure\Service\HttpClientFactory;
-use Lav45\MockServer\Infrastructure\Service\HttpClientInterface;
+use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class ContentTest extends TestCase
