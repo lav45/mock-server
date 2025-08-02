@@ -21,7 +21,7 @@ final readonly class ParserFactory
         $env = $envParser->replace($env);
 
         $paramParser = new ParamParser([
-            'request' => (array)$request,
+            'request' => $request->toArray(),
             'env' => $env,
         ]);
 

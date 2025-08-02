@@ -4,53 +4,61 @@ namespace Lav45\MockServer\Test\Functional\Server;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
-use Lav45\MockServer\Presenter\Service\Request as RequestWrapper;
+use Lav45\MockServer\Application\Query\Request\Request as RequestData;
+use Lav45\MockServer\Presenter\Service\RequestFactory;
 use Lav45\MockServer\Test\Functional\Server\Component\Storage;
 use Lav45\MockServer\Test\Functional\Server\Controller\Content as ContentController;
 use Lav45\MockServer\Test\Functional\Server\Controller\Storage as StorageController;
 
 final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
-    public function __construct(private Storage $storage) {}
+    private StorageController $storageController;
+
+    private ContentController $contentController;
+
+    public function __construct(Storage $storage)
+    {
+        $this->storageController = new StorageController($storage);
+        $this->contentController = new ContentController();
+    }
 
     public function handleRequest(Request $request): Response
     {
-        $requestWrapper = new RequestWrapper($request);
+        $requestData = RequestFactory::create($request);
 
         return match ($request->getUri()->getPath()) {
             '/' => new Response(body: 'OK'),
-            '/storage' => $this->runStorageController($requestWrapper),
-            '/__storage' => $this->runStorageController($requestWrapper, true),
-            '/content' => $this->runContentController($requestWrapper),
+            '/storage' => $this->runStorageController($requestData),
+            '/__storage' => $this->flushStorageController($requestData),
+            '/content' => $this->runContentController($requestData),
             default => new Response(status: 404),
         };
     }
 
-    protected function runStorageController(RequestWrapper $request, bool $control = false): Response
+    protected function runStorageController(RequestData $request): Response
     {
-        $controller = new StorageController($this->storage);
+        return $this->storageController->create(
+            $request->method,
+            $request->get,
+            $request->post,
+            $request->headers,
+        );
+    }
 
-        if ($control === false) {
-            return $controller->create(
-                $request->getMethod(),
-                $request->get(),
-                $request->post(),
-                $request->getHeaders(),
-            );
-        }
-
-        return match ($request->getMethod()) {
-            'GET' => $controller->flush(),
+    protected function flushStorageController(RequestData $request): Response
+    {
+        return match ($request->method) {
+            'GET' => $this->storageController->flush(),
         };
     }
 
-    protected function runContentController(RequestWrapper $request): Response
+    protected function runContentController(RequestData $request): Response
     {
-        return (new ContentController())->index(
-            $request->getMethod(),
-            $request->get(),
-            $request->post(),
-            $request->getHeaders(),
+        return $this->contentController->index(
+            $request->method,
+            $request->get,
+            $request->post,
+            $request->headers,
         );
     }
 }

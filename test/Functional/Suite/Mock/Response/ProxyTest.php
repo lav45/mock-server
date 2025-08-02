@@ -65,7 +65,7 @@ class ProxyTest extends TestCase
     private function getStorageData(): array
     {
         $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody()->read();
         return \json_decode($content, true);
     }
 
@@ -82,7 +82,7 @@ class ProxyTest extends TestCase
         $this->assertArrayHasKey('authorization', $headers);
         $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody()->read();
         $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);
@@ -111,7 +111,7 @@ class ProxyTest extends TestCase
         $this->assertArrayHasKey('authorization', $headers);
         $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody()->read();
         $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);
@@ -137,7 +137,7 @@ class ProxyTest extends TestCase
         $this->assertArrayHasKey('authorization', $headers);
         $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody()->read();
         $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content['method']);

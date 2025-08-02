@@ -13,4 +13,9 @@ final readonly class Request
         public array  $urlParams,
         public string $body,
     ) {}
+
+    public function toArray(): array
+    {
+        return \get_object_vars($this);
+    }
 }

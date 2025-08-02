@@ -41,7 +41,7 @@ class WebHookTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody()->read();
         $content = \json_decode($content, true);
 
         $this->assertEquals('POST', $content[0]['method']);

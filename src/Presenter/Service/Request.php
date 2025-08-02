@@ -5,35 +5,17 @@ namespace Lav45\MockServer\Presenter\Service;
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request as HttpRequest;
 
-/**
- * @mixin HttpRequest
- */
 final class Request
 {
-    public const string URL_PARAMS = 'URL_PARAMS';
-
     private string $body;
 
-    private array $get;
+    private array $query;
 
     public function __construct(private readonly HttpRequest $request) {}
 
-    public function __call(string $name, array $args)
+    public function getQuery(): array
     {
-        if (\method_exists($this->request, $name)) {
-            return \call_user_func_array([$this->request, $name], $args);
-        }
-        throw new \RuntimeException('Calling unknown method: ' . self::class . "::{$name}()");
-    }
-
-    public function getUrlParams(): array
-    {
-        return $this->request->getAttribute(self::URL_PARAMS);
-    }
-
-    public function get(): array
-    {
-        return $this->get ??= $this->parseQuery($this->request->getUri()->getQuery());
+        return $this->query ??= $this->parseQuery($this->request->getUri()->getQuery());
     }
 
     private function parseQuery(null|string $query): array
@@ -45,7 +27,7 @@ final class Request
         return $parseQuery;
     }
 
-    public function post(): array
+    public function getData(): array
     {
         return $this->parseContentBoundary() !== null ?
             $this->parseForm() :

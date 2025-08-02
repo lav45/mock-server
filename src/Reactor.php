@@ -8,7 +8,6 @@ use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response;
 use FastRoute\Dispatcher;
-use Lav45\MockServer\Presenter\Service\Request as RequestWrapper;
 
 final readonly class Reactor implements RequestHandlerInterface
 {
@@ -33,7 +32,7 @@ final readonly class Reactor implements RequestHandlerInterface
 
     private function makeFoundResponse(RequestHandlerInterface $handler, array $requestArgs, Request $request): Response
     {
-        $request->setAttribute(RequestWrapper::URL_PARAMS, $requestArgs);
+        $request->setAttribute('urlParams', $requestArgs);
 
         return $handler->handleRequest($request);
     }

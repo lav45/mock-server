@@ -4,21 +4,21 @@ namespace Lav45\MockServer\Presenter\Service;
 
 use Amp\Http\Server\Request as HttpRequest;
 use Lav45\MockServer\Application\Query\Request\Request as RequestData;
-use Lav45\MockServer\Presenter\Service\Request as RequestWrapper;
+use Lav45\MockServer\Presenter\Service\Request as RequestAdaptor;
 
 final readonly class RequestFactory
 {
-    public static function create(HttpRequest $httpRequest): RequestData
+    public static function create(HttpRequest $httpRequest, array $urlParams = []): RequestData
     {
-        $request = new RequestWrapper($httpRequest);
+        $request = new RequestAdaptor($httpRequest);
 
         return new RequestData(
             start: \microtime(true),
-            method: $request->getMethod(),
-            get: $request->get(),
-            post: $request->post(),
-            headers: $request->getHeaders(),
-            urlParams: $request->getUrlParams(),
+            method: $httpRequest->getMethod(),
+            get: $request->getQuery(),
+            post: $request->getData(),
+            headers: $httpRequest->getHeaders(),
+            urlParams: $urlParams,
             body: $request->body(),
         );
     }

@@ -21,7 +21,8 @@ final readonly class Request implements RequestHandler
 
     public function handleRequest(HttpRequest $request): HttpResponse
     {
-        $requestData = RequestFactory::create($request);
+        $urlParams = $request->getAttribute('urlParams');
+        $requestData = RequestFactory::create($request, $urlParams);
 
         $responseData = (new Handler(
             webHookHandler: $this->webHookHandler,
