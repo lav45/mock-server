@@ -60,7 +60,7 @@ jobs:
       - run: ./composer deptrac
       - run: ./composer unused
 
-      - name: Run tests with phpunit and code coverage
+      - name: Run phpunit tests with code coverage
         run: ./composer codecov
 
       - name: Upload coverage reports to Codecov

@@ -30,12 +30,19 @@ FROM base AS tool
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN <<CMD
-    apk add --no-cache php84-phar php84-curl php84-zip php84-xml php84-xmlwriter php84-pecl-pcov php84-posix
+    apk add --no-cache php84-phar php84-curl php84-zip php84-zlib php84-xml php84-xmlwriter php84-pecl-pcov php84-posix
 
     echo 'zend.assertions=1' >> /etc/php/conf.d/00_main.ini
 CMD
 
+FROM tool AS build
+
 WORKDIR /app
+
+COPY composer.json /app/composer.json
+COPY composer.lock /app/composer.lock
+
+RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
 
 FROM base AS server
 
@@ -51,7 +58,7 @@ CMD
 COPY bin /app/bin
 COPY migrates /app/migrates
 COPY src /app/src
-COPY vendor /app/vendor
+COPY --from=build /app/vendor /app/vendor
 
 WORKDIR /app/bin
 
