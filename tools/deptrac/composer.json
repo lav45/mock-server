@@ -1,5 +1,5 @@
 {
     "require-dev": {
-        "deptrac/deptrac": "^3.0"
+        "deptrac/deptrac": "^4.0"
     }
 }
