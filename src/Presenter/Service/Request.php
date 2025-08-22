@@ -18,7 +18,7 @@ final class Request
         return $this->query ??= $this->parseQuery($this->request->getUri()->getQuery());
     }
 
-    private function parseQuery(null|string $query): array
+    private function parseQuery(string|null $query): array
     {
         if (empty($query)) {
             return [];
@@ -29,9 +29,9 @@ final class Request
 
     public function getData(): array
     {
-        return $this->parseContentBoundary() !== null ?
-            $this->parseForm() :
-            $this->parseBody();
+        return $this->parseContentBoundary() !== null
+            ? $this->parseForm()
+            : $this->parseBody();
     }
 
     private function parseForm(): array
@@ -61,7 +61,7 @@ final class Request
         return $this->body ??= $this->request->getBody()->read();
     }
 
-    private function parseContentBoundary(): null|string
+    private function parseContentBoundary(): string|null
     {
         return FormParser\parseContentBoundary($this->getContentType());
     }
@@ -73,7 +73,7 @@ final class Request
 
     private function getFormValues(): array
     {
-        return (new FormParser\FormParser())
+        return new FormParser\FormParser()
             ->parseBody($this->body(), $this->parseContentBoundary())
             ->getValues();
     }

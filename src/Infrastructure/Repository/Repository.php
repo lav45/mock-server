@@ -17,6 +17,6 @@ final readonly class Repository implements RequestRepository
     public function find(Request $request): Mock
     {
         $parser = $this->parserFactory->create($request);
-        return (new DataMapper($parser))->toModel($this->data, $request);
+        return new DataMapper($parser)->toModel($this->data, $request);
     }
 }

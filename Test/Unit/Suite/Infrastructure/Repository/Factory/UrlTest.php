@@ -24,7 +24,7 @@ final class UrlTest extends TestCase
             }
         };
 
-        $newUrl = (new AttributeFactory($parser, ['url' => $url]))->createUrl($get)->value;
+        $newUrl = new AttributeFactory($parser, ['url' => $url])->createUrl($get)->value;
 
         $this->assertEquals($expected, $newUrl);
     }

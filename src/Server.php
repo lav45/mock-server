@@ -89,6 +89,6 @@ final readonly class Server
             ignoreEmptyContextAndExtra: true,
         ));
 
-        return (new Logger('mock-server'))->pushHandler($handler);
+        return new Logger('mock-server')->pushHandler($handler);
     }
 }

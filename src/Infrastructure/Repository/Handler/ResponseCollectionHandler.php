@@ -36,7 +36,7 @@ final readonly class ResponseCollectionHandler implements Handler
         $pageSize = (int)($request->get[$pageSizeParam] ?? $defaultPageSize);
         $currentPage = (int)(($request->get[$pageParam] ?? null) ?: 1);
 
-        $dataProvider = (new OffsetPaginator(new IterableDataReader($dataItems)))
+        $dataProvider = new OffsetPaginator(new IterableDataReader($dataItems))
             ->withPageSize($pageSize)
             ->withCurrentPage($currentPage);
 
@@ -65,7 +65,7 @@ final readonly class ResponseCollectionHandler implements Handler
             ],
         ]);
 
-        $headers = (new AttributeFactory($parser, $data))->createHeaders(true);
+        $headers = new AttributeFactory($parser, $data)->createHeaders(true);
 
         $result = $data['result'] ?? '{{response.items}}';
         $result = $parser->replace($result);

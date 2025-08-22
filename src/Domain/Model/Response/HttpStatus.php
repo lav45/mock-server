@@ -11,12 +11,11 @@ final readonly class HttpStatus
 
     private function isValidStatus(int $status): bool
     {
-        return
-            $this->isInformational($status) ||
-            $this->isSuccessful($status) ||
-            $this->isRedirect($status) ||
-            $this->isClientError($status) ||
-            $this->isServerError($status);
+        return $this->isInformational($status)
+            || $this->isSuccessful($status)
+            || $this->isRedirect($status)
+            || $this->isClientError($status)
+            || $this->isServerError($status);
     }
 
     /**

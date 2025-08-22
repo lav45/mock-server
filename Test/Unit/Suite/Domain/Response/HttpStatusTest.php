@@ -11,7 +11,7 @@ final class HttpStatusTest extends TestCase
     #[DataProvider('successCreateDataProvider')]
     public function testSuccessCreate(int $code): void
     {
-        $result = (new HttpStatus($code))->value;
+        $result = new HttpStatus($code)->value;
         $this->assertEquals($code, $result);
     }
 

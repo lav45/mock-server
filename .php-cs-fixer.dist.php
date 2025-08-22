@@ -3,7 +3,7 @@
 use PhpCsFixer\Config;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
-$config = (new Config('mock-server'))
+$config = new Config('mock-server')
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRiskyAllowed(true)
     ->setLineEnding("\n")

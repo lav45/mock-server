@@ -13,12 +13,12 @@ final readonly class Body
 
     public static function new(array|string|null $data = null): self
     {
-        return \is_array($data) ?
-            self::fromJson($data) :
-            self::fromText($data);
+        return \is_array($data)
+            ? self::fromJson($data)
+            : self::fromText($data);
     }
 
-    public static function fromText(null|string $content): self
+    public static function fromText(string|null $content): self
     {
         return new self($content ?? '');
     }

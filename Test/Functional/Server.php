@@ -58,7 +58,7 @@ readonly class Server
 
     protected function getLogger(StreamHandler $handler, string $name = 'listen-server'): LoggerInterface
     {
-        return (new Logger($name))->pushHandler($handler);
+        return new Logger($name)->pushHandler($handler);
     }
 
     protected function getLogHandler(): StreamHandler

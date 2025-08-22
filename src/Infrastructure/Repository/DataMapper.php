@@ -16,7 +16,7 @@ final readonly class DataMapper
 
     public function toModel(array $data, Request $request): Mock
     {
-        $webHooks = (new WebHooksHandler($this->parser))->handle($data);
+        $webHooks = new WebHooksHandler($this->parser)->handle($data);
 
         $response = HandlerFactory::fromData($data)
             ->create($this->parser)

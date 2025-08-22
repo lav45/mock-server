@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Service;
 
 final readonly class FileSystem
 {
-    public static function getFileList(string $directory, null|\Closure $filter = null): array
+    public static function getFileList(string $directory, \Closure|null $filter = null): array
     {
         $list = [];
         $items = \glob($directory . '/*');

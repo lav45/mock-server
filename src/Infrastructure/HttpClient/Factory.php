@@ -17,18 +17,18 @@ final readonly class Factory
     public static function create(
         LoggerInterface $logger = new NullLogger(),
     ): HttpClient {
-        $tls = (new ClientTlsContext(''))
+        $tls = new ClientTlsContext('')
             ->withoutPeerVerification()
             ->withSecurityLevel(0);
 
-        $context = (new ConnectContext())
+        $context = new ConnectContext()
             ->withTlsContext($tls);
 
         $factory = new DefaultConnectionFactory(connectContext: $context);
 
         $pool = new UnlimitedConnectionPool($factory);
 
-        $client = (new HttpClientBuilder())
+        $client = new HttpClientBuilder()
             ->intercept(new Logger($logger, Level::Info, Level::Error))
             ->usingPool($pool)
             ->build();

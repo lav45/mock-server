@@ -22,9 +22,9 @@ final readonly class Logger implements ApplicationInterceptor
     {
         $response = $httpClient->request($request, $cancellation);
 
-        $loggerLevel = HttpStatus::isSuccessful($response->getStatus()) ?
-            $this->logLevelOk :
-            $this->logLevelError;
+        $loggerLevel = HttpStatus::isSuccessful($response->getStatus())
+            ? $this->logLevelOk
+            : $this->logLevelError;
 
         $message = '';
         if ($request->hasAttribute('logLabel')) {

@@ -6,11 +6,11 @@ require __DIR__ . '/../vendor/autoload.php';
 use Lav45\MockServer\Server;
 use Lav45\MockServer\Config;
 
-$config = (new Config())
+$config = new Config()
     ->port(getenv('PORT'))
     ->mocks(getenv('MOCKS_PATH'))
     ->locale(getenv('LOCALE'))
     ->log(getenv('LOG_LEVEL'))
     ->fileWatch(getenv('FILE_WATCH_TIMEOUT'));
 
-(new Server($config))->start();
+new Server($config)->start();

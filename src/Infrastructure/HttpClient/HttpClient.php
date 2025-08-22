@@ -15,9 +15,9 @@ final readonly class HttpClient implements HttpClientInterface
     public function request(
         string      $uri,
         string      $method = 'GET',
-        null|string $body = null,
-        null|array  $headers = null,
-        null|string $logLabel = null,
+        string|null $body = null,
+        array|null  $headers = null,
+        string|null $logLabel = null,
     ): Response {
         $request = new Request($uri, $method);
 
