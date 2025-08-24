@@ -78,7 +78,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Lav45\\MockServer\\Test\\": "Test"
+            "Lav45\\MockServer\\Test\\": "test"
         }
     },
     "minimum-stability": "stable"

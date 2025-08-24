@@ -7,7 +7,6 @@ use Amp\Http\Client\Connection\UnlimitedConnectionPool;
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\ConnectContext;
-use Lav45\MockServer\Infrastructure\HttpClient\Interceptor\Logger;
 use Monolog\Level;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -29,7 +28,7 @@ final readonly class Factory
         $pool = new UnlimitedConnectionPool($factory);
 
         $client = new HttpClientBuilder()
-            ->intercept(new Logger($logger, Level::Info, Level::Error))
+            ->intercept(new Interceptor\Logger($logger, Level::Info, Level::Error))
             ->usingPool($pool)
             ->build();
 
