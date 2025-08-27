@@ -21,7 +21,7 @@
     "require": {
         "php": ">=8.4",
         "ext-intl": "*",
-        "ext-pcntl": "*",
+        "ext-uv": "*",
         "ext-filter": "*",
         "ext-inotify": "*",
         "amphp/amp": "^v3.1",
@@ -61,7 +61,7 @@
         "coverage": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
         "codecov": "DOMAIN=test.server.com URL=http://127.0.0.1:8000 php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",
-        "unused": "php vendor/bin/composer-unused",
+        "unused": "php vendor/bin/composer-unused --excludePackage=ext-uv",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
         "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix",
         "test": [

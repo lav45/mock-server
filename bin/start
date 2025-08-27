@@ -13,4 +13,7 @@ $config = new Config()
     ->log(getenv('LOG_LEVEL'))
     ->fileWatch(getenv('FILE_WATCH_TIMEOUT'));
 
+const SIGINT = 2;
+const SIGTERM = 15;
+
 new Server($config)->start();

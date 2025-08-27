@@ -1,35 +1,43 @@
-FROM alpine:3.22 AS inotify
+FROM alpine:3.22 AS pecl
 
 RUN <<CMD
-    apk add --no-cache php84-pear php84-openssl php84-dev musl-dev autoconf make gcc
+    set -e
+    apk add --no-cache php84-dev php84-pear php84-openssl musl-dev autoconf make gcc libuv-dev
 
     pecl84 channel-update pecl.php.net
     pecl84 install inotify
+    pecl84 install uv-0.3.0
 CMD
 
 FROM alpine:3.22 AS base
 
+COPY --from=pecl /usr/lib/php84/modules/inotify.so /usr/lib/php84/modules/inotify.so
+COPY --from=pecl /usr/lib/php84/modules/uv.so /usr/lib/php84/modules/uv.so
+
 RUN <<CMD
+    set -e
     apk upgrade --no-cache --available
-    apk add --no-cache php84 php84-pcntl php84-openssl php84-intl php84-fileinfo php84-ctype php84-dom php84-iconv php84-mbstring php84-tokenizer php84-gmp
+    apk add --no-cache php84 php84-openssl php84-intl php84-fileinfo php84-ctype php84-dom php84-iconv php84-mbstring php84-tokenizer php84-gmp
 
     ln -s /etc/php84 /etc/php
     ln -s /usr/bin/php84 /bin/php
 
-    echo 'memory_limit = -1' >> /etc/php/conf.d/00_main.ini
+    echo 'memory_limit = -1' > /etc/php/conf.d/00_main.ini
 
-    echo 'extension=inotify' > /etc/php/conf.d/00_inotify.ini
+    echo 'extension=inotify.so' > /etc/php/conf.d/00_inotify.ini
     echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
     echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
-CMD
 
-COPY --from=inotify /usr/lib/php84/modules/inotify.so /usr/lib/php84/modules/inotify.so
+    apk add --no-cache libuv
+    echo 'extension=uv.so' > /etc/php/conf.d/00_uv.ini
+CMD
 
 FROM base AS tool
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN <<CMD
+    set -e
     apk add --no-cache php84-phar php84-curl php84-zip php84-zlib php84-xml php84-xmlwriter php84-pecl-pcov php84-posix
 
     echo 'zend.assertions=1' >> /etc/php/conf.d/00_main.ini
@@ -47,6 +55,7 @@ RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev 
 FROM base AS server
 
 RUN <<CMD
+  set -e
   apk add --no-cache php84-opcache
 
   echo 'opcache.enable=on' >> /etc/php/conf.d/00_opcache.ini
