@@ -38,7 +38,7 @@ final class ConfigTest extends TestCase
     public function testListenWithInvalidPortThrowsException(mixed $invalidPort): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid port');
+        $this->expectExceptionMessage('Invalid mock port');
         $this->config->port(port: $invalidPort);
     }
 

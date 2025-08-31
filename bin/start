@@ -3,8 +3,9 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Lav45\MockServer\Server;
 use Lav45\MockServer\Config;
+use Lav45\MockServer\LoggerFactory;
+use Lav45\MockServer\Server;
 
 $config = new Config()
     ->port(getenv('PORT'))
@@ -13,7 +14,12 @@ $config = new Config()
     ->log(getenv('LOG_LEVEL'))
     ->fileWatch(getenv('FILE_WATCH_TIMEOUT'));
 
+$logger = LoggerFactory::create('mock-server', $config->getLogLevel());
+
+$mockServer = new Server($config, $logger)->start();
+
 const SIGINT = 2;
 const SIGTERM = 15;
 
-new Server($config)->start();
+$logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+$mockServer->stop();

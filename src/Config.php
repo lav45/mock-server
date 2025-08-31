@@ -19,19 +19,24 @@ final class Config
     public function port(string|int|false $port): self
     {
         if ($port || $port === 0) {
-            $options = [
-                'options' => [
-                    'min_range' => 0,
-                    'max_range' => 65535,
-                ],
-            ];
-            if (\filter_var($port, FILTER_VALIDATE_INT, $options) !== false) {
+            if ($this->isValidPort($port)) {
                 $this->port = (int)$port;
             } else {
-                throw new \InvalidArgumentException('Invalid port');
+                throw new \InvalidArgumentException('Invalid mock port');
             }
         }
         return $this;
+    }
+
+    private function isValidPort(string|int $port): bool
+    {
+        $options = [
+            'options' => [
+                'min_range' => 0,
+                'max_range' => 65535,
+            ],
+        ];
+        return \filter_var($port, FILTER_VALIDATE_INT, $options) !== false;
     }
 
     public function mocks(string|false $path): self
