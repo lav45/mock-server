@@ -14,15 +14,11 @@ final readonly class ResponseCollectionHandler implements Handler
 {
     public const string TYPE = 'data';
 
-    public function __construct(
-        private Parser $parser,
-    ) {}
-
-    public function handle(array $data, Request $request): Response
+    public function handle(Parser $parser, array $data, Request $request): Response
     {
         $data = $data['response'] ?? [];
 
-        $factory = new AttributeFactory($this->parser, $data);
+        $factory = new AttributeFactory($parser, $data);
 
         $start = new Response\Start($request->start);
         $delay = $factory->createDelay();
@@ -53,7 +49,7 @@ final readonly class ResponseCollectionHandler implements Handler
         $totalPages = $dataProvider->getTotalPages();
         $pageSize = $items ? $dataProvider->getCurrentPageSize() : 0;
 
-        $parser = $this->parser->withData([
+        $parser = $parser->withData([
             'response' => [
                 'items' => $items,
                 'pagination' => [

@@ -11,7 +11,9 @@ final class Request
 
     private array $query;
 
-    public function __construct(private readonly HttpRequest $request) {}
+    public function __construct(
+        private readonly HttpRequest $request,
+    ) {}
 
     public function getQuery(): array
     {

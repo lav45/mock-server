@@ -4,40 +4,32 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Domain\Model\Response\Body;
 use Lav45\MockServer\Domain\Model\WebHook;
-use Lav45\MockServer\Domain\Model\WebHooks;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
 
 final readonly class WebHooksHandler
 {
-    public function __construct(
-        private Parser $parser,
-    ) {}
-
-    public function handle(array $data): WebHooks
+    public function handle(Parser $parser, array $data): iterable
     {
-        $items = [];
-        $webHooks = $data['webhooks'] ?? [];
-        foreach ($webHooks as $webHook) {
-            $items[] = $this->createItem($webHook);
+        foreach ($data['webhooks'] ?? [] as $webHook) {
+            yield $this->createItem($parser, $webHook);
         }
-        return new WebHooks(...$items);
     }
 
-    private function createItem(array $item): WebHook
+    private function createItem(Parser $parser, array $item): WebHook
     {
-        $factory = new AttributeFactory($this->parser, $item);
+        $factory = new AttributeFactory($parser, $item);
 
         $delay = $factory->createDelay();
         $url = $factory->createUrl();
         $method = $factory->createMethod();
 
         $json = $item['json'] ?? null;
-        $json = $this->parser->replace($json);
+        $json = $parser->replace($json);
 
         $headers = $factory->createHeaders(isset($json));
 
         $text = $item['text'] ?? null;
-        $text = $this->parser->replace($text);
+        $text = $parser->replace($text);
 
         if ($json) {
             $body = Body::fromJson($json);

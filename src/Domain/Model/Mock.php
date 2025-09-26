@@ -6,6 +6,6 @@ final readonly class Mock
 {
     public function __construct(
         public Response $response,
-        public WebHooks $webHooks,
+        public iterable $webHooks,
     ) {}
 }

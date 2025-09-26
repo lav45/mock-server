@@ -5,26 +5,43 @@ namespace Lav45\MockServer\Infrastructure\Repository;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Mock;
 use Lav45\MockServer\Infrastructure\Parser\Parser;
-use Lav45\MockServer\Infrastructure\Repository\Handler\HandlerFactory;
+use Lav45\MockServer\Infrastructure\Repository\Handler\Handler;
+use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseCollectionHandler;
+use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseContentHandler;
+use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseProxyHandler;
 use Lav45\MockServer\Infrastructure\Repository\Handler\WebHooksHandler;
 
 final readonly class DataMapper
 {
-    public function __construct(
-        private Parser $parser,
-    ) {}
+    private array $responseHandlers;
 
-    public function toModel(array $data, Request $request): Mock
+    private WebHooksHandler $webHooksHandler;
+
+    public function __construct()
     {
-        $webHooks = new WebHooksHandler($this->parser)->handle($data);
+        $this->responseHandlers = [
+            ResponseContentHandler::TYPE => new ResponseContentHandler(),
+            ResponseProxyHandler::TYPE => new ResponseProxyHandler(),
+            ResponseCollectionHandler::TYPE => new ResponseCollectionHandler(),
+        ];
+        $this->webHooksHandler = new WebHooksHandler();
+    }
 
-        $response = HandlerFactory::fromData($data)
-            ->create($this->parser)
-            ->handle($data, $request);
-
+    public function toModel(Parser $parser, array $data, Request $request): Mock
+    {
         return new Mock(
-            response: $response,
-            webHooks: $webHooks,
+            response: $this->getResponseHandler($data)->handle($parser, $data, $request),
+            webHooks: $this->webHooksHandler->handle($parser, $data),
         );
+    }
+
+    private function getResponseHandler(array $data): Handler
+    {
+        if (isset($data['response']['type'])) {
+            $type = \strtolower($data['response']['type']);
+        } else {
+            $type = ResponseContentHandler::TYPE;
+        }
+        return $this->responseHandlers[$type];
     }
 }

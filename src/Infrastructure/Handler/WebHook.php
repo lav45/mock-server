@@ -17,7 +17,10 @@ final readonly class WebHook implements WebHookInterface
         private HttpClientInterface $httpClient,
     ) {}
 
-    public function send(WebHookItem ...$webHooks): void
+    /**
+     * @param list<WebHookItem> $webHooks
+     */
+    public function send(iterable $webHooks): void
     {
         async(function () use ($webHooks) {
             foreach ($webHooks as $webHook) {

@@ -9,14 +9,21 @@ use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
 
 final readonly class Repository implements RequestRepository
 {
+    private DataMapper $dataMapper;
+
     public function __construct(
         private ParserFactory $parserFactory,
         private array         $data,
-    ) {}
+    ) {
+        $this->dataMapper = new DataMapper();
+    }
 
     public function find(Request $request): Mock
     {
-        $parser = $this->parserFactory->create($request);
-        return new DataMapper($parser)->toModel($this->data, $request);
+        return $this->dataMapper->toModel(
+            parser: $this->parserFactory->create($request),
+            data: $this->data,
+            request: $request,
+        );
     }
 }

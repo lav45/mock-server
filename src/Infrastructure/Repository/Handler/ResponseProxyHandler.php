@@ -12,15 +12,11 @@ final readonly class ResponseProxyHandler implements Handler
 {
     public const string TYPE = 'proxy';
 
-    public function __construct(
-        private Parser $parser,
-    ) {}
-
-    public function handle(array $data, Request $request): Response
+    public function handle(Parser $parser, array $data, Request $request): Response
     {
         $data = $data['response'] ?? [];
 
-        $factory = new AttributeFactory($this->parser, $data);
+        $factory = new AttributeFactory($parser, $data);
 
         $start = new Response\Start($request->start);
         $delay = $factory->createDelay();

@@ -16,7 +16,7 @@ final readonly class Handler
 
         $response = $this->responseFabric->create($mock->response)->execute();
 
-        $this->webHookHandler->send(...$mock->webHooks->items);
+        $this->webHookHandler->send($mock->webHooks);
 
         return $response;
     }
