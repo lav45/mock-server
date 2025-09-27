@@ -4,6 +4,9 @@ use Monolog\Level;
 
 require(__DIR__ . '/../vendor/autoload.php');
 
+putenv('DOMAIN=test.server.com');
+putenv('URL=http://127.0.0.1:8000');
+
 Amp\async(static function () {
     // Fake proxy server
     $logger = Lav45\MockServer\LoggerFactory::create('logger', Level::Error);

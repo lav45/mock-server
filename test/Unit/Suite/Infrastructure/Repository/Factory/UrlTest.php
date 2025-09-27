@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Infrastructure\Repository\Factory;
 
-use Lav45\MockServer\Infrastructure\Parser\Parser;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 use Lav45\MockServer\Infrastructure\Repository\Handler\AttributeFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -12,13 +12,13 @@ final class UrlTest extends TestCase
     #[DataProvider('createUrlDataProvider')]
     public function testCreateUrl(string $url, array $get, string $expected): void
     {
-        $parser = new class implements Parser {
+        $parser = new class implements DataParser {
             public function replace(mixed $data): mixed
             {
                 return $data;
             }
 
-            public function withData(array $data): Parser
+            public function withData(array $data): DataParser
             {
                 return $this;
             }

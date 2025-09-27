@@ -5,7 +5,7 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Response;
 use Lav45\MockServer\Domain\Model\Response\Body;
-use Lav45\MockServer\Infrastructure\Parser\Parser;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
 use Yiisoft\Data\Reader\Iterable\IterableDataReader;
@@ -14,7 +14,7 @@ final readonly class ResponseCollectionHandler implements Handler
 {
     public const string TYPE = 'data';
 
-    public function handle(Parser $parser, array $data, Request $request): Response
+    public function handle(DataParser $parser, array $data, Request $request): Response
     {
         $data = $data['response'] ?? [];
 

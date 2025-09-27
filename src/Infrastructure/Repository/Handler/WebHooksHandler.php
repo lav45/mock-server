@@ -4,18 +4,18 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Domain\Model\Response\Body;
 use Lav45\MockServer\Domain\Model\WebHook;
-use Lav45\MockServer\Infrastructure\Parser\Parser;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 
 final readonly class WebHooksHandler
 {
-    public function handle(Parser $parser, array $data): iterable
+    public function handle(DataParser $parser, array $data): iterable
     {
         foreach ($data['webhooks'] ?? [] as $webHook) {
             yield $this->createItem($parser, $webHook);
         }
     }
 
-    private function createItem(Parser $parser, array $item): WebHook
+    private function createItem(DataParser $parser, array $item): WebHook
     {
         $factory = new AttributeFactory($parser, $item);
 

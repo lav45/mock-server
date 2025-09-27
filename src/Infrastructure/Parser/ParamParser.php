@@ -4,27 +4,31 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
 
-final readonly class ParamParser
+final class ParamParser implements DataParser
 {
     private ParserHelper $parser;
 
-    public function __construct(private array $data)
-    {
-        $this->parser = new ParserHelper(
-            pattern: '([.\w]+)',
-            value: fn(array $matches) => $this->getValue($matches),
-        );
+    public array $data = [];
+
+    public function __construct(
+        private readonly InlineParser $inlineParser,
+    ) {
+        $this->parser = new ParserHelper('([.\w]+)');
     }
 
     public function withData(array $data): self
     {
-        $data = \array_merge_recursive($this->data, $data);
-        return new self($data);
+        $new = clone $this;
+        $new->data = \array_merge_recursive($this->data, $data);
+        return $new;
     }
 
     public function replace(mixed $data): mixed
     {
-        return $this->parser->replace($data);
+        return $this->parser->replace(
+            $this->inlineParser->replace($data),
+            fn(array $matches) => $this->getValue($matches),
+        );
     }
 
     private function getValue(array $matches): mixed

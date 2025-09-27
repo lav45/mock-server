@@ -3,32 +3,13 @@
 namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Faker\Generator;
-use Lav45\MockServer\Application\Query\Request\Request;
 
 final readonly class ParserFactory
 {
-    public function __construct(
-        private Generator $faker,
-        private array     $env,
-    ) {}
-
-    public function create(Request $request): GroupParser
+    public static function create(Generator $faker): DataParser
     {
-        $fakerParser = new FakerParser($this->faker);
-        $env = $fakerParser->replace($this->env);
-
-        $envParser = new EnvParser();
-        $env = $envParser->replace($env);
-
-        $paramParser = new ParamParser([
-            'request' => $request->toArray(),
-            'env' => $env,
-        ]);
-
-        return new GroupParser(
-            $envParser,
-            $fakerParser,
-            $paramParser,
-        );
+        $fakerParser = new FakerParser($faker);
+        $envParser = new EnvParser($fakerParser);
+        return new ParamParser($envParser);
     }
 }

@@ -9,13 +9,13 @@ use Lav45\MockServer\Domain\Model\Response\HttpHeaders;
 use Lav45\MockServer\Domain\Model\Response\HttpMethod;
 use Lav45\MockServer\Domain\Model\Response\HttpStatus;
 use Lav45\MockServer\Domain\Model\Response\Url;
-use Lav45\MockServer\Infrastructure\Parser\Parser;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 
 final readonly class AttributeFactory
 {
     public function __construct(
-        private Parser $parser,
-        private array  $data,
+        private DataParser $parser,
+        private array      $data,
     ) {}
 
     public function createDelay(): Delay

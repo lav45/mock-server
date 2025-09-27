@@ -8,6 +8,7 @@ use Lav45\MockServer\Application\Query\Request\WebHook;
 use Lav45\MockServer\Infrastructure\Handler\ResponseFabric as ResponseFabricHandler;
 use Lav45\MockServer\Infrastructure\Handler\WebHook as WebHookHandler;
 use Lav45\MockServer\Infrastructure\HttpClient\HttpClient;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
 use Lav45\MockServer\Infrastructure\Repository\Repository;
 use Lav45\MockServer\Presenter\Handler\Request;
@@ -19,23 +20,22 @@ final readonly class RequestFactory implements RequestFactoryInterface
 
     private ResponseFabric $responseFabric;
 
+    private DataParser $parser;
+
     public function __construct(
-        private Faker   $faker,
+        Faker           $faker,
         HttpClient      $httpClient,
         LoggerInterface $logger,
     ) {
         $this->webHookHandler = new WebHookHandler($logger, $httpClient);
         $this->responseFabric = new ResponseFabricHandler($httpClient);
+        $this->parser = ParserFactory::create($faker);
     }
 
     public function create(array $mock): Request
     {
-        $env = $mock['env'] ?? [];
-        $parserFactory = new ParserFactory($this->faker, $env);
-        $repository = new Repository($parserFactory, $mock);
-
         return new Request(
-            repository: $repository,
+            repository: new Repository($this->parser, $mock),
             webHookHandler: $this->webHookHandler,
             responseFabric: $this->responseFabric,
         );

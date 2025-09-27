@@ -2,9 +2,7 @@
 
 namespace Lav45\MockServer\Infrastructure\Parser;
 
-interface Parser
+interface InlineParser
 {
     public function replace(mixed $data): mixed;
-
-    public function withData(array $data): self;
 }

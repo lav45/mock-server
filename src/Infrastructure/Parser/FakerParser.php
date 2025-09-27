@@ -4,21 +4,22 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Faker\Generator;
 
-final readonly class FakerParser
+final readonly class FakerParser implements InlineParser
 {
     private ParserHelper $parser;
 
-    public function __construct(private Generator $faker)
-    {
-        $this->parser = new ParserHelper(
-            pattern: 'faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?',
-            value: fn(array $matches) => $this->getValue($matches),
-        );
+    public function __construct(
+        private Generator $faker,
+    ) {
+        $this->parser = new ParserHelper('faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?');
     }
 
     public function replace(mixed $data): mixed
     {
-        return $this->parser->replace($data);
+        return $this->parser->replace(
+            $data,
+            fn(array $matches) => $this->getValue($matches),
+        );
     }
 
     private function getValue(array $matches): mixed

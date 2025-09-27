@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Repository;
 
 use Lav45\MockServer\Application\Query\Request\Request;
 use Lav45\MockServer\Domain\Model\Mock;
-use Lav45\MockServer\Infrastructure\Parser\Parser;
+use Lav45\MockServer\Infrastructure\Parser\DataParser;
 use Lav45\MockServer\Infrastructure\Repository\Handler\Handler;
 use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseCollectionHandler;
 use Lav45\MockServer\Infrastructure\Repository\Handler\ResponseContentHandler;
@@ -27,7 +27,7 @@ final readonly class DataMapper
         $this->webHooksHandler = new WebHooksHandler();
     }
 
-    public function toModel(Parser $parser, array $data, Request $request): Mock
+    public function toModel(DataParser $parser, array $data, Request $request): Mock
     {
         return new Mock(
             response: $this->getResponseHandler($data)->handle($parser, $data, $request),

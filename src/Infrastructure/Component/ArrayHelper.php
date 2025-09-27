@@ -10,7 +10,6 @@ final class ArrayHelper
         mixed  $default = null,
     ): mixed {
         $path = \explode('.', string: \rtrim($name, '.'));
-
         foreach ($path as $step) {
             if (\is_array($data) === false || (isset($data[$step]) || \array_key_exists($step, $data)) === false) {
                 return $default;

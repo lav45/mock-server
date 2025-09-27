@@ -2,24 +2,22 @@
 
 namespace Lav45\MockServer\Infrastructure\Parser;
 
-use Lav45\MockServer\Infrastructure\Component\ArrayHelper;
-
-final readonly class EnvParser
+final readonly class EnvParser implements InlineParser
 {
     private ParserHelper $parser;
 
     public function __construct(
-        private array $data = [],
+        private InlineParser $inlineParser,
     ) {
-        $this->parser = new ParserHelper(
-            pattern: 'env\.([.\w]+)',
-            value: fn(array $matches) => $this->getValue($matches),
-        );
+        $this->parser = new ParserHelper('env\.([.\w]+)');
     }
 
     public function replace(mixed $data): mixed
     {
-        return $this->parser->replace($data);
+        return $this->parser->replace(
+            $this->inlineParser->replace($data),
+            fn(array $matches) => $this->getValue($matches),
+        );
     }
 
     private function getValue(array $matches): mixed
@@ -27,6 +25,6 @@ final readonly class EnvParser
         if ($value = \getenv($matches[2])) {
             return $value;
         }
-        return ArrayHelper::getValue($this->data, $matches[2], $matches[1]);
+        return $matches[1];
     }
 }

@@ -7,7 +7,7 @@ use Lav45\MockServer\Infrastructure\Parser\FakerParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class FakerTest extends TestCase
+final class FakerParserTest extends TestCase
 {
     private FakerParser $parser;
 
