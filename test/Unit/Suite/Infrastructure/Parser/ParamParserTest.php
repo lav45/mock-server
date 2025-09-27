@@ -43,6 +43,33 @@ final class ParamParserTest extends TestCase
                 '{{response.items}}',
                 [],
             ],
+            [
+                [
+                    'response' => [
+                        'items' => [1, 2, 3],
+                    ],
+                ],
+                '{{response.items}}',
+                [1, 2, 3],
+            ],
+            [
+                ['data' => 123],
+                '{{data}}',
+                123,
+            ],
+            [
+                ['data' => 123],
+                '{data}',
+                '123',
+            ],
+            [
+                [
+                    'data' => 123,
+                    'items' => [1, 2, 3],
+                ],
+                '{{items}}',
+                [1, 2, 3],
+            ],
         ];
     }
 }

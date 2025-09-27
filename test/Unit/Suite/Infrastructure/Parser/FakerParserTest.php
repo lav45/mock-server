@@ -39,6 +39,8 @@ final class FakerParserTest extends TestCase
             ["{{faker.regexify('[A-Z0-9]{14}')}}", '~^[A-Z0-9]{14}$~'],
             ["{{faker.dateTimeBetween('-1 week', '-1 hour').format('Y-m-d')}}", '~^\d{4}-\d{2}-\d{2}$~'],
             ["{{faker.dateTimeBetween('-1 week', '-1 hour').getTimestamp()}}", '~^\d+$~'],
+            ["{{faker.dateTime().getTimestamp()}}", '~^\d+$~'],
+            ["{{faker.dateTime().format('Y-m-d')}}", '~^\d{4}-\d{2}-\d{2}$~'],
             ["{{faker.currencyCode}}", '~^[A-Z]{3}$~'],
             ["{{faker.email}}", '~^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$~'],
             ["{faker.email} - {faker.md5}", '~^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4} - [a-f0-9]{32}$~'],

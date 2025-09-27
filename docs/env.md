@@ -12,16 +12,17 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
         "env": {
             "id": "{{faker.uuid}}",
             "iban": "{{faker.iban('LV')}}",
-            "dateTime": "{{faker.dateTimeBetween('-1 week', '+1 week').format('Y-m-d H:i:s')}}",
+            "createdAt": "{{faker.dateTimeBetween('-1 week', '+1 week').format('Y-m-d H:i:s')}}",
+            "now": "{{date.format('Y-m-d H:i:s')}}",
             "amount": 1000
         },
         "response": {
             "content": {
                 "json": {
-                    "id": "{env.id}",
-                    "iban": "{env.iban}",
-                    "createdAt": "{env.dateTime}",
-                    "updatedAt": "{env.dateTime}",
+                    "id": "{{env.id}}",
+                    "iban": "{{env.iban}}",
+                    "createdAt": "{{env.createdAt}}",
+                    "updatedAt": "{{env.now}}",
                     "amountInText": "{env.amount} USD",
                     "amountSourceDataType": "{{env.amount}}"
                 }
@@ -31,11 +32,11 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
             {
                 "url": "https://api.site.com/webhook",
                 "json": {
-                    "id": "{env.id}",
-                    "iban": "{env.iban}",
+                    "id": "{{env.id}}",
+                    "iban": "{{env.iban}}",
                     "amount": "{{env.amount}}",
-                    "createdAt": "{env.dateTime}",
-                    "updatedAt": "{env.dateTime}"
+                    "createdAt": "{{env.createdAt}}",
+                    "updatedAt": "{{env.now}}"
                 }
             }
         ]

@@ -10,6 +10,7 @@ final readonly class ParserFactory
     {
         $fakerParser = new FakerParser($faker);
         $envParser = new EnvParser($fakerParser);
-        return new ParamParser($envParser);
+        $dateParse = new DateParse($envParser);
+        return new ParamParser($dateParse);
     }
 }
