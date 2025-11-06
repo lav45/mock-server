@@ -24,7 +24,7 @@ class ContentTest extends TestCase
         $this->assertArrayHasKey('content-type', $headers);
         $this->assertEquals('application/json', $headers['content-type'][0]);
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
         $this->assertArrayHasKey('id', $content);
 
@@ -44,7 +44,7 @@ class ContentTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/content/json');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $ids2 = \explode('/', $content['id']);
@@ -63,7 +63,7 @@ class ContentTest extends TestCase
         $this->assertArrayHasKey('content-type', $headers);
         $this->assertEquals('text/plain; charset=utf-8', $headers['content-type'][0]);
 
-        $this->assertEquals('OK', $response->getBody()->read());
+        $this->assertEquals('OK', $response->getBody()->buffer());
     }
 
     public function testHeaders(): void
@@ -84,6 +84,6 @@ class ContentTest extends TestCase
     {
         $response = $this->HttpClient->request('http://127.0.0.1/response/content/status');
         $this->assertEquals(401, $response->getStatus());
-        $this->assertEquals('Unauthorized', $response->getBody()->read());
+        $this->assertEquals('Unauthorized', $response->getBody()->buffer());
     }
 }

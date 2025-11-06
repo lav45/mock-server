@@ -19,7 +19,7 @@ class DataTest extends TestCase
     {
         $response = $this->HttpClient->request('http://127.0.0.1/response/data');
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('[]', $response->getBody()->read());
+        $this->assertEquals('[]', $response->getBody()->buffer());
 
         $headers = $response->getHeaders();
         $this->assertArrayHasKey('content-type', $headers);
@@ -31,7 +31,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -72,7 +72,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -114,7 +114,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=0');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -152,7 +152,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2&_s=3');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -193,7 +193,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=2&_s=10');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -222,7 +222,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/file?_p=2&_s=5');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);
@@ -263,7 +263,7 @@ class DataTest extends TestCase
     {
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/status');
         $this->assertEquals(418, $response->getStatus());
-        $this->assertEquals('[]', $response->getBody()->read());
+        $this->assertEquals('[]', $response->getBody()->buffer());
     }
 
     public function testJsonPage100(): void
@@ -271,7 +271,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request('http://127.0.0.1/response/data/json?_p=100');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->read();
+        $content = $response->getBody()->buffer();
         $content = \json_decode($content, true);
 
         $this->assertArrayHasKey('data', $content);

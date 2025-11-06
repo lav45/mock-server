@@ -60,7 +60,7 @@ final class Request
 
     public function body(): string
     {
-        return $this->body ??= $this->request->getBody()->read();
+        return $this->body ??= $this->request->getBody()->buffer();
     }
 
     private function parseContentBoundary(): string|null
