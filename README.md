@@ -68,6 +68,7 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks -e MOCKS_PATH=/app/mocks lav45/mo
 
 ```shell
 ./build.sh
+./composer install
 ```
 
 ## Run in development mode
