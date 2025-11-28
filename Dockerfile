@@ -66,8 +66,8 @@ CMD
 
 COPY bin /app/bin
 COPY migrates /app/migrates
-COPY src /app/src
 COPY --from=build /app/vendor /app/vendor
+COPY src /app/src
 
 WORKDIR /app/bin
 
