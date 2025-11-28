@@ -23,7 +23,7 @@ final readonly class ParserHelper
 
     private function replaceMap(array $data, \Closure $value): array
     {
-        return ArrayHelper::map($data, fn($item) => $this->replaceAttribute($item, $value));
+        return ArrayHelper::map($data, fn(string $item) => $this->replaceAttribute($item, $value));
     }
 
     private function replaceAttribute(string $item, \Closure $value): mixed
