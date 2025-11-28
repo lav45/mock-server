@@ -11,6 +11,8 @@ use Lav45\MockServer\Domain\Model\Response\HttpStatus;
 use Lav45\MockServer\Domain\Model\Response\Url;
 use Lav45\MockServer\Infrastructure\Parser\DataParser;
 
+use function Amp\File\read;
+
 final readonly class AttributeFactory
 {
     public function __construct(
@@ -111,8 +113,7 @@ final readonly class AttributeFactory
     {
         $file = $this->data['file'] ?? null;
         if ($file !== null) {
-            $content = \file_get_contents($file);
-            $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+            $items = \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
         } else {
             $items = $this->data['json'] ?? [];
         }

@@ -9,6 +9,8 @@ use Lav45\Watcher\Event;
 use Lav45\Watcher\WatcherInterface as FileWatcher;
 use Psr\Log\LoggerInterface;
 
+use function Amp\File\read;
+
 final class Watcher implements WatcherInterface
 {
     private Dispatcher $dispatcher;
@@ -120,8 +122,7 @@ final class Watcher implements WatcherInterface
 
     private function parseFile(string $file): array
     {
-        $content = \file_get_contents($file);
-        return \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+        return \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
     }
 
     private function getFileFilter(string $path): bool
