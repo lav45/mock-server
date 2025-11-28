@@ -7,18 +7,21 @@ use Amp\Http\Server\Request as HttpRequest;
 
 final class Request
 {
-    private string $body;
+    public string $body {
+        get {
+            return $this->body ??= $this->request->getBody()->buffer();
+        }
+    }
 
-    private array $query;
+    public array $query {
+        get {
+            return $this->query ??= $this->parseQuery($this->request->getUri()->getQuery());
+        }
+    }
 
     public function __construct(
         private readonly HttpRequest $request,
     ) {}
-
-    public function getQuery(): array
-    {
-        return $this->query ??= $this->parseQuery($this->request->getUri()->getQuery());
-    }
 
     private function parseQuery(string|null $query): array
     {
@@ -39,8 +42,7 @@ final class Request
     private function parseForm(): array
     {
         $result = [];
-        $data = $this->getFormValues();
-        foreach ($data as $key => $value) {
+        foreach ($this->getFormValues() as $key => $value) {
             if (isset($value[1])) {
                 $result[$key] = $value;
             } else {
@@ -52,15 +54,10 @@ final class Request
 
     private function parseBody(): array
     {
-        if ($body = $this->body()) {
-            return \json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        if (\json_validate($this->body)) {
+            return \json_decode($this->body, true, 512, JSON_THROW_ON_ERROR);
         }
         return [];
-    }
-
-    public function body(): string
-    {
-        return $this->body ??= $this->request->getBody()->buffer();
     }
 
     private function parseContentBoundary(): string|null
@@ -76,7 +73,7 @@ final class Request
     private function getFormValues(): array
     {
         return new FormParser\FormParser()
-            ->parseBody($this->body(), $this->parseContentBoundary())
+            ->parseBody($this->body, $this->parseContentBoundary())
             ->getValues();
     }
 }

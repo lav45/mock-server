@@ -15,11 +15,11 @@ final readonly class RequestFactory
         return new RequestData(
             start: \microtime(true),
             method: $httpRequest->getMethod(),
-            get: $request->getQuery(),
+            get: $request->query,
             post: $request->getData(),
             headers: $httpRequest->getHeaders(),
             urlParams: $urlParams,
-            body: $request->body(),
+            body: $request->body,
         );
     }
 }
