@@ -6,27 +6,23 @@ on:
       - '**'
     paths:
       - .github/workflows/test.yml
-      - docker/base.Dockerfile
-      - docker/dev.Dockerfile
+      - bin/**
       - src/**
       - test/**
-      - tools/**
-      - composer.json
       - composer.lock
       - deptrac.yaml
       - phpunit.xml.dist
+      - Dockerfile
   pull_request:
     paths:
       - .github/workflows/test.yml
-      - docker/base.Dockerfile
-      - docker/dev.Dockerfile
+      - bin/**
       - src/**
       - test/**
-      - tools/**
-      - composer.json
       - composer.lock
       - deptrac.yaml
       - phpunit.xml.dist
+      - Dockerfile
 
 jobs:
   test:
