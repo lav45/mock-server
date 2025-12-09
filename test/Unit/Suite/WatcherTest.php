@@ -396,7 +396,7 @@ final class WatcherTest extends TestCase
             'moved_to event (onSetFile)' => [IN_MOVED_TO, 'onSetFile', true],
             'delete event (onDeleteFile)' => [IN_DELETE, 'onDeleteFile', false],
             'moved_from event (onDeleteFile)' => [IN_MOVED_FROM, 'onDeleteFile', false],
-            'close_write event (onSetFile)' => [IN_CLOSE_WRITE, 'onSetFile', true],
+            'modify event (onSetFile)' => [IN_MODIFY, 'onSetFile', true],
         ];
     }
 }

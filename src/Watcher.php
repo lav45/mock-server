@@ -58,7 +58,7 @@ final class Watcher implements WatcherInterface
         $this->watcher = $watcher
             ->on(IN_CREATE | IN_MOVED_TO, $this->handleCreateOrMoveToEvent(...))
             ->on(IN_DELETE | IN_MOVED_FROM, $this->handleDeleteOrMoveFromEvent(...))
-            ->on(IN_CLOSE_WRITE, $this->handleCloseWriteEvent(...))
+            ->on(IN_MODIFY, $this->handleCloseWriteEvent(...))
             ->withFilter(fn(Event $event): bool => $this->getFileFilter($event->path))
             ->watchDirs(FileSystem::getDirList($watchDir));
     }
@@ -125,7 +125,7 @@ final class Watcher implements WatcherInterface
         return \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
     }
 
-    private function getFileFilter(string $path): bool
+    public function getFileFilter(string $path): bool
     {
         $folders = \explode(DIRECTORY_SEPARATOR, $path);
         $folders = \array_splice($folders, 1, -1);
