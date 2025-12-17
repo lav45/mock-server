@@ -11,21 +11,22 @@ final readonly class Body
         return $this->value;
     }
 
-    public static function new(array|string|null $data = null): self
+    public static function new(array|string $data): self
     {
         return \is_array($data)
             ? self::fromJson($data)
             : self::fromText($data);
     }
 
-    public static function fromText(string|null $content): self
+    public static function fromText(string $content): self
     {
-        return new self($content ?? '');
+        return new self($content);
     }
 
     public static function fromJson(array $data): self
     {
-        $content = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        return new self($content);
+        return new self(
+            \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        );
     }
 }

@@ -22,7 +22,9 @@ final readonly class Repository implements RequestRepository
     {
         $parser = $this->parser->withData([
             'request' => $request->toArray(),
-            'env' => $this->parser->replace($this->data['env'] ?? []),
+            'env' => $this->parser->replace(
+                $this->data['env'] ?? [],
+            ),
         ]);
 
         return $this->dataMapper->toModel(

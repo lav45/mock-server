@@ -22,23 +22,21 @@ final readonly class AttributeFactory
 
     public function createDelay(): Delay
     {
-        $delay = $this->data['delay'] ?? 0.0;
-        $delay = $this->parser->replace($delay);
+        $delay = $this->data['delay'] ?? 0.0 |> $this->parser->replace(...);
         return new Delay((float)$delay);
     }
 
     public function createStatus(): HttpStatus
     {
-        $value = $this->data['status'] ?? 200;
-        $value = (int)$this->parser->replace($value);
-        return new HttpStatus($value);
+        $value = $this->data['status'] ?? 200 |> $this->parser->replace(...);
+        return new HttpStatus((int)$value);
     }
 
     public function createHeaders(bool $withJson = false, array $appendHeaders = []): HttpHeaders
     {
-        $headers = $this->data['headers'] ?? [];
-        $headers = $this->parser->replace($headers);
-
+        $headers = $this->parser->replace(
+            $this->data['headers'] ?? [],
+        );
         if ($appendHeaders) {
             unset(
                 $appendHeaders['host'],
@@ -60,30 +58,40 @@ final readonly class AttributeFactory
 
     public function createBody(): Body
     {
-        $value = $this->data['content'] ?? null;
-        $value = $this->parser->replace($value);
-        return Body::new($value);
+        return Body::new(
+            $this->parser->replace(
+                $this->data['content'] ?? '',
+            ),
+        );
     }
 
     public function createBodyContent(): Body
     {
         if (isset($this->data['json'])) {
-            $value = $this->data['json'];
-            $value = $this->parser->replace($value);
-            return Body::fromJson($value);
+            return Body::fromJson(
+                $this->parser->replace(
+                    $this->data['json'],
+                ),
+            );
         }
-
-        $value = $this->data['text'] ?? null;
-        $value = $this->parser->replace($value);
-        return Body::fromText($value);
+        if (isset($this->data['text'])) {
+            return Body::fromText(
+                $this->parser->replace(
+                    $this->data['text'],
+                ),
+            );
+        }
+        return Body::fromText('');
     }
 
     public function createUrl(array $get = []): Url
     {
-        $url = $this->data['url'] ?? null;
-        $url = $this->parser->replace($url);
-        $url = $this->appendQuery($url, $get);
-        return new Url($url);
+        $url = $this->parser->replace(
+            $this->data['url'] ?? '',
+        );
+        return new Url(
+            $this->appendQuery($url, $get),
+        );
     }
 
     private function appendQuery(string $url, array $get): string
@@ -91,7 +99,6 @@ final readonly class AttributeFactory
         if (empty($get)) {
             return $url;
         }
-
         $query = $oldQuery = \parse_url($url, PHP_URL_QUERY);
         if ($query) {
             \parse_str($query, $parseQuery);
@@ -111,9 +118,12 @@ final readonly class AttributeFactory
 
     public function createItems(): array
     {
-        $file = $this->data['file'] ?? null;
-        if ($file !== null) {
-            $items = \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
+        if (isset($this->data['file'])) {
+            $items = \json_decode(
+                read($this->data['file']),
+                associative: true,
+                flags: JSON_THROW_ON_ERROR,
+            );
         } else {
             $items = $this->data['json'] ?? [];
         }
@@ -122,9 +132,9 @@ final readonly class AttributeFactory
 
     public function createMethod(): HttpMethod
     {
-        $method = $this->data['method'] ?? 'POST';
-        $method = $this->parser->replace($method);
-        $method = \strtoupper($method);
+        $method = $this->data['method'] ?? 'POST'
+            |> $this->parser->replace(...)
+            |> \strtoupper(...);
         return new HttpMethod($method);
     }
 }

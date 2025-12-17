@@ -12,8 +12,6 @@ final readonly class ResponseContentHandler implements Handler
 
     public function handle(DataParser $parser, array $data, Request $request): Response
     {
-        $data = $data['response'] ?? [];
-
         $factory = new AttributeFactory($parser, $data);
 
         $start = new Response\Start($request->start);

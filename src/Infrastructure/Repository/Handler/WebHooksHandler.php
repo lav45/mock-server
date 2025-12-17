@@ -10,7 +10,7 @@ final readonly class WebHooksHandler
 {
     public function handle(DataParser $parser, array $data): iterable
     {
-        foreach ($data['webhooks'] ?? [] as $webHook) {
+        foreach ($data as $webHook) {
             yield $this->createItem($parser, $webHook);
         }
     }
@@ -23,18 +23,17 @@ final readonly class WebHooksHandler
         $url = $factory->createUrl();
         $method = $factory->createMethod();
 
-        $json = $item['json'] ?? null;
-        $json = $parser->replace($json);
+        $isJson = isset($item['json']);
+        $headers = $factory->createHeaders($isJson);
 
-        $headers = $factory->createHeaders(isset($json));
-
-        $text = $item['text'] ?? null;
-        $text = $parser->replace($text);
-
-        if ($json) {
-            $body = Body::fromJson($json);
+        if ($isJson) {
+            $body = Body::fromJson(
+                $parser->replace($item['json']),
+            );
         } else {
-            $body = Body::fromText($text);
+            $body = Body::fromText(
+                $parser->replace($item['text'] ?? ''),
+            );
         }
 
         return new WebHook(

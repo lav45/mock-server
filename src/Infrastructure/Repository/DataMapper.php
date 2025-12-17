@@ -30,8 +30,17 @@ final readonly class DataMapper
     public function toModel(DataParser $parser, array $data, Request $request): Mock
     {
         return new Mock(
-            response: $this->getResponseHandler($data)->handle($parser, $data, $request),
-            webHooks: $this->webHooksHandler->handle($parser, $data),
+            response: $this->getResponseHandler($data)
+                ->handle(
+                    parser: $parser,
+                    data: $data['response'] ?? [],
+                    request: $request,
+                ),
+            webHooks: $this->webHooksHandler
+                ->handle(
+                    parser: $parser,
+                    data: $data['webhooks'] ?? [],
+                ),
         );
     }
 
