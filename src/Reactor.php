@@ -12,8 +12,8 @@ use FastRoute\Dispatcher;
 final readonly class Reactor implements RequestHandlerInterface
 {
     public function __construct(
-        private ErrorHandler     $errorHandler,
-        private WatcherInterface $watcher,
+        private ErrorHandler $errorHandler,
+        private Watcher      $watcher,
     ) {}
 
     public function handleRequest(Request $request): Response
@@ -33,7 +33,6 @@ final readonly class Reactor implements RequestHandlerInterface
     private function makeFoundResponse(RequestHandlerInterface $handler, array $requestArgs, Request $request): Response
     {
         $request->setAttribute('urlParams', $requestArgs);
-
         return $handler->handleRequest($request);
     }
 

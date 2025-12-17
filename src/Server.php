@@ -26,7 +26,7 @@ final readonly class Server
         $faker = FakerFactory::create($this->config->getLocale());
         $httpClient = HttpClientFactory::create($this->logger);
         $requestFactory = new RequestFactory($faker, $httpClient, $this->logger);
-        $dispatcherFactory = new DispatcherFactory($requestFactory);
+        $dispatcherFactory = new DispatcherFactory($requestFactory, $this->logger);
         $watcher = $this->runWatcher($this->logger, $dispatcherFactory);
 
         $errorHandler = new DefaultErrorHandler();
@@ -43,21 +43,28 @@ final readonly class Server
         return $server;
     }
 
-    private function runWatcher(LoggerInterface $logger, DispatcherFactoryInterface $dispatcherFactory): WatcherInterface
+    private function runWatcher(LoggerInterface $logger, DispatcherFactory $dispatcherFactory): Watcher
     {
-        $watcher = new Watcher(
-            dispatcherFactory: $dispatcherFactory,
-            watchDir: $this->config->getMocksPath(),
+        $watchDir = $this->config->getMocksPath();
+
+        $fileStorage = new FileStorage(
+            watchDir: $watchDir,
             logger: $logger,
         );
-        $watcher->init();
+
+        $watcher = new Watcher\Watcher(
+            dispatcherFactory: $dispatcherFactory,
+            watchDir: $watchDir,
+            fileStorage: $fileStorage,
+            logger: $logger,
+        );
 
         if ($timeout = $this->config->getFileWatchTimeout()) {
             // @codeCoverageIgnoreStart
             Amp\async(
                 static fn() => $watcher->run(
-                    new FileWatcher(new Listener()),
-                    static fn() => Amp\delay($timeout),
+                    watcher: new FileWatcher(new Listener()),
+                    delay: $timeout,
                 ),
             );
             // @codeCoverageIgnoreEnd

@@ -58,7 +58,7 @@
         }
     },
     "scripts": {
-        "phpunit": "php vendor/bin/phpunit",
+        "phpunit": "AMP_DEBUG=true php -d display_errors=on vendor/bin/phpunit",
         "coverage": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
         "codecov": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",

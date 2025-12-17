@@ -7,6 +7,13 @@ use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+use function Amp\File\createDirectory;
+use function Amp\File\deleteDirectory;
+use function Amp\File\deleteFile;
+use function Amp\File\isDirectory;
+use function Amp\File\isFile;
+use function Amp\File\touch;
+
 final class ConfigTest extends TestCase
 {
     private Config $config;
@@ -56,7 +63,8 @@ final class ConfigTest extends TestCase
     {
         // Create a temporary readable directory
         $tempDir = \sys_get_temp_dir() . '/mocks_test_' . \uniqid('', true);
-        if (!\mkdir($tempDir, 0777, true) && !\is_dir($tempDir)) {
+        createDirectory($tempDir);
+        if (isDirectory($tempDir) === false) {
             $this->markTestSkipped("Cannot create temporary directory {$tempDir}");
         }
 
@@ -65,8 +73,8 @@ final class ConfigTest extends TestCase
             $this->assertSame($tempDir, $this->config->getMocksPath());
         } finally {
             // Clean up
-            if (\is_dir($tempDir)) {
-                \rmdir($tempDir);
+            if (isDirectory($tempDir)) {
+                deleteDirectory($tempDir);
             }
         }
     }
@@ -77,7 +85,7 @@ final class ConfigTest extends TestCase
         if ($createFile) {
             // Create a file instead of a directory to test is_dir failure
             $tempFile = \sys_get_temp_dir() . '/' . \basename($invalidPath);
-            \touch($tempFile);
+            touch($tempFile);
             $invalidPath = $tempFile;
         }
 
@@ -87,8 +95,8 @@ final class ConfigTest extends TestCase
         try {
             $this->config->mocks($invalidPath);
         } finally {
-            if ($createFile && \file_exists($invalidPath)) {
-                \unlink($invalidPath);
+            if ($createFile && isFile($invalidPath)) {
+                deleteFile($invalidPath);
             }
         }
     }

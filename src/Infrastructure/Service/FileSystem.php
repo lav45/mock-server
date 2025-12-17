@@ -2,6 +2,8 @@
 
 namespace Lav45\MockServer\Infrastructure\Service;
 
+use function Amp\File\isDirectory;
+
 final readonly class FileSystem
 {
     public static function getFileList(string $directory, \Closure|null $filter = null): array
@@ -9,7 +11,7 @@ final readonly class FileSystem
         $list = [];
         $items = \glob($directory . '/*');
         foreach ($items as $path) {
-            if (\is_dir($path)) {
+            if (isDirectory($path)) {
                 $list += self::getFileList($path, $filter);
             } elseif ($filter === null || $filter($path) === true) {
                 $list[$path] = $path;
