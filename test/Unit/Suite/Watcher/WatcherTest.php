@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite;
+namespace Lav45\MockServer\Test\Unit\Suite\Watcher;
 
 use Amp;
 use Amp\DeferredCancellation;

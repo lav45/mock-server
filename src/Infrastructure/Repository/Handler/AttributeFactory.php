@@ -22,13 +22,13 @@ final readonly class AttributeFactory
 
     public function createDelay(): Delay
     {
-        $delay = $this->data['delay'] ?? 0.0 |> $this->parser->replace(...);
+        $delay = ($this->data['delay'] ?? 0.0) |> $this->parser->replace(...);
         return new Delay((float)$delay);
     }
 
     public function createStatus(): HttpStatus
     {
-        $value = $this->data['status'] ?? 200 |> $this->parser->replace(...);
+        $value = ($this->data['status'] ?? 200) |> $this->parser->replace(...);
         return new HttpStatus((int)$value);
     }
 
@@ -86,9 +86,8 @@ final readonly class AttributeFactory
 
     public function createUrl(array $get = []): Url
     {
-        $url = $this->parser->replace(
-            $this->data['url'] ?? '',
-        );
+        $url = ($this->data['url'] ?? '')
+            |> $this->parser->replace(...);
         return new Url(
             $this->appendQuery($url, $get),
         );
@@ -132,7 +131,7 @@ final readonly class AttributeFactory
 
     public function createMethod(): HttpMethod
     {
-        $method = $this->data['method'] ?? 'POST'
+        $method = ($this->data['method'] ?? 'POST')
             |> $this->parser->replace(...)
             |> \strtoupper(...);
         return new HttpMethod($method);
