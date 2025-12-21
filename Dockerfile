@@ -5,8 +5,8 @@ RUN <<CMD
     apk add --no-cache php85-dev php85-pear php85-openssl musl-dev autoconf make gcc libuv-dev
 
     pecl85 channel-update pecl.php.net
-    pecl85 install inotify
-    pecl85 install uv-0.3.0
+    CFLAGS="-Wno-attributes" pecl85 install inotify
+    CFLAGS="-Wno-attributes -Wno-format" pecl85 install uv-0.3.0
 CMD
 
 FROM alpine:3.23 AS base
@@ -22,26 +22,35 @@ RUN <<CMD
     ln -s /etc/php85 /etc/php
     ln -s /usr/bin/php85 /bin/php
 
-    echo 'memory_limit = -1' > /etc/php/conf.d/00_main.ini
+    echo 'memory_limit=-1' > /etc/php/conf.d/00_main.ini
     echo 'extension=uv.so' > /etc/php/conf.d/00_uv.ini
     echo 'extension=inotify.so' > /etc/php/conf.d/00_inotify.ini
     echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
     echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
 CMD
 
+WORKDIR /app
+
 FROM base AS tool
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN <<CMD
-    set -e
-    apk add --no-cache php85-phar php85-curl php85-zip php85-zlib php85-xml php85-xmlwriter php85-pecl-pcov php85-posix php85-bcmath php85-sodium php85-dom php85-iconv php85-tokenizer
-    echo 'zend.assertions=1' >> /etc/php/conf.d/00_main.ini
-CMD
+RUN apk add --no-cache \
+    php85-phar \
+    php85-curl \
+    php85-zip \
+    php85-zlib \
+    php85-xml \
+    php85-xmlwriter \
+    php85-pecl-pcov \
+    php85-posix \
+    php85-bcmath \
+    php85-sodium \
+    php85-dom \
+    php85-iconv \
+    php85-tokenizer
 
 FROM tool AS build
-
-WORKDIR /app
 
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
@@ -61,10 +70,6 @@ COPY migrates /app/migrates
 COPY --from=build /app/vendor /app/vendor
 COPY src /app/src
 
-WORKDIR /app/bin
+ENTRYPOINT ["php"]
 
-ARG DEBUG
-
-ENTRYPOINT ["php", "-d", "zend.assertions=${DEBUG:-0}"]
-
-CMD ["start"]
+CMD ["bin/start"]

@@ -16,7 +16,7 @@
                 "pageSizeParam": "_s",
                 "defaultPageSize": 5
             },
-            "file": "/app/test/Functional/mocks/response/data/__data/items.json",
+            "file": "{env.MOCKS_PATH}/response/data/__data/items.json",
             "result": {
                 "data": "{{response.items}}",
                 "pagination": "{{response.pagination}}",

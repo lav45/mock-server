@@ -17,26 +17,26 @@ class ResponseTest extends TestCase
 
     public function testIndex(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL);
         $this->assertEquals(404, $response->getStatus());
     }
 
     public function testNotFound(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/not-found');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/not-found');
         $this->assertEquals(404, $response->getStatus());
     }
 
     public function testMethodNotAllowed(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/delay', 'POST');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/delay', 'POST');
         $this->assertEquals(405, $response->getStatus());
     }
 
     public function testDelay(): void
     {
         $start = \microtime(true);
-        $response = $this->HttpClient->request('http://127.0.0.1/response/delay');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/delay');
         $end = \microtime(true);
 
         $this->assertEquals(200, $response->getStatus());

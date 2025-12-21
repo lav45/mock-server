@@ -4,12 +4,9 @@
             "method": "POST",
             "url": "/response/proxy/array-content"
         },
-        "env": {
-            "url": "http://127.0.0.1:8000"
-        },
         "response": {
             "type": "proxy",
-            "url": "{env.url}/content?n=1",
+            "url": "{env.WEBHOOK_CATCHER_URL}/content?n=1",
             "content": [
                 {
                     "id": 1,
@@ -45,7 +42,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.URL}/content",
+            "url": "{env.WEBHOOK_CATCHER_URL}/content",
             "content": "{\"id\": 100}"
         }
     },
@@ -56,7 +53,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.URL}/content",
+            "url": "{env.WEBHOOK_CATCHER_URL}/content",
             "content": {
                 "company": {
                     "id": "{{faker.uuid}}"
@@ -74,7 +71,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.URL}/{request.urlParams.path}",
+            "url": "{env.WEBHOOK_CATCHER_URL}/{request.urlParams.path}",
             "headers": {
                 "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
             }

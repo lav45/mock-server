@@ -9,7 +9,7 @@ final class DelayTest extends TestCase
 {
     public function testException(): void
     {
-        $this->expectException(\AssertionError::class);
+        $this->expectException(\InvalidArgumentException::class);
         new Delay(-1);
     }
 }

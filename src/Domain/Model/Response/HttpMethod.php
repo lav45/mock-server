@@ -6,7 +6,7 @@ final readonly class HttpMethod
 {
     public function __construct(public string $value)
     {
-        \assert($this->isValidMethod($value), 'Invalid method');
+        $this->isValidMethod($value) || throw new \InvalidArgumentException('Invalid method');
     }
 
     private function isValidMethod(string $value): bool

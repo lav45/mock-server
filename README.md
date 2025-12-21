@@ -61,7 +61,7 @@ curl http://127.0.0.1:8080/
 ### Upgrade mocks data
 
 ```shell
-docker run --rm -it -v $(pwd)/mocks:/app/mocks -e MOCKS_PATH=/app/mocks lav45/mock-server:latest upgrade
+docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 ```
 
 ## Build containers
@@ -74,11 +74,11 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks -e MOCKS_PATH=/app/mocks lav45/mo
 ## Run in development mode
 
 ```shell
-docker run --rm -it -v $(pwd):/app -p 8080:8080 -e DEBUG=1 mock-server:server
+docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
 ```
 
 ## Testing
 
 ```shell
-./composer test
+./test.sh phpunit
 ```

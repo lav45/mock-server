@@ -6,7 +6,7 @@ final readonly class Url
 {
     public function __construct(public string $value)
     {
-        \assert($this->isValidUrl($value), 'Invalid url: "' . $value . '"');
+        $this->isValidUrl($value) || throw new \InvalidArgumentException('Invalid url: "' . $value . '"');
     }
 
     private function isValidUrl(string $value): bool

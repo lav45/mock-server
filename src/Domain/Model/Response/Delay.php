@@ -7,7 +7,7 @@ final readonly class Delay
     public function __construct(
         public float $value,
     ) {
-        \assert($this->isValidDelay($value), 'Invalid delay');
+        $this->isValidDelay($value) || throw new \InvalidArgumentException('Invalid delay');
     }
 
     private function isValidDelay(float $delay): bool

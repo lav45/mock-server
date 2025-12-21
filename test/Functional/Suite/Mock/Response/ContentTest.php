@@ -17,7 +17,7 @@ class ContentTest extends TestCase
 
     public function testJson(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/content/json');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/json');
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
@@ -41,7 +41,7 @@ class ContentTest extends TestCase
         $this->assertEquals('https://test.server.com/v1', $content['url']);
         $this->assertEquals(1.2, $content['value']);
 
-        $response = $this->HttpClient->request('http://127.0.0.1/response/content/json');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/json');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
@@ -56,7 +56,7 @@ class ContentTest extends TestCase
 
     public function testText(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/content/text');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/text');
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
@@ -68,7 +68,7 @@ class ContentTest extends TestCase
 
     public function testHeaders(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/content/headers');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/headers');
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
@@ -82,7 +82,7 @@ class ContentTest extends TestCase
 
     public function testStatus(): void
     {
-        $response = $this->HttpClient->request('http://127.0.0.1/response/content/status');
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/status');
         $this->assertEquals(401, $response->getStatus());
         $this->assertEquals('Unauthorized', $response->getBody()->buffer());
     }

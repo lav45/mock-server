@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Functional;
+namespace Lav45\MockServer\Test\Functional\Server;
 
 use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\SocketClientFactory;
@@ -8,7 +8,6 @@ use Amp\Http\Server\HttpServer;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
 use Lav45\MockServer\Test\Functional\Server\Component\Storage;
-use Lav45\MockServer\Test\Functional\Server\RequestHandler;
 use Psr\Log\LoggerInterface;
 
 readonly class Server

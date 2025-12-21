@@ -8,8 +8,8 @@ final readonly class HttpHeader
         public string $name,
         public string $value,
     ) {
-        \assert($this->isValidName($name), 'Invalid header name: "' . $name . '"');
-        \assert($this->isValidValue($value), 'Invalid header value: "' . $value . '"');
+        $this->isValidName($name) || throw new \InvalidArgumentException('Invalid header name: "' . $name . '"');
+        $this->isValidValue($value) || throw new \InvalidArgumentException('Invalid header value: "' . $value . '"');
     }
 
     private function isValidName(string $name): bool

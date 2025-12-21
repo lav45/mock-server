@@ -35,7 +35,7 @@ final class HttpStatusTest extends TestCase
     #[DataProvider('failedCreateDataProvider')]
     public function testFailedCreate(int $code): void
     {
-        $this->expectException(\AssertionError::class);
+        $this->expectException(\InvalidArgumentException::class);
         new HttpStatus($code);
     }
 

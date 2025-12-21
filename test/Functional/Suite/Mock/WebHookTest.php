@@ -29,7 +29,7 @@ class WebHookTest extends TestCase
         ];
 
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/webhook/200?id=500',
+            uri: MOCK_SERVER_URL . '/webhook/200?id=500',
             method: 'POST',
             body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             headers: ['content-type' => 'application/json'],
@@ -38,7 +38,7 @@ class WebHookTest extends TestCase
 
         delay(1);
 
-        $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
+        $response = $this->HttpClient->request(WEBHOOK_CATCHER_URL . '/__storage');
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();

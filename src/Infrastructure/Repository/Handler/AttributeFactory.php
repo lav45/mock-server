@@ -11,8 +11,6 @@ use Lav45\MockServer\Domain\Model\Response\HttpStatus;
 use Lav45\MockServer\Domain\Model\Response\Url;
 use Lav45\MockServer\Infrastructure\Parser\DataParser;
 
-use function Amp\File\read;
-
 final readonly class AttributeFactory
 {
     public function __construct(
@@ -86,8 +84,7 @@ final readonly class AttributeFactory
 
     public function createUrl(array $get = []): Url
     {
-        $url = ($this->data['url'] ?? '')
-            |> $this->parser->replace(...);
+        $url = ($this->data['url'] ?? '') |> $this->parser->replace(...);
         return new Url(
             $this->appendQuery($url, $get),
         );
@@ -118,11 +115,8 @@ final readonly class AttributeFactory
     public function createItems(): array
     {
         if (isset($this->data['file'])) {
-            $items = \json_decode(
-                read($this->data['file']),
-                associative: true,
-                flags: JSON_THROW_ON_ERROR,
-            );
+            $content = $this->parser->replace($this->data['file']) |> \Amp\File\read(...);
+            $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
         } else {
             $items = $this->data['json'] ?? [];
         }

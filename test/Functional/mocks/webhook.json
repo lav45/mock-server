@@ -3,7 +3,7 @@
         "env": {
             "webhook": {
                 "token": "e71ad173-dacf-493c-be55-643074fdf41c",
-                "url": "{env.URL}/storage"
+                "url": "{env.WEBHOOK_CATCHER_URL}/storage"
             },
             "uuid": "{{faker.uuid}}",
             "correlationId": "{{faker.numerify('############')}}"
@@ -26,7 +26,7 @@
             },
             {
                 "method": "POST",
-                "url": "http://127.0.0.1:8000/storage?id=300",
+                "url": "{env.WEBHOOK_CATCHER_URL}/storage?id=300",
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 },
@@ -68,7 +68,7 @@
             },
             {
                 "method": "GET",
-                "url": "http://127.0.0.1:8000/storage?sss=get",
+                "url": "{env.WEBHOOK_CATCHER_URL}/storage?sss=get",
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 }

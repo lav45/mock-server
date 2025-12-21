@@ -1,23 +1,6 @@
 <?php declare(strict_types=1);
 
-use Monolog\Level;
-
 require(__DIR__ . '/../vendor/autoload.php');
 
-putenv('DOMAIN=test.server.com');
-putenv('URL=http://127.0.0.1:8000');
-
-Amp\async(static function () {
-    // Fake proxy server
-    $logger = Lav45\MockServer\LoggerFactory::create('logger', Level::Error);
-
-    new Lav45\MockServer\Test\Functional\Server($logger)->start();
-
-    // Test mock server
-    $config = new Lav45\MockServer\Config()
-        ->port(80)
-        ->mocks('/app/test/Functional/mocks')
-        ->fileWatch(0);
-
-    new Lav45\MockServer\Server($config, $logger)->start();
-});
+define("MOCK_SERVER_URL", getenv('MOCK_SERVER_URL'));
+define("WEBHOOK_CATCHER_URL", getenv('WEBHOOK_CATCHER_URL'));

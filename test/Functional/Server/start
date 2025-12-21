@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+require __DIR__ . '/../../../vendor/autoload.php';
+
+use Lav45\MockServer\Config;
+use Lav45\MockServer\LoggerFactory;
+use Lav45\MockServer\Test\Functional\Server\Server;
+
+$config = new Config()
+    ->port(getenv('PORT'))
+    ->log(getenv('LOG_LEVEL'));
+
+$logger = LoggerFactory::create('logger', $config->getLogLevel());
+
+$server = new Server($logger, $config->getPort())->start();
+
+const SIGINT = 2;
+const SIGTERM = 15;
+
+$logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+
+$server->stop();

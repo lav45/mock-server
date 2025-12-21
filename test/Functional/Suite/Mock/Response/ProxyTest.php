@@ -21,7 +21,7 @@ class ProxyTest extends TestCase
         $data = ['text' => 'OK'];
 
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/storage',
+            uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
             body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             headers: ['content-type' => 'application/json'],
@@ -44,7 +44,7 @@ class ProxyTest extends TestCase
     public function testGet(): void
     {
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/storage?id=100',
+            uri: MOCK_SERVER_URL . '/response/proxy/storage?id=100',
             headers: ['content-type' => 'application/json'],
         );
         $this->assertEquals(200, $response->getStatus());
@@ -64,7 +64,7 @@ class ProxyTest extends TestCase
 
     private function getStorageData(): array
     {
-        $response = $this->HttpClient->request('http://127.0.0.1:8000/__storage');
+        $response = $this->HttpClient->request(WEBHOOK_CATCHER_URL . '/__storage');
         $content = $response->getBody()->buffer();
         return \json_decode($content, true);
     }
@@ -72,7 +72,7 @@ class ProxyTest extends TestCase
     public function testArrayContent(): void
     {
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/array-content',
+            uri: MOCK_SERVER_URL . '/response/proxy/array-content',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
         );
@@ -100,7 +100,7 @@ class ProxyTest extends TestCase
     public function testStringContent(): void
     {
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/string-content',
+            uri: MOCK_SERVER_URL . '/response/proxy/string-content',
             method: 'POST',
             body: '{"name": "Company"}',
             headers: ['content-type' => 'application/json'],
@@ -126,7 +126,7 @@ class ProxyTest extends TestCase
     public function testFakerContent(): void
     {
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/faker-content',
+            uri: MOCK_SERVER_URL . '/response/proxy/faker-content',
             method: 'POST',
             body: '{"name": "Company"}',
             headers: ['content-type' => 'application/json'],
@@ -170,7 +170,7 @@ class ProxyTest extends TestCase
         }
 
         $response = $this->HttpClient->request(
-            uri: 'http://127.0.0.1/response/proxy/storage',
+            uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
             body: $form->getContent()->read(),
             headers: ['content-type' => $form->getContentType()],

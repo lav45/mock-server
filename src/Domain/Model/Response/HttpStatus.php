@@ -6,7 +6,7 @@ final readonly class HttpStatus
 {
     public function __construct(public int $value)
     {
-        \assert($this->isValidStatus($value), 'Invalid status');
+        $this->isValidStatus($value) || throw new \InvalidArgumentException('Invalid status');
     }
 
     private function isValidStatus(int $status): bool

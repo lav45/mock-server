@@ -7,7 +7,7 @@ final readonly class Start
     public function __construct(
         public float $value,
     ) {
-        \assert($this->isValidDelay($value), 'Invalid start');
+        $this->isValidDelay($value) || throw new \InvalidArgumentException('Invalid start');
     }
 
     private function isValidDelay(float $start): bool
