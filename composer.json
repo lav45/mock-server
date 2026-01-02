@@ -1,5 +1,6 @@
 {
     "name": "lav45/mock-server",
+    "version": "3.3.1",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [
@@ -34,7 +35,7 @@
         "amphp/socket": "^v2.3",
         "amphp/file": "^3.2",
         "nikic/fast-route": "^v1.3",
-        "monolog/monolog": "^3.9",
+        "monolog/monolog": "3.9.*",
         "fakerphp/faker": "^v1.24",
         "yiisoft/data": "^1.0",
         "psr/log": "^3.0",
@@ -52,6 +53,8 @@
         }
     },
     "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true
         }
@@ -63,7 +66,7 @@
         "check": "php vendor/bin/composer-require-checker check",
         "unused": "php vendor/bin/composer-unused",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "code-style": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix"
+        "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix"
     },
     "autoload": {
         "psr-4": {
@@ -75,5 +78,6 @@
             "Lav45\\MockServer\\Test\\": "test"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
