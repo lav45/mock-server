@@ -8,6 +8,5 @@ docker run --rm -i ${DOCKER_ARG} \
   -u $(id -u):$(id -g) \
   -v $(pwd):/app \
   -w /app \
-  -e COMPOSER_HOME=/app/.cache/.composer \
   --entrypoint composer \
   mock-server:tool $@

@@ -66,7 +66,7 @@
         "check": "php vendor/bin/composer-require-checker check",
         "unused": "php vendor/bin/composer-unused",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix"
+        "cs:fix": "php vendor/bin/php-cs-fixer fix"
     },
     "autoload": {
         "psr-4": {

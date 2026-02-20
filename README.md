@@ -77,8 +77,14 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
 ```
 
-## Testing
+## Running E2E functional tests
 
 ```shell
-./test.sh phpunit
+./e2e-test.sh phpunit test/Functional
+```
+
+## Running unit tests
+
+```shell
+./composer phpunit test/Unit
 ```

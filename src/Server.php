@@ -10,6 +10,7 @@ use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
 use Faker\Factory as FakerFactory;
 use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
 use Lav45\Watcher\Listener;
 use Lav45\Watcher\Watcher as FileWatcher;
 use Psr\Log\LoggerInterface;
@@ -23,9 +24,11 @@ final readonly class Server
 
     public function start(): HttpServer
     {
-        $faker = FakerFactory::create($this->config->getLocale());
+        $parserFactory = new ParserFactory(
+            FakerFactory::create($this->config->getLocale()),
+        );
         $httpClient = HttpClientFactory::create($this->logger);
-        $requestFactory = new RequestFactory($faker, $httpClient, $this->logger);
+        $requestFactory = new RequestFactory($parserFactory, $httpClient, $this->logger);
         $dispatcherFactory = new DispatcherFactory($requestFactory, $this->logger);
         $watcher = $this->runWatcher($this->logger, $dispatcherFactory);
 

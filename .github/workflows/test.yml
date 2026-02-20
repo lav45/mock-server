@@ -57,8 +57,11 @@ jobs:
       - run: ./composer deptrac
       - run: ./composer unused
 
+      - name: Run functional tests
+        run: ./e2e-test.sh phpunit test/Functional
+
       - name: Run phpunit tests with code coverage
-        run: ./test.sh codecov
+        run: ./composer codecov test/Unit
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

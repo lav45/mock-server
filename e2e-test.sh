@@ -8,8 +8,8 @@ RUNNING_PROCESS=$(
 
 if [ "$RUNNING_PROCESS" ] ; then
   for PROCESS in $RUNNING_PROCESS ; do
-    docker stop "$PROCESS" > /dev/null
-    docker rm "$PROCESS" > /dev/null
+    docker kill "$PROCESS" > /dev/null 2>&1
+    docker rm "$PROCESS" > /dev/null 2>&1
   done
 fi
 
@@ -51,7 +51,7 @@ docker run --rm -i \
   -e COMPOSER_HOME=/app/.cache/.composer \
   --entrypoint composer \
   --name test_runner \
-  mock-server:tool "$1"
+  mock-server:tool "$@"
 
 docker stop test_mock_server test_webhook_catcher > /dev/null
 docker rm test_mock_server test_webhook_catcher > /dev/null

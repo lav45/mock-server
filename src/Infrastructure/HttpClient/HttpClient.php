@@ -5,6 +5,7 @@ namespace Lav45\MockServer\Infrastructure\HttpClient;
 use Amp\Http\Client\HttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
+use Amp\Http\Client\SocketException;
 
 final readonly class HttpClient implements HttpClientInterface
 {
@@ -31,6 +32,13 @@ final readonly class HttpClient implements HttpClientInterface
             $request->setAttribute('logLabel', $logLabel);
         }
 
-        return $this->client->request($request);
+        $retry = 3;
+        do {
+            try {
+                return $this->client->request($request);
+            } catch (SocketException $exception) {
+            }
+        } while ($retry--);
+        throw $exception;
     }
 }

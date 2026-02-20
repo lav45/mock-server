@@ -50,6 +50,9 @@ RUN apk add --no-cache \
     php85-iconv \
     php85-tokenizer
 
+ENV COMPOSER_HOME=/app/.cache/.composer
+ENV COMPOSER_PROCESS_TIMEOUT=600
+
 FROM tool AS build
 
 COPY composer.json /app/composer.json
