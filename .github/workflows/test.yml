@@ -13,6 +13,7 @@ on:
       - deptrac.yaml
       - phpunit.xml.dist
       - Dockerfile
+      - test.sh
   pull_request:
     paths:
       - .github/workflows/test.yml
@@ -23,7 +24,7 @@ on:
       - deptrac.yaml
       - phpunit.xml.dist
       - Dockerfile
-
+      - test.sh
 jobs:
   test:
     runs-on: ubuntu-latest
