@@ -21,7 +21,7 @@
     "require": {
         "php": ">=8.5",
         "ext-intl": "*",
-        "ext-uv": "*",
+        "ext-pcntl": "*",
         "ext-filter": "*",
         "ext-inotify": "*",
         "amphp/amp": "^v3.1",
@@ -64,7 +64,7 @@
         "coverage": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
         "codecov": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",
-        "unused": "php vendor/bin/composer-unused",
+        "unused": "php vendor/bin/composer-unused --excludePackage=ext-pcntl",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
         "cs:fix": "php vendor/bin/php-cs-fixer fix"
     },

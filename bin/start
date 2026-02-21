@@ -18,8 +18,5 @@ $logger = LoggerFactory::create('mock-server', $config->getLogLevel());
 
 $mockServer = new Server($config, $logger)->start();
 
-const SIGINT = 2;
-const SIGTERM = 15;
-
 $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
 $mockServer->stop();

@@ -17,7 +17,7 @@ COPY --from=pecl /usr/lib/php85/modules/uv.so /usr/lib/php85/modules/uv.so
 RUN <<CMD
     set -e
     apk upgrade --no-cache --available
-    apk add --no-cache php85 libuv php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp
+    apk add --no-cache php85 libuv php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl
 
     ln -s /etc/php85 /etc/php
     ln -s /usr/bin/php85 /bin/php
@@ -58,7 +58,7 @@ FROM tool AS build
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
 
-RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
 
 FROM base AS server
 

@@ -15,9 +15,6 @@ $logger = LoggerFactory::create('logger', $config->getLogLevel());
 
 $server = new Server($logger, $config->getPort())->start();
 
-const SIGINT = 2;
-const SIGTERM = 15;
-
 $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
 
 $server->stop();
