@@ -1,6 +1,6 @@
 # Mock Server
 
-HTTP mocking application for testing and fast prototyping
+HTTP mocking application for testing and fast prototyping.
 
 [![Version](https://img.shields.io/docker/v/lav45/mock-server/latest?sort=semver)](https://hub.docker.com/r/lav45/mock-server)
 [![Docker Pulls](https://img.shields.io/docker/pulls/lav45/mock-server.svg)](https://hub.docker.com/r/lav45/mock-server)
@@ -8,6 +8,12 @@ HTTP mocking application for testing and fast prototyping
 [![Codecov](https://codecov.io/gh/lav45/mock-server/branch/master/graph/badge.svg)](https://codecov.io/gh/lav45/mock-server)
 
 [Docker image](https://hub.docker.com/r/lav45/mock-server)
+
+## Overview
+
+Mock Server is a high-performance HTTP mocking application built with PHP and the [Amp](https://amphp.org/) asynchronous
+framework. It allows you to quickly create mock APIs for testing and development, with support for dynamic responses,
+webhooks, and automatic reloading of mock files.
 
 ## Features
 
@@ -29,7 +35,7 @@ HTTP mocking application for testing and fast prototyping
 
 ## Quick start
 
-Create mock file `./mocks/index.json` and put the content in it
+Create mock file `./mocks/index.json` and put the content in it:
 
 ```json
 [
@@ -46,7 +52,7 @@ Create mock file `./mocks/index.json` and put the content in it
 ]
 ```
 
-### Run the Mock Server
+### Run the Mock Server (Docker)
 
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
@@ -60,31 +66,54 @@ curl http://127.0.0.1:8080/
 
 ### Upgrade mocks data
 
+If you are upgrading from an older version, you may need to migrate your mock files:
+
 ```shell
 docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 ```
 
-## Build containers
+## Environment Variables
+
+| Variable             | Default      | Description                                                                                      |
+|----------------------|--------------|--------------------------------------------------------------------------------------------------|
+| `PORT`               | `8080`       | Port the server will listen on.                                                                  |
+| `MOCKS_PATH`         | `/app/mocks` | Path to the directory containing mock JSON files.                                                |
+| `LOCALE`             | `en_US`      | Locale used for Faker data generation.                                                           |
+| `LOG_LEVEL`          | `info`       | Logging level (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`). |
+| `FILE_WATCH_TIMEOUT` | `0.2`        | Timeout for mock file watcher in seconds.                                                        |
+
+## Development
+
+### Local Setup
 
 ```shell
-./build.sh
 ./composer install
 ```
 
-## Run in development mode
+### Build Docker Containers
+
+```shell
+./build.sh
+```
+
+### Run in Development Mode
 
 ```shell
 docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
 ```
 
-## Running E2E functional tests
+## Tests
 
-```shell
-./e2e-test.sh phpunit test/Functional
-```
-
-## Running unit tests
+### Running Unit Tests
 
 ```shell
 ./composer phpunit test/Unit
+```
+
+### Running E2E Functional Tests
+
+Requires Docker and built images (`./build.sh`).
+
+```shell
+./e2e-test.sh phpunit test/Functional
 ```
