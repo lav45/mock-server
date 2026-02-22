@@ -84,16 +84,16 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 
 ## Development
 
-### Local Setup
-
-```shell
-./composer install
-```
-
 ### Build Docker Containers
 
 ```shell
 ./build.sh
+```
+
+### Local Setup
+
+```shell
+./composer install
 ```
 
 ### Run in Development Mode
@@ -107,7 +107,8 @@ docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
 ### Running Unit Tests
 
 ```shell
-./composer phpunit test/Unit
+./unit-test.sh
+./unit-test.sh coverage:html # Generate coverage report in ./coverage/
 ```
 
 ### Running E2E Functional Tests
@@ -115,5 +116,5 @@ docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
 Requires Docker and built images (`./build.sh`).
 
 ```shell
-./e2e-test.sh phpunit test/Functional
+./e2e-test.sh
 ```

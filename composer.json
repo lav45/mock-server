@@ -61,8 +61,8 @@
     },
     "scripts": {
         "phpunit": "AMP_DEBUG=true php -d display_errors=on vendor/bin/phpunit",
-        "coverage": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html test/coverage",
-        "codecov": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
+        "coverage:html": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html coverage",
+        "coverage:xml": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",
         "unused": "php vendor/bin/composer-unused --excludePackage=ext-pcntl",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",

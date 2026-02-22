@@ -58,10 +58,10 @@ jobs:
       - run: ./composer unused
 
       - name: Run functional tests
-        run: ./e2e-test.sh phpunit test/Functional
+        run: ./e2e-test.sh
 
       - name: Run phpunit tests with code coverage
-        run: ./composer codecov test/Unit
+        run: ./unit-test.sh coverage:xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

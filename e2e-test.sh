@@ -39,7 +39,7 @@ docker run --rm -i \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
   --entrypoint composer \
   --name test_runner \
-  mock-server:tool "$@"
+  mock-server:tool phpunit test/Functional
 
 docker stop test_mock_server test_webhook_catcher > /dev/null
 docker rm test_mock_server test_webhook_catcher > /dev/null
