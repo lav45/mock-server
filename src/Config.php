@@ -107,9 +107,9 @@ final class Config
         return $this->locale;
     }
 
-    public function getLogLevel(): Level
+    public function getLogLevel(): int
     {
-        return $this->logLevel;
+        return $this->logLevel->value;
     }
 
     public function getFileWatchTimeout(): float

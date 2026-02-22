@@ -28,7 +28,7 @@ final class ConfigTest extends TestCase
         $this->assertSame(8080, $this->config->getPort());
         $this->assertSame('/app/mocks', $this->config->getMocksPath());
         $this->assertSame('en_US', $this->config->getLocale());
-        $this->assertSame(Level::Info, $this->config->getLogLevel());
+        $this->assertSame(Level::Info->value, $this->config->getLogLevel());
         $this->assertSame(0.2, $this->config->getFileWatchTimeout());
     }
 
@@ -126,7 +126,7 @@ final class ConfigTest extends TestCase
     }
 
     #[DataProvider('validLogLevelProvider')]
-    public function testLogWithValidLevels(string $levelName, Level $expectedLevel): void
+    public function testLogWithValidLevels(string $levelName, int $expectedLevel): void
     {
         $this->config->log($levelName);
         $this->assertSame($expectedLevel, $this->config->getLogLevel());
@@ -135,16 +135,16 @@ final class ConfigTest extends TestCase
     public static function validLogLevelProvider(): array
     {
         return [
-            ['debug', Level::Debug],
-            ['info', Level::Info],
-            ['notice', Level::Notice],
-            ['warning', Level::Warning],
-            ['error', Level::Error],
-            ['critical', Level::Critical],
-            ['alert', Level::Alert],
-            ['emergency', Level::Emergency],
-            ['DEBUG', Level::Debug],
-            ['InFo', Level::Info],
+            ['debug', Level::Debug->value],
+            ['info', Level::Info->value],
+            ['notice', Level::Notice->value],
+            ['warning', Level::Warning->value],
+            ['error', Level::Error->value],
+            ['critical', Level::Critical->value],
+            ['alert', Level::Alert->value],
+            ['emergency', Level::Emergency->value],
+            ['DEBUG', Level::Debug->value],
+            ['InFo', Level::Info->value],
         ];
     }
 

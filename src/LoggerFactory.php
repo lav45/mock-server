@@ -5,14 +5,13 @@ namespace Lav45\MockServer;
 use Amp\ByteStream;
 use Amp\Log\ConsoleFormatter;
 use Amp\Log\StreamHandler;
-use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
 
 final readonly class LoggerFactory
 {
-    public static function create(string $name, Level $logLevel): LoggerInterface
+    public static function create(string $name, int|string $logLevel): LoggerInterface
     {
         $handler = new StreamHandler(ByteStream\getStdout());
         $handler->setLevel($logLevel);
