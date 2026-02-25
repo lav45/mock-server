@@ -2,13 +2,24 @@
 
 set -e
 
+RUNNING_PROCESS=$(
+  docker ps --filter name='(test_webhook_catcher|test_mock_server|test_runner)' --format "{{.Names}}"
+)
+
+if [ "$RUNNING_PROCESS" ] ; then
+  for PROCESS in $RUNNING_PROCESS ; do
+    docker kill "$PROCESS" > /dev/null 2>&1
+    docker rm "$PROCESS" > /dev/null 2>&1
+  done
+fi
+
 getIp() {
   docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$1"
 }
 
 docker run -d \
-  -v "$(pwd)"/vendor:/app/vendor \
-  -v "$(pwd)"/test/Functional/Server:/app/test/Functional/Server \
+  -v "$(pwd)"/vendor:/app/vendor:ro \
+  -v "$(pwd)"/test/Functional/Server:/app/test/Functional/Server:ro \
   -e PORT=80 \
   -e LOG_LEVEL=error \
   --name test_webhook_catcher \
@@ -18,8 +29,8 @@ docker run -d \
 WEBHOOK_CATCHER_URL=http://$(getIp "test_webhook_catcher")
 
 docker run -d \
-  -v "$(pwd)"/vendor:/app/vendor \
-  -v "$(pwd)"/test/Functional/mocks:/app/mocks \
+  -v "$(pwd)"/vendor:/app/vendor:ro \
+  -v "$(pwd)"/test/Functional/mocks:/app/mocks:ro \
   -e PORT=80 \
   -e LOG_LEVEL=error \
   -e MOCKS_PATH=/app/mocks \
@@ -32,14 +43,19 @@ docker run -d \
 
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
 
-docker run --rm -i \
+DOCKER_ARG='-i'
+if [ -z "$GITHUB_ACTIONS" ]; then
+  DOCKER_ARG='-it'
+fi
+
+docker run --rm $DOCKER_ARG \
   -u "$(id -u):$(id -g)" \
-  -v "$(pwd)":/app \
+  -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
   --entrypoint composer \
   --name test_runner \
-  mock-server:tool phpunit test/Functional
+  mock-server:tool phpunit -- --do-not-cache-result test/Functional
 
 docker stop test_mock_server test_webhook_catcher > /dev/null
 docker rm test_mock_server test_webhook_catcher > /dev/null
