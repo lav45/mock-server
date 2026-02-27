@@ -4,7 +4,6 @@ namespace Lav45\MockServer\Infrastructure\Repository\Handler;
 
 use Lav45\MockServer\Domain\Model\Response\Body;
 use Lav45\MockServer\Domain\Model\Response\Delay;
-use Lav45\MockServer\Domain\Model\Response\HttpHeader;
 use Lav45\MockServer\Domain\Model\Response\HttpHeaders;
 use Lav45\MockServer\Domain\Model\Response\HttpMethod;
 use Lav45\MockServer\Domain\Model\Response\HttpStatus;
@@ -20,47 +19,65 @@ final readonly class AttributeFactory
 
     public function createDelay(): Delay
     {
-        $delay = ($this->data['delay'] ?? 0.0) |> $this->parser->replace(...);
-        return new Delay((float)$delay);
+        if (isset($this->data['delay'])) {
+            $value = $this->data['delay'];
+            if (\is_string($value)) {
+                $value = (float)$this->parser->replace($value);
+            }
+        } else {
+            $value = 0.0;
+        }
+        return new Delay($value);
     }
 
     public function createStatus(): HttpStatus
     {
-        $value = ($this->data['status'] ?? 200) |> $this->parser->replace(...);
-        return new HttpStatus((int)$value);
+        if (isset($this->data['status'])) {
+            $value = $this->data['status'];
+            if (\is_string($value)) {
+                $value = (int)$this->parser->replace($value);
+            }
+        } else {
+            $value = 200;
+        }
+        return new HttpStatus($value);
     }
 
     public function createHeaders(bool $withJson = false, array $appendHeaders = []): HttpHeaders
     {
-        $headers = $this->parser->replace(
-            $this->data['headers'] ?? [],
-        );
+        if (isset($this->data['headers'])) {
+            $headers = $this->data['headers'];
+            if ($headers) {
+                $headers = $this->parser->replace($headers);
+            }
+        } else {
+            $headers = [];
+        }
         if ($appendHeaders) {
             unset(
                 $appendHeaders['host'],
                 $appendHeaders['content-length'],
+                $appendHeaders['connection'],
             );
             $headers += \array_map(static fn($value) => $value[0], $appendHeaders);
         }
         if ($withJson) {
             $headers['content-type'] = 'application/json';
         }
-
-        $result = [];
-        /** @var array<string,string|int> $headers */
-        foreach ($headers as $name => $value) {
-            $result[] = new HttpHeader($name, (string)$value);
-        }
-        return new HttpHeaders(...$result);
+        return HttpHeaders::fromArray($headers);
     }
 
     public function createBody(): Body
     {
-        return Body::new(
-            $this->parser->replace(
-                $this->data['content'] ?? '',
-            ),
-        );
+        if (isset($this->data['content'])) {
+            $value = $this->data['content'];
+            if ($value) {
+                $value = $this->parser->replace($value);
+            }
+        } else {
+            $value = '';
+        }
+        return Body::new($value);
     }
 
     public function createBodyContent(): Body
@@ -84,9 +101,13 @@ final readonly class AttributeFactory
 
     public function createUrl(array $get = []): Url
     {
-        $url = ($this->data['url'] ?? '') |> $this->parser->replace(...);
+        if (isset($this->data['url'])) {
+            $value = $this->parser->replace($this->data['url']);
+        } else {
+            $value = '';
+        }
         return new Url(
-            $this->appendQuery($url, $get),
+            $this->appendQuery($value, $get),
         );
     }
 
@@ -125,9 +146,13 @@ final readonly class AttributeFactory
 
     public function createMethod(): HttpMethod
     {
-        $method = ($this->data['method'] ?? 'POST')
-            |> $this->parser->replace(...)
-            |> \strtoupper(...);
-        return new HttpMethod($method);
+        if (isset($this->data['method'])) {
+            $value = \strtoupper(
+                $this->parser->replace($this->data['method']),
+            );
+        } else {
+            $value = 'POST';
+        }
+        return new HttpMethod($value);
     }
 }

@@ -19,4 +19,16 @@ final readonly class HttpHeaders
         }
         return $result;
     }
+
+    /**
+     * @param array<string,string|int> $headers
+     */
+    public static function fromArray(array $headers): self
+    {
+        $result = [];
+        foreach ($headers as $name => $value) {
+            $result[] = new HttpHeader($name, (string)$value);
+        }
+        return new self(...$result);
+    }
 }
