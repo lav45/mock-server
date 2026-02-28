@@ -3,18 +3,35 @@
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
+use Amp\Http\Server\DefaultErrorHandler;
+use Amp\Http\Server\Driver\SocketClientFactory;
+use Amp\Http\Server\SocketHttpServer;
+use Amp\Socket;
 use Lav45\MockServer\Config;
 use Lav45\MockServer\LoggerFactory;
-use Lav45\MockServer\Test\Functional\Server\Server;
+use Lav45\MockServer\Test\Functional\Server\Component\Storage;
+use Lav45\MockServer\Test\Functional\Server\RequestHandler;
 
-$config = new Config()
-    ->port(getenv('PORT'))
-    ->log(getenv('LOG_LEVEL'));
+(static function (): void {
 
-$logger = LoggerFactory::create('logger', $config->getLogLevel());
+    $config = new Config()
+        ->port(getenv('PORT'))
+        ->log(getenv('LOG_LEVEL'));
 
-$server = new Server($logger, $config->getPort())->start();
+    $logger = LoggerFactory::create('logger', $config->getLogLevel());
 
-$logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+    $clientFactory = new SocketClientFactory($logger);
+    $serverSocketFactory = new Socket\ResourceServerSocketFactory();
+    $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
+    $server->expose(new Socket\InternetAddress('0.0.0.0', $config->getPort()));
 
-$server->stop();
+    $storage = new Storage();
+    $requestHandler = new RequestHandler($storage);
+    $errorHandler = new DefaultErrorHandler();
+    $server->start($requestHandler, $errorHandler);
+
+    $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+
+    $server->stop();
+
+})();

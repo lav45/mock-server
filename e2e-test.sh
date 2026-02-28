@@ -49,7 +49,6 @@ if [ -z "$GITHUB_ACTIONS" ]; then
 fi
 
 docker run --rm $DOCKER_ARG \
-  -u "$(id -u):$(id -g)" \
   -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
