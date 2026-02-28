@@ -15,6 +15,8 @@ final class ResponseTest extends TestCase
 
         $data = new class implements ResponseEntity {};
 
-        new ResponseFabric(HttpClientFactory::create())->create($data);
+        $httpClient = new HttpClientFactory()->create();
+
+        new ResponseFabric($httpClient)->create($data);
     }
 }

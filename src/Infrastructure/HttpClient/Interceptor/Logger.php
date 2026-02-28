@@ -3,6 +3,8 @@
 namespace Lav45\MockServer\Infrastructure\HttpClient\Interceptor;
 
 use Amp\Cancellation;
+use Amp\ForbidCloning;
+use Amp\ForbidSerialization;
 use Amp\Http\Client\ApplicationInterceptor;
 use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
@@ -12,14 +14,20 @@ use Psr\Log\LoggerInterface;
 
 final readonly class Logger implements ApplicationInterceptor
 {
+    use ForbidCloning;
+    use ForbidSerialization;
+
     public function __construct(
         private LoggerInterface $logger,
         private mixed           $logLevelOk,
         private mixed           $logLevelError,
     ) {}
 
-    public function request(Request $request, Cancellation $cancellation, DelegateHttpClient $httpClient): Response
-    {
+    public function request(
+        Request            $request,
+        Cancellation       $cancellation,
+        DelegateHttpClient $httpClient,
+    ): Response {
         $response = $httpClient->request($request, $cancellation);
 
         $loggerLevel = HttpStatus::isSuccessful($response->getStatus())

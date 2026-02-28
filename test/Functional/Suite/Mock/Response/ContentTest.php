@@ -12,7 +12,7 @@ class ContentTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->HttpClient = HttpClientFactory::create();
+        $this->HttpClient = new HttpClientFactory()->create();
     }
 
     public function testJson(): void

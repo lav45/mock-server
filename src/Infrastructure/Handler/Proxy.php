@@ -25,7 +25,7 @@ final readonly class Proxy implements ResponseHandler
                 headers: $this->data->headers->toArray(),
                 logLabel: 'Proxy',
             );
-            $responseBody = $response->getBody()->buffer() ?: '';
+            $responseBody = $response->getBody()->buffer();
         } // @codeCoverageIgnoreStart
         catch (\Throwable $exception) {
             return new Response(

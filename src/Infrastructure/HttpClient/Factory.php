@@ -13,9 +13,13 @@ use Psr\Log\NullLogger;
 
 final readonly class Factory
 {
-    public static function create(
-        LoggerInterface $logger = new NullLogger(),
-    ): HttpClient {
+    public function __construct(
+        private LoggerInterface $logger = new NullLogger(),
+        private int             $retryLimit = 3,
+    ) {}
+
+    public function create(): HttpClient
+    {
         $tls = new ClientTlsContext('')
             ->withoutPeerVerification()
             ->withSecurityLevel(0);
@@ -28,7 +32,8 @@ final readonly class Factory
         $pool = new UnlimitedConnectionPool($factory);
 
         $client = new HttpClientBuilder()
-            ->intercept(new Interceptor\Logger($logger, Level::Info, Level::Error))
+            ->intercept(new Interceptor\Logger($this->logger, Level::Info, Level::Error))
+            ->intercept(new Interceptor\RetryRequests($this->retryLimit))
             ->usingPool($pool)
             ->build();
 

@@ -13,7 +13,7 @@ class ProxyTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->HttpClient = HttpClientFactory::create();
+        $this->HttpClient = new HttpClientFactory()->create();
     }
 
     public function testPost(): void

@@ -34,7 +34,7 @@ use Lav45\Watcher\Watcher as FileWatcher;
     $parserFactory = new ParserFactory(
         FakerFactory::create($config->getLocale()),
     );
-    $httpClient = HttpClientFactory::create($logger);
+    $httpClient = new HttpClientFactory($logger)->create();
     $requestFactory = new RequestFactory($parserFactory, $httpClient, $logger);
     $dispatcherFactory = new DispatcherFactory($requestFactory, $logger);
 
