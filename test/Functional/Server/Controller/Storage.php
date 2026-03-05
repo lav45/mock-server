@@ -20,10 +20,8 @@ final readonly class Storage
     public function flush(): Response
     {
         $headers = ["content-type" => "application/json"];
-        $data = $this->storage->all();
+        $data = $this->storage->flush();
         $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-        $this->storage->flush();
 
         return new Response(
             headers: $headers,

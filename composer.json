@@ -1,6 +1,6 @@
 {
     "name": "lav45/mock-server",
-    "version": "3.3.2",
+    "version": "3.3.3",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [

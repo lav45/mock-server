@@ -2,37 +2,44 @@
 
 namespace Lav45\MockServer\Test\Functional\Server\Component;
 
+use Amp\Sync\LocalMutex;
+use Amp\Sync\Mutex;
+
 final class Storage
 {
     private array $data = [];
 
-    public function all(): array
-    {
-        return $this->data;
-    }
+    private Mutex $mutex;
 
-    public function get(int $index): mixed
+    public function __construct()
     {
-        return $this->data[$index] ?? null;
+        $this->mutex = new LocalMutex();
     }
 
     public function add(mixed $value): void
     {
-        $this->set($this->count(), $value);
+        $this->lock(function () use ($value) {
+            $this->data[] = $value;
+        });
     }
 
-    public function set(int $index, mixed $value): void
+    public function flush(): array
     {
-        $this->data[$index] = $value;
+        return $this->lock(function () {
+            $data = $this->data;
+            $this->data = [];
+            return $data;
+        });
     }
 
-    public function count(): int
+    private function lock(callable $fn): mixed
     {
-        return \count($this->data);
-    }
-
-    public function flush(): void
-    {
-        $this->data = [];
+        $lock = $this->mutex->acquire();
+        try {
+            $result = $fn();
+        } finally {
+            $lock->release();
+        }
+        return $result;
     }
 }
