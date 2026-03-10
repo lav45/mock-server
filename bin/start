@@ -3,13 +3,13 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\SocketClientFactory;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
 use Faker\Factory as FakerFactory;
 use Lav45\MockServer\Config;
 use Lav45\MockServer\DispatcherFactory;
+use Lav45\MockServer\ErrorHandler;
 use Lav45\MockServer\FileStorage;
 use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
 use Lav45\MockServer\Infrastructure\Parser\ParserFactory;
@@ -56,7 +56,7 @@ use Lav45\Watcher\Watcher as FileWatcher;
         );
     }
 
-    $errorHandler = new DefaultErrorHandler();
+    $errorHandler = new ErrorHandler();
     $reactor = new Reactor($errorHandler, $watcher);
 
     $serverSocketFactory = new Socket\ResourceServerSocketFactory();
