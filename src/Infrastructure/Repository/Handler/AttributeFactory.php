@@ -54,12 +54,18 @@ final readonly class AttributeFactory
             $headers = [];
         }
         if ($appendHeaders) {
-            unset(
-                $appendHeaders['host'],
-                $appendHeaders['content-length'],
-                $appendHeaders['connection'],
-            );
-            $headers += \array_map(static fn($value) => $value[0], $appendHeaders);
+            $filterHeaders = [
+                'host',
+                'content-length',
+                'connection',
+                'keep-alive',
+                'transfer-encoding',
+            ];
+            foreach ($appendHeaders as $name => $value) {
+                if (\in_array($name, $filterHeaders, true) === false) {
+                    $headers[$name] = $value[0];
+                }
+            }
         }
         if ($withJson) {
             $headers['content-type'] = 'application/json';

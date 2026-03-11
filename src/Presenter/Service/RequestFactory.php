@@ -15,7 +15,7 @@ final readonly class RequestFactory
         return new RequestData(
             start: \microtime(true),
             method: $httpRequest->getMethod(),
-            get: $request->query,
+            get: $request->getQuery(),
             post: $request->getData(),
             headers: $httpRequest->getHeaders(),
             urlParams: $urlParams,

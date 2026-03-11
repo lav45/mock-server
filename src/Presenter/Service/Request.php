@@ -13,36 +13,32 @@ final class Request
         }
     }
 
-    public array $query {
-        get {
-            return $this->query ??= $this->parseQuery($this->request->getUri()->getQuery());
-        }
-    }
-
     public function __construct(
         private readonly HttpRequest $request,
     ) {}
 
-    private function parseQuery(string|null $query): array
+    public function getQuery(): array
     {
-        if (empty($query)) {
-            return [];
-        }
-        \parse_str($query, $parseQuery);
-        return $parseQuery;
+        return $this->normalizeValues(
+            $this->request->getQueryParameters(),
+        );
     }
 
     public function getData(): array
     {
-        return $this->parseContentBoundary() !== null
-            ? $this->parseForm()
-            : $this->parseBody();
+        $body = $this->body;
+        if (\json_validate($body)) {
+            return \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+        }
+        return $this->normalizeValues(
+            $this->getFormValues($body, $this->parseContentBoundary()),
+        );
     }
 
-    private function parseForm(): array
+    private function normalizeValues(array $values): array
     {
         $result = [];
-        foreach ($this->getFormValues() as $key => $value) {
+        foreach ($values as $key => $value) {
             if (isset($value[1])) {
                 $result[$key] = $value;
             } else {
@@ -52,28 +48,17 @@ final class Request
         return $result;
     }
 
-    private function parseBody(): array
-    {
-        if (\json_validate($this->body)) {
-            return \json_decode($this->body, true, 512, JSON_THROW_ON_ERROR);
-        }
-        return [];
-    }
-
     private function parseContentBoundary(): string|null
     {
-        return FormParser\parseContentBoundary($this->getContentType());
+        return FormParser\parseContentBoundary(
+            $this->request->getHeader('content-type') ?? '',
+        );
     }
 
-    private function getContentType(): string
-    {
-        return $this->request->getHeader('content-type') ?? '';
-    }
-
-    private function getFormValues(): array
+    private function getFormValues(string $body, string|null $boundary): array
     {
         return new FormParser\FormParser()
-            ->parseBody($this->body, $this->parseContentBoundary())
+            ->parseBody($body, $boundary)
             ->getValues();
     }
 }
