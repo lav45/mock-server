@@ -18,7 +18,8 @@ class ResponseTest extends TestCase
     public function testIndex(): void
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL);
-        $this->assertEquals(404, $response->getStatus());
+        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals('', $response->getBody()->buffer());
     }
 
     public function testNotFound(): void

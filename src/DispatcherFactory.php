@@ -23,9 +23,9 @@ final readonly class DispatcherFactory implements Watcher\DispatcherFactory
             foreach ($data as $mocks) {
                 foreach ($mocks as $mock) {
                     try {
-                        $request = Request::fromArray($mock['request']);
+                        $request = Request::fromArray($mock['request'] ?? []);
                         $handler = $this->requestFactory->create($mock);
-                    } catch (\Exception $exception) {
+                    } catch (\Throwable $exception) {
                         $this->logger->error($exception);
                         continue;
                     }

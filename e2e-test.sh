@@ -29,7 +29,7 @@ docker run -d \
 WEBHOOK_CATCHER_URL=http://$(getIp "test_webhook_catcher")
 
 docker run -d \
-  -v "$(pwd)"/vendor:/app/vendor:ro \
+  -v "$(pwd)":/app:ro \
   -v "$(pwd)"/test/Functional/mocks:/app/mocks:ro \
   -e PORT=80 \
   -e LOG_LEVEL=error \
