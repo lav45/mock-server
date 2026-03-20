@@ -74,7 +74,7 @@ Webhook will send the data:
 You can pass the environment parameters when starting the container
 
 ```shell
-docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 -e DOMAIN=api.server.com lav45/mock-server:latest
+docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 -e DOMAIN=api.server.com lav45/mock-server:latest
 ```
 
 ```json

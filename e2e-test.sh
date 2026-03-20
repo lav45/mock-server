@@ -48,7 +48,7 @@ if [ -z "$GITHUB_ACTIONS" ]; then
   DOCKER_ARG='-it'
 fi
 
-docker run --rm $DOCKER_ARG \
+docker run --rm --init $DOCKER_ARG \
   -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \

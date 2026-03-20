@@ -55,7 +55,7 @@ Create mock file `./mocks/index.json` and put the content in it:
 ### Run the Mock Server (Docker)
 
 ```shell
-docker run --rm -it -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
+docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
 ### Checking
@@ -69,7 +69,7 @@ curl http://127.0.0.1:8080/
 If you are upgrading from an older version, you may need to migrate your mock files:
 
 ```shell
-docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
+docker run --rm -it --init -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 ```
 
 ## Environment Variables
@@ -99,7 +99,7 @@ docker run --rm -it -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
 ### Run in Development Mode
 
 ```shell
-docker run --rm -it -v $(pwd):/app -p 8080:8080 mock-server:server
+docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server
 ```
 
 ## Tests
