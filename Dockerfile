@@ -1,7 +1,7 @@
 FROM alpine:3.23 AS pecl
 
 RUN <<CMD
-    set -e
+    set -eux
     apk add --no-cache php85-dev php85-pear php85-openssl musl-dev autoconf make gcc libuv-dev
 
     pecl85 channel-update pecl.php.net
@@ -14,8 +14,12 @@ FROM alpine:3.23 AS base
 COPY --from=pecl /usr/lib/php85/modules/inotify.so /usr/lib/php85/modules/inotify.so
 COPY --from=pecl /usr/lib/php85/modules/uv.so /usr/lib/php85/modules/uv.so
 
+RUN addgroup -S www-data -g 1000; \
+    adduser -S -D -G www-data -u 1000 -H -h /app -s /bin/sh www-data; \
+    install --verbose --directory --owner www-data --group www-data --mode 755 /app
+
 RUN <<CMD
-    set -e
+    set -eux
     apk upgrade --no-cache --available
     apk add --no-cache php85 libuv php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl
 
@@ -53,17 +57,22 @@ RUN apk add --no-cache \
 ENV COMPOSER_HOME=/app/.cache/.composer
 ENV COMPOSER_PROCESS_TIMEOUT=600
 
+USER www-data
+
 FROM tool AS build
 
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
 
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
+RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
+
+USER root
+RUN chown -R root: vendor
 
 FROM base AS server
 
 RUN <<CMD
-  set -e
+  set -eux
   echo 'opcache.enable_cli=on' >> /etc/php/conf.d/00_opcache.ini
   echo 'opcache.jit=tracing' >> /etc/php/conf.d/00_opcache.ini
 CMD
@@ -72,6 +81,8 @@ COPY bin /app/bin
 COPY migrates /app/migrates
 COPY --from=build /app/vendor /app/vendor
 COPY src /app/src
+
+USER www-data
 
 ENTRYPOINT ["php"]
 
