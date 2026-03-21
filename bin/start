@@ -3,6 +3,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Amp\Cluster\Cluster;
 use Amp\Http\Server\Driver\SocketClientFactory;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
@@ -29,13 +30,15 @@ use Lav45\Watcher\Watcher as FileWatcher;
         ->log(getenv('LOG_LEVEL'))
         ->fileWatch(getenv('FILE_WATCH_TIMEOUT'));
 
-    $logger = LoggerFactory::create('mock-server', $config->getLogLevel());
+    $logHandler = Cluster::isWorker() ? Cluster::createLogHandler($config->getLogLevel()) : null;
+    $logName = 'mock-server-' . (Cluster::getContextId() ?? getmypid());
+    $logger = new LoggerFactory($logName, $config->getLogLevel())->create($logHandler);
 
-    $parserFactory = new ParserFactory(
+    $parser = new ParserFactory(
         FakerFactory::create($config->getLocale()),
-    );
+    )->create();
     $httpClient = new HttpClientFactory($logger)->create();
-    $requestFactory = new RequestFactory($parserFactory, $httpClient, $logger);
+    $requestFactory = new RequestFactory($parser, $httpClient, $logger);
     $dispatcherFactory = new DispatcherFactory($requestFactory, $logger);
 
     $watchDir = $config->getMocksPath();
@@ -47,11 +50,11 @@ use Lav45\Watcher\Watcher as FileWatcher;
         logger: $logger,
     );
 
-    if ($timeout = $config->getFileWatchTimeout()) {
+    if (Cluster::isWorker() === false) {
         Amp\async(
             static fn() => $watcher->run(
                 watcher: new FileWatcher(new Listener()),
-                delay: $timeout,
+                delay: $config->getFileWatchTimeout(),
             ),
         );
     }
@@ -59,13 +62,13 @@ use Lav45\Watcher\Watcher as FileWatcher;
     $errorHandler = new ErrorHandler();
     $reactor = new Reactor($errorHandler, $watcher);
 
-    $serverSocketFactory = new Socket\ResourceServerSocketFactory();
+    $serverSocketFactory = Cluster::getServerSocketFactory();
     $clientFactory = new SocketClientFactory($logger);
     $server = new SocketHttpServer($logger, $serverSocketFactory, $clientFactory);
     $server->expose(new Socket\InternetAddress('0.0.0.0', $config->getPort()));
     $server->start($reactor, $errorHandler);
 
-    $logger->info(\sprintf("Received signal %d, stopping HTTP server", Amp\trapSignal([SIGINT, SIGTERM])));
+    Cluster::awaitTermination();
 
     $server->stop();
 

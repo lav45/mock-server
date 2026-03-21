@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Infrastructure\Parser;
 
 use Faker\Generator;
 
-final readonly class ParserFactory implements ParserFactoryInterface
+final readonly class ParserFactory
 {
     public function __construct(
         private Generator $faker,

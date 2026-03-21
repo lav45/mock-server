@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": ">=8.5",
+        "php": ">=8.4",
         "ext-intl": "*",
         "ext-pcntl": "*",
         "ext-filter": "*",
@@ -34,6 +34,7 @@
         "amphp/byte-stream": "^v2.1",
         "amphp/socket": "^v2.3",
         "amphp/file": "^3.2",
+        "amphp/cluster": "^2.0",
         "nikic/fast-route": "^v1.3",
         "monolog/monolog": "3.9.*",
         "fakerphp/faker": "^v1.24",
@@ -64,7 +65,7 @@
         "coverage:html": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html coverage",
         "coverage:xml": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
         "check": "php vendor/bin/composer-require-checker check",
-        "unused": "php vendor/bin/composer-unused --excludePackage=ext-pcntl",
+        "unused": "php vendor/bin/composer-unused --excludePackage=ext-pcntl --excludePackage=amphp/cluster",
         "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
         "cs:fix": "php vendor/bin/php-cs-fixer fix"
     },

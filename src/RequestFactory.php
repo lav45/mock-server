@@ -8,7 +8,6 @@ use Lav45\MockServer\Infrastructure\Handler\ResponseFabric as ResponseFabricHand
 use Lav45\MockServer\Infrastructure\Handler\WebHook as WebHookHandler;
 use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
 use Lav45\MockServer\Infrastructure\Parser\DataParser;
-use Lav45\MockServer\Infrastructure\Parser\ParserFactoryInterface;
 use Lav45\MockServer\Infrastructure\Repository\Repository;
 use Lav45\MockServer\Presenter\Handler\Request;
 use Psr\Log\LoggerInterface;
@@ -19,16 +18,13 @@ final readonly class RequestFactory implements RequestFactoryInterface
 
     private ResponseFabric $responseFabric;
 
-    private DataParser $parser;
-
     public function __construct(
-        ParserFactoryInterface $parserFactory,
-        HttpClientInterface    $httpClient,
-        LoggerInterface        $logger,
+        private DataParser  $parser,
+        HttpClientInterface $httpClient,
+        LoggerInterface     $logger,
     ) {
         $this->webHookHandler = new WebHookHandler($logger, $httpClient);
         $this->responseFabric = new ResponseFabricHandler($httpClient);
-        $this->parser = $parserFactory->create();
     }
 
     public function create(array $mock): Request

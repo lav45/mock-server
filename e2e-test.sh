@@ -18,8 +18,7 @@ getIp() {
 }
 
 docker run -d \
-  -v "$(pwd)"/vendor:/app/vendor:ro \
-  -v "$(pwd)"/test/Functional/Server:/app/test/Functional/Server:ro \
+  -v "$(pwd)":/app:ro \
   -e PORT=80 \
   -e LOG_LEVEL=error \
   --name test_webhook_catcher \
@@ -36,7 +35,6 @@ docker run -d \
   -e MOCKS_PATH=/app/mocks \
   -e DOMAIN=test.server.com \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
-  -e FILE_WATCH_TIMEOUT=0 \
   --name test_mock_server \
   --restart on-failure \
   mock-server:server > /dev/null

@@ -18,7 +18,7 @@ use Lav45\MockServer\Test\Functional\Server\RequestHandler;
         ->port(getenv('PORT'))
         ->log(getenv('LOG_LEVEL'));
 
-    $logger = LoggerFactory::create('logger', $config->getLogLevel());
+    $logger = new LoggerFactory('logger', $config->getLogLevel())->create();
 
     $clientFactory = new SocketClientFactory($logger);
     $serverSocketFactory = new Socket\ResourceServerSocketFactory();

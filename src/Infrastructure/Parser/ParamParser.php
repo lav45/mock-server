@@ -18,9 +18,9 @@ final class ParamParser implements DataParser
 
     public function withData(array $data): self
     {
-        return clone($this, [
-            'data' => \array_merge_recursive($this->data, $data),
-        ]);
+        $new = clone $this;
+        $new->data = \array_merge_recursive($this->data, $data);
+        return $new;
     }
 
     public function replace(mixed $data): mixed

@@ -36,7 +36,7 @@ class WebHookTest extends TestCase
         );
         $this->assertEquals(200, $response->getStatus());
 
-        delay(1.5);
+        delay(1);
 
         $response = $this->HttpClient->request(WEBHOOK_CATCHER_URL . '/__storage');
         $this->assertEquals(200, $response->getStatus());

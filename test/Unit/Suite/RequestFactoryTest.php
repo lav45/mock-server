@@ -67,7 +67,7 @@ final class RequestFactoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $parser = new ParserFactory(FakerFactory::create());
+        $parser = new ParserFactory(FakerFactory::create())->create();
         $httpClient = new FakeHttpClient();
         $logger = new NullLogger();
 

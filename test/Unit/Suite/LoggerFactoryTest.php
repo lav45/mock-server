@@ -16,7 +16,7 @@ final class LoggerFactoryTest extends TestCase
         $loggerName = 'test_logger';
         $logLevel = Level::Debug->value;
 
-        $logger = LoggerFactory::create($loggerName, $logLevel);
+        $logger = new LoggerFactory($loggerName, $logLevel)->create();
 
         $this->assertInstanceOf(Logger::class, $logger);
         $this->assertSame($loggerName, $logger->getName());
@@ -33,7 +33,7 @@ final class LoggerFactoryTest extends TestCase
         $this->assertInstanceOf(LineFormatter::class, $formatter);
 
         $logLevel = 'debug';
-        $logger = LoggerFactory::create($loggerName, $logLevel);
+        $logger = new LoggerFactory($loggerName, $logLevel)->create();
 
         $this->assertInstanceOf(Logger::class, $logger);
         $this->assertSame($loggerName, $logger->getName());
