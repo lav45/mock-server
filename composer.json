@@ -1,6 +1,6 @@
 {
     "name": "lav45/mock-server",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [
@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.5",
         "ext-intl": "*",
         "ext-pcntl": "*",
         "ext-filter": "*",

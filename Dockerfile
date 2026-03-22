@@ -2,30 +2,30 @@ FROM alpine:3.23 AS pecl
 
 RUN <<CMD
     set -eux
-    apk add --no-cache php84-dev php84-pear php84-openssl openssl-dev musl-dev autoconf make gcc libevent-dev
+    apk add --no-cache php85-dev php85-pear php85-openssl openssl-dev musl-dev autoconf make gcc libevent-dev
 
-    pecl84 channel-update pecl.php.net
-    pecl84 install inotify
-    pecl84 install event
+    pecl85 channel-update pecl.php.net
+    pecl85 install inotify
+    pecl85 install event
 CMD
 
 FROM alpine:3.23 AS base
 
 COPY --from=pecl \
-    /usr/lib/php84/modules/inotify.so \
-    /usr/lib/php84/modules/event.so \
-    /usr/lib/php84/modules/
+    /usr/lib/php85/modules/inotify.so \
+    /usr/lib/php85/modules/event.so \
+    /usr/lib/php85/modules/
 
 RUN <<CMD
     set -eux
     apk upgrade --no-cache --available
-    apk add --no-cache libevent php84 php84-openssl php84-intl php84-fileinfo php84-ctype php84-mbstring php84-gmp php84-pcntl php84-sockets php84-posix
+    apk add --no-cache libevent php85 php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl php85-sockets php85-posix
 
-    ln -s /usr/bin/php84 /bin/php
+    ln -s /usr/bin/php85 /bin/php
 
-    echo 'memory_limit=-1' > /etc/php84/conf.d/00_main.ini
-    echo 'extension=event.so' > /etc/php84/conf.d/01_event.ini
-    echo 'extension=inotify.so' > /etc/php84/conf.d/00_inotify.ini
+    echo 'memory_limit=-1' > /etc/php85/conf.d/00_main.ini
+    echo 'extension=event.so' > /etc/php85/conf.d/01_event.ini
+    echo 'extension=inotify.so' > /etc/php85/conf.d/00_inotify.ini
     echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
     echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
 
@@ -41,18 +41,18 @@ FROM base AS tool
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN apk add --no-cache \
-    php84-phar \
-    php84-curl \
-    php84-zip \
-    php84-zlib \
-    php84-xml \
-    php84-xmlwriter \
-    php84-pecl-pcov \
-    php84-bcmath \
-    php84-sodium \
-    php84-dom \
-    php84-iconv \
-    php84-tokenizer \
+    php85-phar \
+    php85-curl \
+    php85-zip \
+    php85-zlib \
+    php85-xml \
+    php85-xmlwriter \
+    php85-pecl-pcov \
+    php85-bcmath \
+    php85-sodium \
+    php85-dom \
+    php85-iconv \
+    php85-tokenizer \
     hey
 
 ENV COMPOSER_HOME=/app/.cache/.composer
@@ -71,11 +71,8 @@ FROM base AS base-server
 
 RUN <<CMD
   set -eux
-  apk add --no-cache php84-opcache
-  echo 'opcache.enable=on' >> /etc/php84/conf.d/00_opcache.ini
-  echo 'opcache.enable_cli=on' >> /etc/php84/conf.d/00_opcache.ini
-  echo 'opcache.jit_buffer_size=128M' >> /etc/php84/conf.d/00_opcache.ini
-  echo 'opcache.jit=tracing' >> /etc/php84/conf.d/00_opcache.ini
+  echo 'opcache.enable_cli=on' >> /etc/php85/conf.d/00_opcache.ini
+  echo 'opcache.jit=tracing' >> /etc/php85/conf.d/00_opcache.ini
 CMD
 
 USER www-data

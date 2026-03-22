@@ -16,9 +16,9 @@ final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
 
     public function withLabel(string $label): self
     {
-        $new = clone $this;
-        $new->logLabel = $label;
-        return $new;
+        return clone($this, [
+            'logLabel' => $label,
+        ]);
     }
 
     public function request(
