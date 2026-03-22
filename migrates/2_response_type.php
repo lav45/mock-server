@@ -16,13 +16,12 @@ return static function (array $data): array {
     ];
     foreach ($list as $type) {
         if (isset($data['response'][$type])) {
-            $result = ['type' => $type] + $data['response'][$type];
-            if (isset($data['response']['delay'])) {
-                $result['delay'] = $data['response']['delay'];
-            }
-            $data['response'] = $result;
+            $data['response'] = ['type' => $type] + $data['response'][$type];
             return $data;
         }
     }
+
+    $data['response'] = ['type' => 'content'] + $data['response'];
+
     return $data;
 };

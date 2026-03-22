@@ -51,7 +51,8 @@ RUN apk add --no-cache \
     php84-sodium \
     php84-dom \
     php84-iconv \
-    php84-tokenizer
+    php84-tokenizer \
+    wrk
 
 ENV COMPOSER_HOME=/app/.cache/.composer
 ENV COMPOSER_PROCESS_TIMEOUT=600

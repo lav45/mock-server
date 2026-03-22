@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -e
+
 CMD=${1:-phpunit}
 DIR=${2:-test/Unit}
 

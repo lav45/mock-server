@@ -22,7 +22,6 @@ docker run -d \
   -e PORT=80 \
   -e LOG_LEVEL=error \
   --name test_webhook_catcher \
-  --restart on-failure \
   mock-server:server test/Functional/Server/start > /dev/null
 
 WEBHOOK_CATCHER_URL=http://$(getIp "test_webhook_catcher")
@@ -36,10 +35,12 @@ docker run -d \
   -e DOMAIN=test.server.com \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
   --name test_mock_server \
-  --restart on-failure \
   mock-server:server > /dev/null
 
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
+
+while ! curl -s "$WEBHOOK_CATCHER_URL" > /dev/null; do sleep 1; done
+while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do sleep 1; done
 
 DOCKER_ARG='-i'
 if [ -z "$GITHUB_ACTIONS" ]; then

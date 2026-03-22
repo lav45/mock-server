@@ -1,0 +1,10 @@
+[
+    {
+        "response": {
+            "type": "content",
+            "json": {
+                "text": "Hello world!"
+            }
+        }
+    }
+]

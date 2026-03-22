@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 DOCKER_ARG='-i'
 if [ -z "$GITHUB_ACTIONS" ]; then

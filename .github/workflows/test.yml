@@ -15,6 +15,7 @@ on:
       - Dockerfile
       - e2e-test.sh
       - unit-test.sh
+      - benchmark.sh
   pull_request:
     paths:
       - .github/workflows/test.yml
@@ -27,6 +28,7 @@ on:
       - Dockerfile
       - e2e-test.sh
       - unit-test.sh
+      - benchmark.sh
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -59,11 +61,14 @@ jobs:
       - run: ./composer deptrac
       - run: ./composer unused
 
-      - name: Run functional tests
+      - name: Running functional tests
         run: ./e2e-test.sh
 
-      - name: Run phpunit tests with code coverage
+      - name: Running phpunit tests with code coverage
         run: ./unit-test.sh coverage:xml
+
+      - name: Running benchmark tests
+        run: ./benchmark.sh
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
