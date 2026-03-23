@@ -11,27 +11,26 @@ CMD
 
 FROM alpine:3.23 AS base
 
-COPY --from=pecl /usr/lib/php84/modules/inotify.so /usr/lib/php84/modules/inotify.so
-COPY --from=pecl /usr/lib/php84/modules/event.so /usr/lib/php84/modules/event.so
-
-RUN addgroup -S www-data -g 1000; \
-    adduser -S -D -G www-data -u 1000 -H -h /app -s /bin/sh www-data; \
-    install --verbose --directory --owner www-data --group www-data --mode 755 /app
+RUN adduser -S -D -G www-data -u 82 -h /app -s /bin/sh www-data
 
 RUN <<CMD
     set -eux
     apk upgrade --no-cache --available
     apk add --no-cache libevent php84 php84-openssl php84-intl php84-fileinfo php84-ctype php84-mbstring php84-gmp php84-pcntl php84-sockets php84-posix
 
-    ln -s /etc/php84 /etc/php
     ln -s /usr/bin/php84 /bin/php
 
-    echo 'memory_limit=-1' > /etc/php/conf.d/00_main.ini
-    echo 'extension=event.so' > /etc/php/conf.d/01_event.ini
-    echo 'extension=inotify.so' > /etc/php/conf.d/00_inotify.ini
+    echo 'memory_limit=-1' > /etc/php84/conf.d/00_main.ini
+    echo 'extension=event.so' > /etc/php84/conf.d/01_event.ini
+    echo 'extension=inotify.so' > /etc/php84/conf.d/00_inotify.ini
     echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
     echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
 CMD
+
+COPY --from=pecl \
+    /usr/lib/php84/modules/inotify.so \
+    /usr/lib/php84/modules/event.so \
+    /usr/lib/php84/modules/
 
 WORKDIR /app
 
@@ -66,27 +65,24 @@ COPY composer.lock /app/composer.lock
 
 RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
 
-USER root
-RUN chown -R root: vendor
-
 FROM base AS base-server
 
 RUN <<CMD
   set -eux
   apk add --no-cache php84-opcache
-  echo 'opcache.enable=on' >> /etc/php/conf.d/00_opcache.ini
-  echo 'opcache.enable_cli=on' >> /etc/php/conf.d/00_opcache.ini
-  echo 'opcache.jit_buffer_size=128M' >> /etc/php/conf.d/00_opcache.ini
-  echo 'opcache.jit=tracing' >> /etc/php/conf.d/00_opcache.ini
+  echo 'opcache.enable=on' >> /etc/php84/conf.d/00_opcache.ini
+  echo 'opcache.enable_cli=on' >> /etc/php84/conf.d/00_opcache.ini
+  echo 'opcache.jit_buffer_size=128M' >> /etc/php84/conf.d/00_opcache.ini
+  echo 'opcache.jit=tracing' >> /etc/php84/conf.d/00_opcache.ini
 CMD
 
 USER www-data
 
-CMD ["vendor/bin/cluster", "--pid-file", "/tmp/cluster.pid", "bin/start"]
+CMD [ "vendor/bin/cluster", "--pid-file", "/tmp/cluster.pid", "bin/start" ]
 
 FROM base-server AS server
 
 COPY bin /app/bin
-COPY migrates /app/migrates
-COPY --from=build /app/vendor /app/vendor
 COPY src /app/src
+COPY migrates /app/migrates
+COPY --from=build --chown=root:root /app/vendor /app/vendor
