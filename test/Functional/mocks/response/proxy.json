@@ -6,7 +6,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.WEBHOOK_CATCHER_URL}/content?n=1",
+            "url": "{env.WEBHOOK_STORAGE_URL}/content?n=1",
             "content": [
                 {
                     "id": 1,
@@ -42,7 +42,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.WEBHOOK_CATCHER_URL}/content",
+            "url": "{env.WEBHOOK_STORAGE_URL}/content",
             "content": "{\"id\": 100}"
         }
     },
@@ -53,7 +53,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.WEBHOOK_CATCHER_URL}/content",
+            "url": "{env.WEBHOOK_STORAGE_URL}/content",
             "content": {
                 "company": {
                     "id": "{{faker.uuid}}"
@@ -71,7 +71,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.WEBHOOK_CATCHER_URL}/{request.urlParams.path}",
+            "url": "{env.WEBHOOK_STORAGE_URL}/{request.urlParams.path}",
             "headers": {
                 "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
             }

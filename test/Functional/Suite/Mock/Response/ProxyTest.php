@@ -5,6 +5,7 @@ namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
 use Amp\Http\Client\Form;
 use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
 use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
+use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
 class ProxyTest extends TestCase
@@ -31,14 +32,11 @@ class ProxyTest extends TestCase
         $content = $this->getStorageData();
 
         $this->assertEquals('POST', $content[0]['method']);
-        $this->assertEquals([], $content[0]['get']);
-        $this->assertEquals($data, $content[0]['post']);
+        $this->assertNull(Uri::new($content[0]['url'])->getQuery());
+        $this->assertEquals($data, \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true));
 
-        $this->assertArrayHasKey('content-type', $content[0]['headers']);
-        $this->assertEquals('application/json', $content[0]['headers']['content-type'][0]);
-
-        $this->assertArrayHasKey('authorization', $content[0]['headers']);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $content[0]['headers']['authorization'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
+        $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
     }
 
     public function testGet(): void
@@ -52,21 +50,21 @@ class ProxyTest extends TestCase
         $content = $this->getStorageData();
 
         $this->assertEquals('GET', $content[0]['method']);
-        $this->assertEquals(['id' => 100], $content[0]['get']);
-        $this->assertEquals([], $content[0]['post']);
+        $this->assertEquals('id=100', Uri::new($content[0]['url'])->getQuery());
+        $this->assertNull(\json_decode(\base64_decode($content[0]['request_payload_base64'], true), true));
 
-        $this->assertArrayHasKey('content-type', $content[0]['headers']);
-        $this->assertEquals('application/json', $content[0]['headers']['content-type'][0]);
-
-        $this->assertArrayHasKey('authorization', $content[0]['headers']);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $content[0]['headers']['authorization'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
+        $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
     }
 
     private function getStorageData(): array
     {
-        $response = $this->HttpClient->request(WEBHOOK_CATCHER_URL . '/__storage');
+        $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
+        $response = $this->HttpClient->request($url);
+        $this->assertEquals(200, $response->getStatus());
         $content = $response->getBody()->buffer();
-        return \json_decode($content, true);
+        $this->HttpClient->request($url, 'DELETE');
+        return \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
     }
 
     public function testArrayContent(): void
@@ -79,22 +77,20 @@ class ProxyTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
-        $this->assertArrayHasKey('authorization', $headers);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
+        $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $response->getBody()->buffer();
-        $content = \json_decode($content, true);
+        $content = $this->getStorageData();
 
-        $this->assertEquals('POST', $content['method']);
-        $this->assertEquals(['n' => '1'], $content['get']);
+        $this->assertEquals('POST', $content[0]['method']);
+        $this->assertEquals('n=1', Uri::new($content[0]['url'])->getQuery());
 
-        $this->assertCount(6, $content['post']);
+        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true);
+        $this->assertCount(6, $payload);
 
         $expected = ['id' => 3, 'name' => 'name 3'];
-        $this->assertEquals($expected, $content['post'][2]);
+        $this->assertEquals($expected, $payload[2]);
 
-        $this->assertArrayHasKey('content-type', $content['headers']);
-        $this->assertEquals('application/json', $content['headers']['content-type'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
     }
 
     public function testStringContent(): void
@@ -108,19 +104,17 @@ class ProxyTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
-        $this->assertArrayHasKey('authorization', $headers);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
+        $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $response->getBody()->buffer();
-        $content = \json_decode($content, true);
+        $content = $this->getStorageData();
 
-        $this->assertEquals('POST', $content['method']);
-        $this->assertEquals([], $content['get']);
+        $this->assertEquals('POST', $content[0]['method']);
+        $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        $this->assertEquals(['id' => 100], $content['post']);
+        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true);
+        $this->assertEquals(['id' => 100], $payload);
 
-        $this->assertArrayHasKey('content-type', $content['headers']);
-        $this->assertEquals('application/json', $content['headers']['content-type'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
     }
 
     public function testFakerContent(): void
@@ -134,35 +128,34 @@ class ProxyTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $headers = $response->getHeaders();
-        $this->assertArrayHasKey('authorization', $headers);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $headers['authorization'][0]);
+        $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $response->getBody()->buffer();
-        $content = \json_decode($content, true);
+        $content = $this->getStorageData();
 
-        $this->assertEquals('POST', $content['method']);
-        $this->assertEquals([], $content['get']);
+        $this->assertEquals('POST', $content[0]['method']);
+        $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        $this->assertTrue(isset($content['post']['company']['id']));
+        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true);
+        $this->assertTrue(isset($payload['company']['id']));
+
         $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
-        $this->assertMatchesRegularExpression($uuidPattern, $content['post']['company']['id']);
+        $this->assertMatchesRegularExpression($uuidPattern, $payload['company']['id']);
 
-        $this->assertArrayHasKey('content-type', $content['headers']);
-        $this->assertEquals('application/json', $content['headers']['content-type'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
     }
 
     public function testFormData(): void
     {
         $data = [
-            'id' => 100,
-            'item' => [1, 2, 3],
+            'id' => '100',
+            'item' => ['1', '2', '3'],
         ];
 
         $form = new Form();
         foreach ($data as $name => $value) {
             if (\is_array($value)) {
                 foreach ($value as $val) {
-                    $form->addField($name, (string)$val);
+                    $form->addField("{$name}[]", (string)$val);
                 }
             } else {
                 $form->addField($name, (string)$value);
@@ -180,18 +173,12 @@ class ProxyTest extends TestCase
         $content = $this->getStorageData();
 
         $this->assertEquals('POST', $content[0]['method']);
-        $this->assertEquals([], $content[0]['get']);
+        $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        $expected = [
-            'id' => '100',
-            'item' => ['1', '2', '3'],
-        ];
-        $this->assertEquals($expected, $content[0]['post']);
+        \parse_str(\base64_decode($content[0]['request_payload_base64'], true), $payload);
+        $this->assertEquals($data, $payload);
 
-        $this->assertArrayHasKey('content-type', $content[0]['headers']);
-        $this->assertEquals('application/x-www-form-urlencoded', $content[0]['headers']['content-type'][0]);
-
-        $this->assertArrayHasKey('authorization', $content[0]['headers']);
-        $this->assertEquals('Bearer eyJhbGciOiJSUzI1NiJ9', $content[0]['headers']['authorization'][0]);
+        $this->assertContains(['name' => 'Content-Type', 'value' => 'application/x-www-form-urlencoded'], $content[0]['headers']);
+        $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
     }
 }
