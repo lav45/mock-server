@@ -13,12 +13,12 @@ if [ "$RUNNING_PROCESS" ] ; then
   done
 fi
 
-docker run -d \
+docker run -d --rm \
   -v "$(pwd)":/app:ro \
   -v "$(pwd)"/test/benchmark:/app/mocks:ro \
   -e PORT=80 \
   --name test_mock_server \
-  mock-server:server > /dev/null
+  "${1:-mock-server:server}" > /dev/null
 
 getIp() {
   docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$1"
@@ -36,7 +36,7 @@ URL="http://${IP}"
 
 THREADS=$CORES
 CONNECTIONS=$((THREADS * 100))
-DURATION=${1:-"30s"}
+DURATION="30s"
 
 SAFE_FD_LIMIT=$((MAX_FD - 100))
 if [ "$CONNECTIONS" -gt "$SAFE_FD_LIMIT" ]; then
@@ -55,4 +55,3 @@ docker run --rm --init $DOCKER_ARG \
   mock-server:tool -t"$THREADS" -c"$CONNECTIONS" -d"$DURATION" --latency "$URL"
 
 docker stop test_mock_server > /dev/null
-docker rm test_mock_server > /dev/null
