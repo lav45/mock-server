@@ -99,7 +99,7 @@ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest u
 ### Run in Development Mode
 
 ```shell
-docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server
+docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 -e LOG_LEVEL=debug mock-server:server bin/start
 ```
 
 ## Tests
