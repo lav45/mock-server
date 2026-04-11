@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $config = new Config('mock-server')
@@ -51,10 +52,12 @@ $config = new Config('mock-server')
         ],
     ]);
 
-$config->getFinder()
+/** @var Finder $finder */
+$finder = $config->getFinder();
+$finder
+    ->append(glob(__DIR__ . '/bin/*'))
     ->in(__DIR__ . '/src')
-    ->in(__DIR__ . '/test')
-    ->in(__DIR__ . '/migrates');
+    ->in(__DIR__ . '/test');
 
 $config->setCacheFile(__DIR__ . '/.cache/.php_cs.cache');
 

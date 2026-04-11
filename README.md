@@ -64,14 +64,6 @@ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-se
 curl http://127.0.0.1:8080/
 ```
 
-### Upgrade mocks data
-
-If you are upgrading from an older version, you may need to migrate your mock files:
-
-```shell
-docker run --rm -it --init -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest upgrade
-```
-
 ## Environment Variables
 
 | Variable             | Default      | Description                                                                                      |

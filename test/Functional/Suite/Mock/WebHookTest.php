@@ -3,8 +3,8 @@
 namespace Lav45\MockServer\Test\Functional\Suite\Mock;
 
 use Amp\Http\Server\FormParser;
-use Lav45\MockServer\Infrastructure\HttpClient\Factory as HttpClientFactory;
-use Lav45\MockServer\Infrastructure\HttpClient\HttpClientInterface;
+use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
