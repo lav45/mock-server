@@ -35,7 +35,7 @@ IP=$(getIp "test_mock_server")
 URL="http://${IP}"
 
 THREADS=$CORES
-CONNECTIONS=$((THREADS * 100))
+CONNECTIONS=$((CORES * 100))
 DURATION="30s"
 
 SAFE_FD_LIMIT=$((MAX_FD - 100))
@@ -49,9 +49,7 @@ fi
 
 while ! curl -s "$URL" > /dev/null; do sleep 1; done
 
-docker run --rm --init $DOCKER_ARG \
-  --name test_runner \
-  --entrypoint wrk \
-  mock-server:tool -t"$THREADS" -c"$CONNECTIONS" -d"$DURATION" --latency "$URL"
+docker run --rm --init $DOCKER_ARG --name test_runner mock-server:tool \
+  hey -c "$CONNECTIONS" -z "$DURATION" "$URL"
 
 docker stop test_mock_server > /dev/null
