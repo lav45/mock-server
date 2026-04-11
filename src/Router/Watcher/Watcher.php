@@ -3,8 +3,6 @@
 namespace Lav45\MockServer\Router\Watcher;
 
 use Amp\DeferredCancellation;
-use Amp\Sync\LocalMutex;
-use Amp\Sync\Mutex;
 use FastRoute\Dispatcher;
 use Lav45\Watcher\Event;
 use Lav45\Watcher\WatcherInterface as FileWatcher;
@@ -16,24 +14,18 @@ final class Watcher implements \Lav45\MockServer\Bootstrap\Watcher
 {
     private Dispatcher $dispatcher;
 
-    private Mutex $mutex;
-
     public function __construct(
         private readonly DispatcherFactory    $dispatcherFactory,
         private readonly string               $watchDir,
         private readonly FileStorageInterface $fileStorage,
         private readonly LoggerInterface      $logger,
     ) {
-        $this->mutex = new LocalMutex();
         $this->initDispatcher();
     }
 
     public function getDispatcher(): Dispatcher
     {
-        $lock = $this->mutex->acquire();
-        $dispatcher = clone $this->dispatcher;
-        $lock->release();
-        return $dispatcher;
+        return $this->dispatcher;
     }
 
     public function run(FileWatcher $watcher, float $delay, DeferredCancellation|null $cancellation = null): void
@@ -74,15 +66,12 @@ final class Watcher implements \Lav45\MockServer\Bootstrap\Watcher
 
     private function initDispatcher(): void
     {
-        $lock = $this->mutex->acquire();
         try {
             $this->dispatcher = $this->dispatcherFactory->create(
                 $this->fileStorage->getFiles(),
             );
         } catch (\Throwable $exception) {
             $this->logger->error($exception);
-        } finally {
-            $lock->release();
         }
     }
 
