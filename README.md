@@ -91,7 +91,7 @@ curl http://127.0.0.1:8080/
 ### Run in Development Mode
 
 ```shell
-docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server
+docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 -e LOG_LEVEL=debug mock-server:server bin/start
 ```
 
 ## Tests
