@@ -75,7 +75,7 @@ final readonly class AttributeBuilder
         return HttpHeaders::fromArray($headers);
     }
 
-    public function createBody(): Body
+    public function createBodyContent(): Body
     {
         if (isset($this->data['content'])) {
             $value = $this->data['content'];
@@ -88,7 +88,7 @@ final readonly class AttributeBuilder
         return Body::new($value);
     }
 
-    public function createBodyContent(): Body
+    public function createBody(): Body
     {
         if (isset($this->data['json'])) {
             return Body::fromJson(

@@ -12,8 +12,8 @@ use Lav45\MockServer\Bootstrap\Config;
 use Lav45\MockServer\Bootstrap\ErrorHandler;
 use Lav45\MockServer\Bootstrap\LoggerFactory;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
-use Lav45\MockServer\Domain\Mock\Response\Content as ContentEntity;
-use Lav45\MockServer\Domain\Mock\Response\Proxy as ProxyEntity;
+use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
+use Lav45\MockServer\Domain\Mock\Response\ProxyResponse;
 use Lav45\MockServer\Http\MockRequestHandler;
 use Lav45\MockServer\Http\RequestDataFactory;
 use Lav45\MockServer\Parser\ParserFactory;
@@ -64,8 +64,8 @@ use Lav45\Watcher\Watcher as FileWatcher;
     );
     $webHookHandler = new WebHookHandler($httpClient->withLabel('WebHook'), $logger);
     $responseFabric = new ResponseFabric([
-        ProxyEntity::class => new ProxyResponder($httpClient->withLabel('Proxy')),
-        ContentEntity::class => new ContentResponder(),
+        ProxyResponse::class => new ProxyResponder($httpClient->withLabel('Proxy')),
+        ContentResponse::class => new ContentResponder(),
     ]);
     $requestDataFactory = new RequestDataFactory();
     $delayHandler = new DelayHandler();

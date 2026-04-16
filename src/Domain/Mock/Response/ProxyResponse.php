@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Domain\Mock\Response;
 
 use Lav45\MockServer\Domain\Mock\Response;
 
-final readonly class Proxy implements Response
+final readonly class ProxyResponse implements Response
 {
     public function __construct(
         private Delay      $delay,

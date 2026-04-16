@@ -5,7 +5,7 @@ namespace Lav45\MockServer\Test\Unit\Suite\Http;
 use Amp\Http\Server\Request as HttpRequest;
 use Amp\Http\Server\RequestHandler;
 use Faker\Factory as FakerFactory;
-use Lav45\MockServer\Domain\Mock\Response\Content as ContentEntity;
+use Lav45\MockServer\Domain\Mock\Response\ContentResponse as ContentEntity;
 use Lav45\MockServer\Http\MockRequestHandler;
 use Lav45\MockServer\Http\RequestDataFactory;
 use Lav45\MockServer\Http\RequestFactory;
@@ -31,9 +31,7 @@ final class MockRequestHandlerTest extends TestCase
     {
         $parser = new ParserFactory(FakerFactory::create())->create();
         $webHookHandler = new class implements WebHookHandlerInterface {
-            public function send(iterable $webHooks): void
-            {
-            }
+            public function send(iterable $webHooks): void {}
         };
         $responseFabric = new ResponseFabric([
             ContentEntity::class => new ContentResponder(),

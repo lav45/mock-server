@@ -62,7 +62,7 @@ final readonly class CollectionFactory implements ResponseFactoryInterface
         $result = $parser->replace($result);
         $body = Body::new($result);
 
-        return new Response\Content(
+        return new Response\ContentResponse(
             delay: $factory->createDelay(),
             status: $factory->createStatus(),
             headers: $headers,

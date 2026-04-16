@@ -43,10 +43,6 @@ final class MockRequestHandler implements RequestHandler, RequestFactory
 
         $delay->wait($mock->response->delay());
 
-        return new Response(
-            status: $response->status,
-            headers: $response->headers,
-            body: $response->body,
-        );
+        return $response;
     }
 }

@@ -3,9 +3,9 @@
 namespace Lav45\MockServer\Responder;
 
 use Amp\Http\HttpStatus;
+use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
-use Lav45\MockServer\Domain\Mock\Response\Proxy as ProxyEntity;
-use Lav45\MockServer\Http\ResponseData;
+use Lav45\MockServer\Domain\Mock\Response\ProxyResponse as ProxyEntity;
 use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 
 final readonly class ProxyResponder implements ResponderInterface
@@ -14,7 +14,7 @@ final readonly class ProxyResponder implements ResponderInterface
         private HttpClientInterface $httpClient,
     ) {}
 
-    public function execute(Response $data): ResponseData
+    public function execute(Response $data): HttpResponse
     {
         if ($data instanceof ProxyEntity === false) {
             throw new \RuntimeException(\sprintf('Response data class %s is not allowed.', \get_class($data)));
@@ -27,19 +27,17 @@ final readonly class ProxyResponder implements ResponderInterface
                 body: $data->body->toString(),
                 headers: $data->headers->toArray(),
             );
-            $responseBody = $response->getBody()->buffer();
         } // @codeCoverageIgnoreStart
         catch (\Throwable $exception) {
-            return new ResponseData(
+            return new HttpResponse(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
                 body: $exception->getMessage(),
             );
         } // @codeCoverageIgnoreEnd
-
-        return new ResponseData(
+        return new HttpResponse(
             status: $response->getStatus(),
             headers: $response->getHeaders(),
-            body: $responseBody,
+            body: $response->getBody(),
         );
     }
 }

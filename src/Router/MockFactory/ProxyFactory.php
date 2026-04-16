@@ -20,12 +20,12 @@ final readonly class ProxyFactory implements ResponseFactoryInterface
         $headers = $factory->createHeaders($withJson, $request->headers);
 
         if (isset($data['content'])) {
-            $body = $factory->createBody();
+            $body = $factory->createBodyContent();
         } else {
             $body = Body::fromText($request->body);
         }
 
-        return new Response\Proxy(
+        return new Response\ProxyResponse(
             delay: $factory->createDelay(),
             url: $factory->createUrl($request->get),
             method: new HttpMethod($request->method),

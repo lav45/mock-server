@@ -14,11 +14,11 @@ final readonly class ContentFactory implements ResponseFactoryInterface
     {
         $factory = new AttributeBuilder($parser, $data);
 
-        return new Response\Content(
+        return new Response\ContentResponse(
             delay: $factory->createDelay(),
             status: $factory->createStatus(),
             headers: $factory->createHeaders(isset($data['json'])),
-            body: $factory->createBodyContent(),
+            body: $factory->createBody(),
         );
     }
 }

@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Domain\Mock\Response;
 
 use Lav45\MockServer\Domain\Mock\Response;
 
-final readonly class Content implements Response
+final readonly class ContentResponse implements Response
 {
     public function __construct(
         private Delay      $delay,
