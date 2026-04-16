@@ -2,18 +2,21 @@
 
 namespace Lav45\MockServer\Responder;
 
+use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
 
-final readonly class ResponseFabric implements ResponderFactoryInterface
+final readonly class ResponseFabric implements ResponseFactoryInterface
 {
     public function __construct(
         /** @var non-empty-list<non-empty-string, ResponderInterface> */
         public array $responders = [],
     ) {}
 
-    public function create(Response $data): ResponderInterface
+    public function create(Response $data): HttpResponse
     {
-        return $this->responders[\get_class($data)]
+        $responder = $this->responders[\get_class($data)]
             ?? throw new \InvalidArgumentException(\sprintf("Not found Responder for data class %s.", \get_class($data)));
+
+        return $responder->execute($data);
     }
 }
