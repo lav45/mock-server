@@ -2,7 +2,8 @@
 
 namespace Lav45\MockServer\Router\MockFactory;
 
-use Lav45\MockServer\Http\RequestData;
+use Amp\Http\Server\Request;
+use Lav45\MockServer\Http\RequestAdapter;
 use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class RequestParserContext
@@ -11,10 +12,19 @@ final readonly class RequestParserContext
         private VariableParser $parser,
     ) {}
 
-    public function create(RequestData $request, array $data): VariableParser
+    public function create(Request $request, array $data): VariableParser
     {
+        $requestAdapter = new RequestAdapter($request);
+
         return $this->parser->withData([
-            'request' => $request->toArray(),
+            'request' => [
+                'method' => $request->getMethod(),
+                'headers' => static fn() => $requestAdapter->getHeaders(),
+                'urlParams' => static fn() => $request->getAttribute('urlParams'),
+                'get' => static fn() => $requestAdapter->getQuery(),
+                'post' => static fn() => $requestAdapter->getData(),
+                'body' => static fn() => $requestAdapter->getBody(),
+            ],
             'env' => $this->parser->replace(
                 $data['env'] ?? [],
             ),

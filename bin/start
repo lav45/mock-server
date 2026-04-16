@@ -15,7 +15,6 @@ use Lav45\MockServer\Bootstrap\RouterRequestHandler;
 use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 use Lav45\MockServer\Domain\Mock\Response\ProxyResponse;
 use Lav45\MockServer\Http\MockRequestHandler;
-use Lav45\MockServer\Http\RequestDataFactory;
 use Lav45\MockServer\Parser\ParserFactory;
 use Lav45\MockServer\Responder\ContentResponder;
 use Lav45\MockServer\Responder\DelayHandler;
@@ -67,14 +66,12 @@ use Lav45\Watcher\Watcher as FileWatcher;
         ProxyResponse::class => new ProxyResponder($httpClient->withLabel('Proxy')),
         ContentResponse::class => new ContentResponder(),
     ]);
-    $requestDataFactory = new RequestDataFactory();
     $delayHandler = new DelayHandler();
 
     $requestFactory = new MockRequestHandler(
         webHookHandler: $webHookHandler,
         responseFabric: $responseFabric,
         mockFactory: $mockFactory,
-        requestDataFactory: $requestDataFactory,
         delayHandler: $delayHandler,
     );
 

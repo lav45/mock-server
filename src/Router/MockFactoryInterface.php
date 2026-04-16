@@ -2,10 +2,10 @@
 
 namespace Lav45\MockServer\Router;
 
+use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Mock;
-use Lav45\MockServer\Http\RequestData;
 
 interface MockFactoryInterface
 {
-    public function create(RequestData $request, array $data): Mock;
+    public function create(Request $request, array $data): Mock;
 }

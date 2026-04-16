@@ -65,7 +65,7 @@ final readonly class AttributeBuilder
             ];
             foreach ($appendHeaders as $name => $value) {
                 if (\in_array($name, $filterHeaders, true) === false) {
-                    $headers[$name] = $value[0];
+                    $headers[$name] = $value;
                 }
             }
         }

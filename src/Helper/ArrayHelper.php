@@ -15,6 +15,9 @@ final class ArrayHelper
                 return $default;
             }
             $data = &$data[$step];
+            if ($data instanceof \Closure) {
+                $data = $data();
+            }
         }
         return $data;
     }

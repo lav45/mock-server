@@ -2,9 +2,10 @@
 
 namespace Lav45\MockServer\Router\MockFactory;
 
+use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Mock\Response;
 use Lav45\MockServer\Domain\Mock\Response\Body;
-use Lav45\MockServer\Http\RequestData;
+use Lav45\MockServer\Http\RequestAdapter;
 use Lav45\MockServer\Parser\VariableParser;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
@@ -14,7 +15,7 @@ final readonly class CollectionFactory implements ResponseFactoryInterface
 {
     public const string TYPE = 'data';
 
-    public function create(VariableParser $parser, array $data, RequestData $request): Response
+    public function create(VariableParser $parser, array $data, Request $request): Response
     {
         $factory = new AttributeBuilder($parser, $data);
 
@@ -24,8 +25,10 @@ final readonly class CollectionFactory implements ResponseFactoryInterface
         $pageSizeParam = $data['pagination']['pageSizeParam'] ?? 'per-page';
         $defaultPageSize = $data['pagination']['defaultPageSize'] ?? 20;
 
-        $pageSize = (int)($request->get[$pageSizeParam] ?? $defaultPageSize);
-        $currentPage = (int)(($request->get[$pageParam] ?? null) ?: 1);
+        $get = new RequestAdapter($request)->getQuery();
+
+        $pageSize = (int)($get[$pageSizeParam] ?? $defaultPageSize);
+        $currentPage = (int)(($get[$pageParam] ?? null) ?: 1);
 
         $dataProvider = new OffsetPaginator(new IterableDataReader($dataItems))
             ->withPageSize($pageSize)

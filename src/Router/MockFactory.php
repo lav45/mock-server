@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Router;
 
+use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Mock;
-use Lav45\MockServer\Http\RequestData;
 use Lav45\MockServer\Router\MockFactory\RequestParserContext;
 use Lav45\MockServer\Router\MockFactory\ResponseFactoryResolver;
 use Lav45\MockServer\Router\MockFactory\WebHooksFactoryInterface;
@@ -16,7 +16,7 @@ final readonly class MockFactory implements MockFactoryInterface
         private ResponseFactoryResolver  $responseFactoryResolver,
     ) {}
 
-    public function create(RequestData $request, array $data): Mock
+    public function create(Request $request, array $data): Mock
     {
         $parser = $this->parserContext->create($request, $data);
 

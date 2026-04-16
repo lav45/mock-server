@@ -36,6 +36,15 @@ final class ParamParserTest extends TestCase
             [
                 [
                     'response' => [
+                        'items' => static fn() => [],
+                    ],
+                ],
+                '{{response.items}}',
+                [],
+            ],
+            [
+                [
+                    'response' => [
                         'items' => [],
                     ],
                 ],

@@ -18,7 +18,6 @@ final class MockRequestHandler implements RequestHandler, RequestFactory
         private readonly WebHookHandlerInterface     $webHookHandler,
         private readonly ResponderFactoryInterface   $responseFabric,
         private readonly MockFactoryInterface        $mockFactory,
-        private readonly RequestDataFactoryInterface $requestDataFactory,
         private readonly DelayHandlerInterface       $delayHandler,
     ) {}
 
@@ -31,9 +30,7 @@ final class MockRequestHandler implements RequestHandler, RequestFactory
 
     public function handleRequest(Request $request): Response
     {
-        $requestData = $this->requestDataFactory->create($request, $request->getAttribute('urlParams'));
-
-        $mock = $this->mockFactory->create($requestData, $this->data);
+        $mock = $this->mockFactory->create($request, $this->data);
 
         $delay = $this->delayHandler->start();
 

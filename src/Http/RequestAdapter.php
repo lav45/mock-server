@@ -3,18 +3,12 @@
 namespace Lav45\MockServer\Http;
 
 use Amp\Http\Server\FormParser;
-use Amp\Http\Server\Request as HttpRequest;
+use Amp\Http\Server\Request;
 
-final class RequestAdapter
+final readonly class RequestAdapter
 {
-    public string $body {
-        get {
-            return $this->body ??= $this->request->getBody()->buffer();
-        }
-    }
-
     public function __construct(
-        private readonly HttpRequest $request,
+        private Request $request,
     ) {}
 
     public function getQuery(): array
@@ -24,9 +18,27 @@ final class RequestAdapter
         );
     }
 
+    public function getHeaders(): array
+    {
+        return $this->normalizeValues(
+            $this->request->getHeaders(),
+        );
+    }
+
+    public function getBody(): string
+    {
+        if ($this->request->hasAttribute('body') === false) {
+            $this->request->setAttribute('body', $this->request->getBody()->buffer());
+        }
+        return $this->request->getAttribute('body');
+    }
+
     public function getData(): array
     {
-        $body = $this->body;
+        $body = $this->getBody();
+        if (empty($body)) {
+            return [];
+        }
         if (\json_validate($body)) {
             return \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
         }

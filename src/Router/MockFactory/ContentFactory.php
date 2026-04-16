@@ -2,15 +2,15 @@
 
 namespace Lav45\MockServer\Router\MockFactory;
 
+use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Mock\Response;
-use Lav45\MockServer\Http\RequestData;
 use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class ContentFactory implements ResponseFactoryInterface
 {
     public const string TYPE = 'content';
 
-    public function create(VariableParser $parser, array $data, RequestData $request): Response
+    public function create(VariableParser $parser, array $data, Request $request): Response
     {
         $factory = new AttributeBuilder($parser, $data);
 
