@@ -3,16 +3,19 @@
 namespace Lav45\MockServer\Router\MockFactory;
 
 use Lav45\MockServer\Domain\Mock\Response\Body;
-use Lav45\MockServer\Domain\Mock\WebHook;
+use Lav45\MockServer\Domain\Mock\WebHooks;
+use Lav45\MockServer\Domain\Mock\WebHooks\WebHook;
 use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class WebHooksFactory implements WebHooksFactoryInterface
 {
-    public function create(VariableParser $parser, array $data): iterable
+    public function create(VariableParser $parser, array $data): WebHooks
     {
+        $items = [];
         foreach ($data as $webHook) {
-            yield $this->createItem($parser, $webHook);
+            $items[] = $this->createItem($parser, $webHook);
         }
+        return new WebHooks(...$items);
     }
 
     private function createItem(VariableParser $parser, array $item): WebHook

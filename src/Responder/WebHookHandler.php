@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Lav45\MockServer\Domain\Mock\WebHook;
+use Lav45\MockServer\Domain\Mock\WebHooks\WebHook;
 use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -17,10 +17,7 @@ final readonly class WebHookHandler implements \Lav45\MockServer\Http\WebHookHan
         private LoggerInterface     $logger = new NullLogger(),
     ) {}
 
-    /**
-     * @param list<WebHook> $webHooks
-     */
-    public function send(iterable $webHooks): void
+    public function send(WebHook ...$webHooks): void
     {
         async(function () use ($webHooks) {
             foreach ($webHooks as $webHook) {

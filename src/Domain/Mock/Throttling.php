@@ -2,4 +2,7 @@
 
 namespace Lav45\MockServer\Domain\Mock;
 
-interface Response {}
+interface Throttling
+{
+    public function delay(): float;
+}

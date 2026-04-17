@@ -2,12 +2,9 @@
 
 namespace Lav45\MockServer\Http;
 
-use Lav45\MockServer\Domain\Mock\WebHook;
+use Lav45\MockServer\Domain\Mock\WebHooks\WebHook;
 
 interface WebHookHandler
 {
-    /**
-     * @param list<WebHook> $webHooks
-     */
-    public function send(iterable $webHooks): void;
+    public function send(WebHook ...$webHooks): void;
 }

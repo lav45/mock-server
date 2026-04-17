@@ -23,7 +23,7 @@ final class EnvParserTest extends TestCase
 
     public function testParse(): void
     {
-        putenv('URL=http://test.com');
+        \putenv('URL=http://test.com');
         $result = $this->parser->replace('{{env.URL}}');
         $this->assertEquals('http://test.com', $result);
 

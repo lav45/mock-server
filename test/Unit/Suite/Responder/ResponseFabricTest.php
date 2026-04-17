@@ -4,9 +4,9 @@ namespace Lav45\MockServer\Test\Unit\Suite\Responder;
 
 use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
+use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 use Lav45\MockServer\Responder\ContentResponder;
 use Lav45\MockServer\Responder\ResponseFactory;
-use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 use PHPUnit\Framework\TestCase;
 
 final class ResponseFabricTest extends TestCase

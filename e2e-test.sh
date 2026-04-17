@@ -31,7 +31,7 @@ while ! curl -s "$WEBHOOK_CATCHER_URL/ready" > /dev/null; do sleep 1; done
 
 WEBHOOK_CATCHER_SESSION_ID=$(
   curl -s -H "Content-Type: application/json" -X POST -d '{"status_code": 200}' "$WEBHOOK_CATCHER_URL/api/session" | \
-    docker run --rm -i --entrypoint php mock-server:tool -r "echo json_decode(file_get_contents('php://stdin'), true)['uuid'];"
+    docker run --rm -i mock-server:tool php -r "echo json_decode(file_get_contents('php://stdin'), true)['uuid'];"
 )
 
 docker run --rm -d \
@@ -44,6 +44,8 @@ docker run --rm -d \
   -e WEBHOOK_STORAGE_URL="$WEBHOOK_CATCHER_URL/$WEBHOOK_CATCHER_SESSION_ID" \
   --name test_mock_server \
   mock-server:server > /dev/null
+
+docker logs -f test_mock_server &
 
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
 

@@ -14,13 +14,13 @@ use Lav45\MockServer\Bootstrap\LoggerFactory;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
 use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 use Lav45\MockServer\Domain\Mock\Response\ProxyResponse;
-use Lav45\MockServer\Http\DelayHandler;
 use Lav45\MockServer\Http\MockRequestHandler;
 use Lav45\MockServer\Parser\ParserFactory;
 use Lav45\MockServer\Responder\ContentResponder;
 use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
 use Lav45\MockServer\Responder\ProxyResponder;
 use Lav45\MockServer\Responder\ResponseFactory;
+use Lav45\MockServer\Responder\ThrottlingMiddleware;
 use Lav45\MockServer\Responder\WebHookHandler;
 use Lav45\MockServer\Router\DispatcherFactory;
 use Lav45\MockServer\Router\MockFactory;
@@ -62,17 +62,20 @@ use Lav45\Watcher\Watcher as FileWatcher;
         ]),
     );
     $webHookHandler = new WebHookHandler($httpClient->withLabel('WebHook'), $logger);
-    $responseFactory = new ResponseFactory([
-        ProxyResponse::class => new ProxyResponder($httpClient->withLabel('Proxy')),
-        ContentResponse::class => new ContentResponder(),
-    ]);
-    $delayHandler = new DelayHandler();
+    $responseFactory = new ResponseFactory(
+        responders: [
+            ProxyResponse::class => new ProxyResponder($httpClient->withLabel('Proxy')),
+            ContentResponse::class => new ContentResponder(),
+        ],
+        middlewares: [
+            new ThrottlingMiddleware(),
+        ],
+    );
 
     $requestFactory = new MockRequestHandler(
-        webHookHandler: $webHookHandler,
-        responseFactory: $responseFactory,
         mockFactory: $mockFactory,
-        delayHandler: $delayHandler,
+        responseFactory: $responseFactory,
+        webHookHandler: $webHookHandler,
     );
 
     $watchDir = $config->getMocksPath();

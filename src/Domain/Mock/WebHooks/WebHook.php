@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Domain\Mock;
+namespace Lav45\MockServer\Domain\Mock\WebHooks;
 
 use Lav45\MockServer\Domain\Mock\Response\Body;
 use Lav45\MockServer\Domain\Mock\Response\Delay;

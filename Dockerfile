@@ -11,7 +11,10 @@ CMD
 
 FROM alpine:3.23 AS base
 
-RUN adduser -S -D -G www-data -u 82 -h /app -s /bin/sh www-data
+COPY --from=pecl \
+    /usr/lib/php84/modules/inotify.so \
+    /usr/lib/php84/modules/event.so \
+    /usr/lib/php84/modules/
 
 RUN <<CMD
     set -eux
@@ -25,12 +28,11 @@ RUN <<CMD
     echo 'extension=inotify.so' > /etc/php84/conf.d/00_inotify.ini
     echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
     echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
-CMD
 
-COPY --from=pecl \
-    /usr/lib/php84/modules/inotify.so \
-    /usr/lib/php84/modules/event.so \
-    /usr/lib/php84/modules/
+    mkdir /app
+    chown -R 82:82 /app
+    echo 'www-data:x:82:82::/app:/bin/sh' >> /etc/passwd
+CMD
 
 WORKDIR /app
 
@@ -78,7 +80,9 @@ CMD
 
 USER www-data
 
-CMD [ "vendor/bin/cluster", "--pid-file", "/tmp/cluster.pid", "bin/start" ]
+ENV LOG_LEVEL=info
+
+CMD [ "sh", "-c", "vendor/bin/cluster --pid-file /tmp/cluster.pid --log ${LOG_LEVEL} bin/start" ]
 
 FROM base-server AS server
 

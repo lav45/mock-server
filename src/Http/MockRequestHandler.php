@@ -11,10 +11,9 @@ final class MockRequestHandler implements RequestHandler, RequestFactory
     private array $data;
 
     public function __construct(
-        private readonly WebHookHandler  $webHookHandler,
-        private readonly ResponseFactory $responseFactory,
         private readonly MockFactory     $mockFactory,
-        private readonly DelayHandler    $delayHandler,
+        private readonly ResponseFactory $responseFactory,
+        private readonly WebHookHandler  $webHookHandler,
     ) {}
 
     public function withData(array $data): self
@@ -28,13 +27,9 @@ final class MockRequestHandler implements RequestHandler, RequestFactory
     {
         $mock = $this->mockFactory->create($request, $this->data);
 
-        $delay = $this->delayHandler->start();
-
         $response = $this->responseFactory->create($mock->response);
 
-        $this->webHookHandler->send($mock->webHooks);
-
-        $delay->wait($mock->response->delay());
+        $this->webHookHandler->send(...$mock->webHooks->items);
 
         return $response;
     }

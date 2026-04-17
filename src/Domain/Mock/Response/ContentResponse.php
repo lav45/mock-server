@@ -3,8 +3,9 @@
 namespace Lav45\MockServer\Domain\Mock\Response;
 
 use Lav45\MockServer\Domain\Mock\Response;
+use Lav45\MockServer\Domain\Mock\Throttling;
 
-final readonly class ContentResponse implements Response
+final readonly class ContentResponse implements Response, Throttling
 {
     public function __construct(
         private Delay      $delay,
