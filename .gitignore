@@ -2,6 +2,7 @@
 .idea
 .DS_Store
 vendor
-phpunit.xml
-.draft
-coverage.xml
+/phpunit.xml
+/.draft
+/coverage.xml
+/coverage
