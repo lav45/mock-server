@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Helper;
+namespace Lav45\MockServer\Test\Unit\Suite\Parser;
 
-use Lav45\MockServer\Helper\ArrayHelper;
+use Lav45\MockServer\Parser\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
 final class ArrayHelperTest extends TestCase

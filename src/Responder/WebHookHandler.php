@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Lav45\MockServer\Domain\Mock\WebHook as WebHookItem;
+use Lav45\MockServer\Domain\Mock\WebHook;
 use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -10,7 +10,7 @@ use Psr\Log\NullLogger;
 use function Amp\async;
 use function Amp\delay;
 
-final readonly class WebHookHandler implements WebHookHandlerInterface
+final readonly class WebHookHandler implements \Lav45\MockServer\Http\WebHookHandler
 {
     public function __construct(
         private HttpClientInterface $httpClient,
@@ -18,7 +18,7 @@ final readonly class WebHookHandler implements WebHookHandlerInterface
     ) {}
 
     /**
-     * @param list<WebHookItem> $webHooks
+     * @param list<WebHook> $webHooks
      */
     public function send(iterable $webHooks): void
     {
@@ -32,7 +32,7 @@ final readonly class WebHookHandler implements WebHookHandlerInterface
         });
     }
 
-    private function request(WebHookItem $webHook): void
+    private function request(WebHook $webHook): void
     {
         try {
             $this->httpClient->request(

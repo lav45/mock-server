@@ -6,13 +6,13 @@ use Amp\Http\Server\Request as HttpRequest;
 use Amp\Http\Server\RequestHandler;
 use Faker\Factory as FakerFactory;
 use Lav45\MockServer\Domain\Mock\Response\ContentResponse as ContentEntity;
+use Lav45\MockServer\Http\DelayHandler;
 use Lav45\MockServer\Http\MockRequestHandler;
 use Lav45\MockServer\Http\RequestFactory;
+use Lav45\MockServer\Http\WebHookHandler;
 use Lav45\MockServer\Parser\ParserFactory;
 use Lav45\MockServer\Responder\ContentResponder;
-use Lav45\MockServer\Responder\DelayHandler;
-use Lav45\MockServer\Responder\ResponseFabric;
-use Lav45\MockServer\Responder\WebHookHandlerInterface;
+use Lav45\MockServer\Responder\ResponseFactory;
 use Lav45\MockServer\Router\MockFactory;
 use Lav45\MockServer\Router\MockFactory\ContentFactory;
 use Lav45\MockServer\Router\MockFactory\RequestParserContext;
@@ -29,10 +29,10 @@ final class MockRequestHandlerTest extends TestCase
     protected function setUp(): void
     {
         $parser = new ParserFactory(FakerFactory::create())->create();
-        $webHookHandler = new class implements WebHookHandlerInterface {
+        $webHookHandler = new class implements WebHookHandler {
             public function send(iterable $webHooks): void {}
         };
-        $responseFabric = new ResponseFabric([
+        $responseFabric = new ResponseFactory([
             ContentEntity::class => new ContentResponder(),
         ]);
         $delayHandler = new DelayHandler();
@@ -46,7 +46,7 @@ final class MockRequestHandlerTest extends TestCase
 
         $this->factory = new MockRequestHandler(
             webHookHandler: $webHookHandler,
-            responseFabric: $responseFabric,
+            responseFactory: $responseFabric,
             mockFactory: $mockFactory,
             delayHandler: $delayHandler,
         );

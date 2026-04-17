@@ -4,12 +4,12 @@ namespace Lav45\MockServer\Parser;
 
 final readonly class DateParse implements InlineParser
 {
-    private ParserHelper $parser;
+    private BaseParser $parser;
 
     public function __construct(
         private InlineParser $inlineParser,
     ) {
-        $this->parser = new ParserHelper('date\.(\w+)(\([^)]*\))');
+        $this->parser = new BaseParser('date\.(\w+)(\([^)]*\))');
     }
 
     public function replace(mixed $data): mixed

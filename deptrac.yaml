@@ -3,32 +3,36 @@ deptrac:
     - ./src
     - ./vendor
 
-  analyser:
-    types:
-      - "use"
-      - "file"
-      - "function_call"
-
   layers:
-    - name: Presenter
+    - name: Bootstrap
       collectors:
         - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Presenter\\.*~
-
-    - name: Infrastructure
-      collectors:
-        - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Infrastructure\\.*~
-
-    - name: Application
-      collectors:
-        - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Application\\.*~
+          value: ~^Lav45\\MockServer\\Bootstrap\\.*~
 
     - name: Domain
       collectors:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Domain\\.*~
+
+    - name: Http
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Http\\.*~
+
+    - name: Parser
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Parser\\.*~
+
+    - name: Responder
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Responder\\.*~
+
+    - name: Router
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Router\\.*~
 
     - name: Vendor
       collectors:
@@ -36,13 +40,20 @@ deptrac:
           value: ./vendor
 
   ruleset:
-    Presenter:
-      - Application
+    Bootstrap:
+      - Vendor
+    Http:
       - Domain
       - Vendor
-    Infrastructure:
-      - Application
+    Parser:
+      - Vendor
+    Responder:
+      - Http
       - Domain
       - Vendor
-    Application:
+    Router:
+      - Bootstrap
+      - Http
       - Domain
+      - Parser
+      - Vendor

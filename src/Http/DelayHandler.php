@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Responder;
+namespace Lav45\MockServer\Http;
 
-final readonly class DelayHandler implements DelayHandlerInterface
+final readonly class DelayHandler
 {
     public function start(): Delay
     {

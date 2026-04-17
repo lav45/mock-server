@@ -2,18 +2,17 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Responder;
 
+use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
 use Lav45\MockServer\Responder\ContentResponder;
-use Lav45\MockServer\Responder\ResponderInterface;
-use Lav45\MockServer\Responder\ResponseFabric;
+use Lav45\MockServer\Responder\ResponseFactory;
+use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 use PHPUnit\Framework\TestCase;
 
 final class ResponseFabricTest extends TestCase
 {
     public function testInvalidArgumentException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-
         $data = new class implements Response {
             public function delay(): float
             {
@@ -21,24 +20,47 @@ final class ResponseFabricTest extends TestCase
             }
         };
 
-        new ResponseFabric()->create($data);
+        $this->expectException(\InvalidArgumentException::class);
+
+        new ResponseFactory()->create($data);
     }
 
     public function testSuccess(): void
     {
-        $data = new class implements Response {
-            public function delay(): float
-            {
-                return 0.0;
-            }
-        };
-
-        $responseFabric = new ResponseFabric([
-            \get_class($data) => new ContentResponder(),
+        $responseFactory = new ResponseFactory([
+            ContentResponse::class => new ContentResponder(),
         ]);
 
-        $responder = $responseFabric->create($data);
+        $response = new ContentResponse(
+            delay: new Response\Delay(0.0),
+            status: new Response\HttpStatus(200),
+            headers: new Response\HttpHeaders(),
+            body: Response\Body::fromText(''),
+        );
 
-        $this->assertInstanceOf(ResponderInterface::class, $responder);
+        $responder = $responseFactory->create($response);
+
+        $this->assertInstanceOf(HttpResponse::class, $responder);
+    }
+
+    public function testRuntimeException(): void
+    {
+        $responseFactory = new ResponseFactory([
+            FakeResponse::class => new ContentResponder(),
+        ]);
+
+        $response = new FakeResponse();
+
+        $this->expectException(\RuntimeException::class);
+
+        $responseFactory->create($response);
+    }
+}
+
+final readonly class FakeResponse implements Response
+{
+    public function delay(): float
+    {
+        return 0.0;
     }
 }

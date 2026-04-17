@@ -4,13 +4,13 @@ namespace Lav45\MockServer\Responder;
 
 use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
-use Lav45\MockServer\Domain\Mock\Response\ContentResponse as ContentEntity;
+use Lav45\MockServer\Domain\Mock\Response\ContentResponse;
 
 final readonly class ContentResponder implements ResponderInterface
 {
     public function execute(Response $data): HttpResponse
     {
-        if ($data instanceof ContentEntity === false) {
+        if ($data instanceof ContentResponse === false) {
             throw new \RuntimeException(\sprintf('Response data class %s is not allowed.', \get_class($data)));
         }
 

@@ -8,7 +8,7 @@ use Lav45\MockServer\Router\MockFactory\RequestParserContext;
 use Lav45\MockServer\Router\MockFactory\ResponseFactoryResolver;
 use Lav45\MockServer\Router\MockFactory\WebHooksFactoryInterface;
 
-final readonly class MockFactory implements MockFactoryInterface
+final readonly class MockFactory implements \Lav45\MockServer\Http\MockFactory
 {
     public function __construct(
         private RequestParserContext     $parserContext,

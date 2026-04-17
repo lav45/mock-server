@@ -6,12 +6,12 @@ use Faker\Generator;
 
 final readonly class FakerParser implements InlineParser
 {
-    private ParserHelper $parser;
+    private BaseParser $parser;
 
     public function __construct(
         private Generator $faker,
     ) {
-        $this->parser = new ParserHelper('faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?');
+        $this->parser = new BaseParser('faker\.(\w+)(\([^)]*\))?(\.(\w+)(\([^)]*\)))?');
     }
 
     public function replace(mixed $data): mixed

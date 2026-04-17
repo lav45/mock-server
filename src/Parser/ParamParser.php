@@ -2,18 +2,16 @@
 
 namespace Lav45\MockServer\Parser;
 
-use Lav45\MockServer\Helper\ArrayHelper;
-
 final class ParamParser implements VariableParser
 {
-    private ParserHelper $parser;
+    private BaseParser $parser;
 
     public array $data = [];
 
     public function __construct(
         private readonly InlineParser $inlineParser,
     ) {
-        $this->parser = new ParserHelper('([.\w]+)');
+        $this->parser = new BaseParser('([.\w]+)');
     }
 
     public function withData(array $data): self

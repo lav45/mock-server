@@ -4,12 +4,12 @@ namespace Lav45\MockServer\Parser;
 
 final readonly class EnvParser implements InlineParser
 {
-    private ParserHelper $parser;
+    private BaseParser $parser;
 
     public function __construct(
         private InlineParser $inlineParser,
     ) {
-        $this->parser = new ParserHelper('env\.([.\w]+)');
+        $this->parser = new BaseParser('env\.([.\w]+)');
     }
 
     public function replace(mixed $data): mixed

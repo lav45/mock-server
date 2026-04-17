@@ -5,7 +5,7 @@ namespace Lav45\MockServer\Responder;
 use Amp\Http\HttpStatus;
 use Amp\Http\Server\Response as HttpResponse;
 use Lav45\MockServer\Domain\Mock\Response;
-use Lav45\MockServer\Domain\Mock\Response\ProxyResponse as ProxyEntity;
+use Lav45\MockServer\Domain\Mock\Response\ProxyResponse;
 use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 
 final readonly class ProxyResponder implements ResponderInterface
@@ -16,7 +16,7 @@ final readonly class ProxyResponder implements ResponderInterface
 
     public function execute(Response $data): HttpResponse
     {
-        if ($data instanceof ProxyEntity === false) {
+        if ($data instanceof ProxyResponse === false) {
             throw new \RuntimeException(\sprintf('Response data class %s is not allowed.', \get_class($data)));
         }
 
