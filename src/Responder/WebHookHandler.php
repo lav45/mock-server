@@ -2,25 +2,25 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Lav45\MockServer\Domain\Mock\WebHooks\WebHook;
-use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
+use Lav45\MockServer\Domain\WebHooks;
+use Lav45\MockServer\Domain\WebHooks\WebHook;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 use function Amp\async;
 use function Amp\delay;
 
-final readonly class WebHookHandler implements \Lav45\MockServer\Http\WebHookHandler
+final readonly class WebHookHandler
 {
     public function __construct(
-        private HttpClientInterface $httpClient,
-        private LoggerInterface     $logger = new NullLogger(),
+        private HttpClient      $httpClient,
+        private LoggerInterface $logger = new NullLogger(),
     ) {}
 
-    public function send(WebHook ...$webHooks): void
+    public function send(WebHooks $webHooks): void
     {
         async(function () use ($webHooks) {
-            foreach ($webHooks as $webHook) {
+            foreach ($webHooks->items as $webHook) {
                 if ($webHook->delay->value > 0) {
                     delay($webHook->delay->value);
                 }

@@ -19,7 +19,7 @@ getIp() {
 
 docker run --rm -d \
   -e HTTP_PORT=80 \
-  -e LOG_LEVEL=error \
+  -e LOG_LEVEL=${LOG_LEVEL:-error} \
   -e MAX_REQUESTS=0 \
   -e AUTO_CREATE_SESSIONS=0 \
   --name test_webhook_catcher \
@@ -38,7 +38,7 @@ docker run --rm -d \
   -v "$(pwd)":/app:ro \
   -v "$(pwd)"/test/Functional/mocks:/app/mocks:ro \
   -e PORT=80 \
-  -e LOG_LEVEL=error \
+  -e LOG_LEVEL=${LOG_LEVEL:-error} \
   -e MOCKS_PATH=/app/mocks \
   -e DOMAIN=test.server.com \
   -e WEBHOOK_STORAGE_URL="$WEBHOOK_CATCHER_URL/$WEBHOOK_CATCHER_SESSION_ID" \

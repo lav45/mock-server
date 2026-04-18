@@ -11,6 +11,7 @@ use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Http\HttpStatus;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 final readonly class Logger implements ApplicationInterceptor
 {
@@ -18,7 +19,7 @@ final readonly class Logger implements ApplicationInterceptor
     use ForbidSerialization;
 
     public function __construct(
-        private LoggerInterface $logger,
+        private LoggerInterface $logger = new NullLogger(),
     ) {}
 
     public function request(

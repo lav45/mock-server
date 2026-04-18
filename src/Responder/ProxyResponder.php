@@ -3,23 +3,17 @@
 namespace Lav45\MockServer\Responder;
 
 use Amp\Http\HttpStatus;
-use Amp\Http\Server\Response as HttpResponse;
-use Lav45\MockServer\Domain\Mock\Response;
-use Lav45\MockServer\Domain\Mock\Response\ProxyResponse;
-use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
+use Amp\Http\Server\Response;
+use Lav45\MockServer\Domain\Response\ProxyResponse;
 
-final readonly class ProxyResponder implements ResponderInterface
+final readonly class ProxyResponder
 {
     public function __construct(
-        private HttpClientInterface $httpClient,
+        private HttpClient $httpClient,
     ) {}
 
-    public function execute(Response $data): HttpResponse
+    public function execute(ProxyResponse $data): Response
     {
-        if ($data instanceof ProxyResponse === false) {
-            throw new \RuntimeException(\sprintf('Response data class %s is not allowed.', \get_class($data)));
-        }
-
         try {
             $response = $this->httpClient->request(
                 uri: $data->url->value,
@@ -29,12 +23,12 @@ final readonly class ProxyResponder implements ResponderInterface
             );
         } // @codeCoverageIgnoreStart
         catch (\Throwable $exception) {
-            return new HttpResponse(
+            return new Response(
                 status: HttpStatus::INTERNAL_SERVER_ERROR,
                 body: $exception->getMessage(),
             );
         } // @codeCoverageIgnoreEnd
-        return new HttpResponse(
+        return new Response(
             status: $response->getStatus(),
             headers: $response->getHeaders(),
             body: $response->getBody(),

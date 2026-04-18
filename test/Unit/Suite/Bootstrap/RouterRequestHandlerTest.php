@@ -36,28 +36,33 @@ final class RouterRequestHandlerTest extends TestCase
         $expectedResponse = new HttpResponse(HttpStatus::OK);
         $handler = new FakeRequestHandler($expectedResponse);
 
+        $data = [true];
+        $urlParams = ['id' => '123'];
         $dispatcher = new FakeDispatcher([
-            Dispatcher::FOUND,
-            $handler,
-            ['id' => '123'],
+            Dispatcher::FOUND, $data, $urlParams,
         ]);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher));
+        $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher), $handler);
         $request = $this->createRequest('GET', 'http://localhost/api/test/123');
 
         $response = $reactor->handleRequest($request);
 
         $this->assertSame($expectedResponse, $response);
-        $this->assertSame(['id' => '123'], $request->getAttribute('urlParams'));
+        $this->assertSame($data, $request->getAttribute('data'));
+        $this->assertSame($urlParams, $request->getAttribute('urlParams'));
     }
 
     public function testHandleRequestNotFound(): void
     {
+        $expectedResponse = new HttpResponse(HttpStatus::OK);
+        $handler = new FakeRequestHandler($expectedResponse);
+
         $dispatcher = new FakeDispatcher([
             Dispatcher::NOT_FOUND,
         ]);
+        $watcher = new FakeWatcher($dispatcher);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher));
+        $reactor = new RouterRequestHandler($this->errorHandler, $watcher, $handler);
         $request = $this->createRequest('GET', 'http://localhost/not-found');
 
         $response = $reactor->handleRequest($request);
@@ -67,12 +72,16 @@ final class RouterRequestHandlerTest extends TestCase
 
     public function testHandleRequestMethodNotAllowed(): void
     {
+        $expectedResponse = new HttpResponse(HttpStatus::OK);
+        $handler = new FakeRequestHandler($expectedResponse);
+
         $dispatcher = new FakeDispatcher([
             Dispatcher::METHOD_NOT_ALLOWED,
             ['GET', 'POST'],
         ]);
+        $watcher = new FakeWatcher($dispatcher);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher));
+        $reactor = new RouterRequestHandler($this->errorHandler, $watcher, $handler);
         $request = $this->createRequest('PUT', 'http://localhost/api/test');
 
         $response = $reactor->handleRequest($request);

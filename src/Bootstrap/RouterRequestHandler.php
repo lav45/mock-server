@@ -12,8 +12,9 @@ use FastRoute\Dispatcher;
 final readonly class RouterRequestHandler implements RequestHandler
 {
     public function __construct(
-        private ErrorHandler $errorHandler,
-        private Watcher      $watcher,
+        private ErrorHandler   $errorHandler,
+        private Watcher        $watcher,
+        private RequestHandler $handler,
     ) {}
 
     public function handleRequest(Request $request): Response
@@ -24,16 +25,17 @@ final readonly class RouterRequestHandler implements RequestHandler
         );
 
         return match ($match[0]) {
-            Dispatcher::FOUND => $this->makeFoundResponse($match[1], $match[2], $request),
+            Dispatcher::FOUND => $this->makeFoundResponse($request, $match[1], $match[2]),
             Dispatcher::NOT_FOUND => $this->makeNotFoundResponse($request),
-            Dispatcher::METHOD_NOT_ALLOWED => $this->makeMethodNotAllowedResponse($match[1], $request),
+            Dispatcher::METHOD_NOT_ALLOWED => $this->makeMethodNotAllowedResponse($request, $match[1]),
         };
     }
 
-    private function makeFoundResponse(RequestHandler $handler, array $requestArgs, Request $request): Response
+    private function makeFoundResponse(Request $request, array $data, array $requestArgs): Response
     {
+        $request->setAttribute('data', $data);
         $request->setAttribute('urlParams', $requestArgs);
-        return $handler->handleRequest($request);
+        return $this->handler->handleRequest($request);
     }
 
     /**
@@ -47,7 +49,7 @@ final readonly class RouterRequestHandler implements RequestHandler
     /**
      * Create a response if the requested method is not allowed for the matched path.
      */
-    private function makeMethodNotAllowedResponse(array $methods, Request $request): Response
+    private function makeMethodNotAllowedResponse(Request $request, array $methods): Response
     {
         $response = $this->errorHandler->handleError(HttpStatus::METHOD_NOT_ALLOWED, null, $request);
         $response->setHeader('allow', \implode(', ', $methods));

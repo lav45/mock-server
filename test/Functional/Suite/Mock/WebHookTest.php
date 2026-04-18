@@ -3,8 +3,8 @@
 namespace Lav45\MockServer\Test\Functional\Suite\Mock;
 
 use Amp\Http\Server\FormParser;
+use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
-use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +12,7 @@ use function Amp\delay;
 
 class WebHookTest extends TestCase
 {
-    private HttpClientInterface $HttpClient;
+    private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
@@ -54,7 +54,7 @@ class WebHookTest extends TestCase
         $this->assertEquals('POST', $webhooks[1]['method']);
         $this->assertNull(Uri::new($webhooks[1]['url'])->getQuery());
 
-        $payload = \json_decode(\base64_decode($webhooks[1]['request_payload_base64'], true), true);
+        $payload = \json_decode(\base64_decode($webhooks[1]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
         $this->assertEquals(['text' => 'Hello world'], $payload);
 
         $this->assertEquals('POST', $webhooks[2]['method']);
@@ -70,14 +70,14 @@ class WebHookTest extends TestCase
             'urlParams' => ['id' => '200'],
             'urlParamsId' => '200',
         ];
-        $payload = \json_decode(\base64_decode($webhooks[2]['request_payload_base64'], true), true);
+        $payload = \json_decode(\base64_decode($webhooks[2]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
         $this->assertSame($expected, $payload);
 
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $webhooks[2]['headers']);
 
         $this->assertEquals('PUT', $webhooks[3]['method']);
         $this->assertNull(Uri::new($webhooks[3]['url'])->getQuery());
-        $payload = \json_decode(\base64_decode($webhooks[3]['request_payload_base64'], true), true);
+        $payload = \json_decode(\base64_decode($webhooks[3]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
         $this->assertCount(4, $payload);
 
         $this->assertArrayHasKey('id', $payload[0]);
@@ -115,13 +115,13 @@ class WebHookTest extends TestCase
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $webhooks[8]['headers']);
         $this->assertContains(['name' => 'X-Api-Token', 'value' => 'e71ad173-dacf-493c-be55-643074fdf41c'], $webhooks[8]['headers']);
 
-        $payload = \json_decode(\base64_decode($webhooks[8]['request_payload_base64'], true), true);
+        $payload = \json_decode(\base64_decode($webhooks[8]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
         $this->assertMatchesRegularExpression($uuidPattern, $payload['uuid']);
         $this->assertMatchesRegularExpression('~^TEST\d{4}$~', $payload['id']);
         $this->assertMatchesRegularExpression('~^\d{12}$~', $payload['correlationId']);
 
         $this->assertEquals('POST', $webhooks[9]['method']);
-        $payload = \json_decode(\base64_decode($webhooks[9]['request_payload_base64'], true), true);
+        $payload = \json_decode(\base64_decode($webhooks[9]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
         $this->assertSame(['text' => 'OK'], $payload);
     }
 

@@ -2,13 +2,13 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
 
+use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
-use Lav45\MockServer\Responder\HttpClient\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class ContentTest extends TestCase
 {
-    private HttpClientInterface $HttpClient;
+    private HttpClient $HttpClient;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ class ContentTest extends TestCase
         $this->assertEquals('application/json', $headers['content-type'][0]);
 
         $content = $response->getBody()->buffer();
-        $content = \json_decode($content, true);
+        $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('id', $content);
 
         $ids = \explode('/', $content['id']);
@@ -45,7 +45,7 @@ class ContentTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
 
         $content = $response->getBody()->buffer();
-        $content = \json_decode($content, true);
+        $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $ids2 = \explode('/', $content['id']);
         $this->assertCount(2, $ids2);

@@ -6,7 +6,7 @@ use Amp\Http\Client\HttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 
-final class HttpClient implements HttpClientInterface
+final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
 {
     private string|null $logLabel = null;
 

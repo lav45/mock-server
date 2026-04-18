@@ -9,15 +9,20 @@ deptrac:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Bootstrap\\.*~
 
+    - name: DataFactory
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\DataFactory\\.*~
+
     - name: Domain
       collectors:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Domain\\.*~
 
-    - name: Http
+    - name: Middleware
       collectors:
         - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Http\\.*~
+          value: ~^Lav45\\MockServer\\Middleware\\.*~
 
     - name: Parser
       collectors:
@@ -29,11 +34,6 @@ deptrac:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Responder\\.*~
 
-    - name: Router
-      collectors:
-        - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Router\\.*~
-
     - name: Vendor
       collectors:
         - type: directory
@@ -41,19 +41,18 @@ deptrac:
 
   ruleset:
     Bootstrap:
-      - Vendor
-    Http:
       - Domain
+      - Vendor
+    Middleware:
+      - DataFactory
+      - Responder
+      - Vendor
+    DataFactory:
+      - Domain
+      - Parser
       - Vendor
     Parser:
       - Vendor
     Responder:
-      - Http
       - Domain
-      - Vendor
-    Router:
-      - Bootstrap
-      - Http
-      - Domain
-      - Parser
       - Vendor
