@@ -9,7 +9,7 @@ interface HttpClient
     public function request(
         string      $uri,
         string      $method = 'GET',
-        string|null $body = null,
         array|null  $headers = null,
+        string|null $body = null,
     ): Response;
 }

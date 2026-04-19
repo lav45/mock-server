@@ -5,13 +5,13 @@ namespace Lav45\MockServer\DataFactory;
 use Amp\Http\Server\Request;
 use Lav45\MockServer\Parser\VariableParser;
 
-final readonly class RequestParserContext
+final readonly class ParserFactory
 {
     public function __construct(
         private VariableParser $parser,
     ) {}
 
-    public function create(Request $request, array $data): VariableParser
+    public function create(Request $request, array $env): VariableParser
     {
         $requestAdapter = new RequestAdapter($request);
 
@@ -19,14 +19,12 @@ final readonly class RequestParserContext
             'request' => [
                 'method' => $request->getMethod(),
                 'headers' => static fn() => $requestAdapter->getHeaders(),
-                'urlParams' => static fn() => $request->getAttribute('urlParams'),
+                'urlParams' => $request->getAttribute('urlParams'),
                 'get' => static fn() => $requestAdapter->getQuery(),
                 'post' => static fn() => $requestAdapter->getData(),
                 'body' => static fn() => $requestAdapter->getBody(),
             ],
-            'env' => $this->parser->replace(
-                $data['env'] ?? [],
-            ),
+            'env' => $this->parser->replace($env),
         ]);
     }
 }

@@ -36,8 +36,6 @@ final readonly class Factory
             ->usingPool($pool)
             ->build();
 
-        return new HttpClient(
-            client: $client,
-        );
+        return new HttpClient($client);
     }
 }

@@ -18,11 +18,13 @@ use Lav45\MockServer\Bootstrap\Watcher\FileStorage;
 use Lav45\MockServer\Bootstrap\Watcher\Watcher;
 use Lav45\MockServer\DataFactory\CollectionFactory;
 use Lav45\MockServer\DataFactory\ContentFactory;
+use Lav45\MockServer\DataFactory\DirectFactory;
+use Lav45\MockServer\DataFactory\ParserFactory;
 use Lav45\MockServer\DataFactory\ProxyFactory;
-use Lav45\MockServer\DataFactory\RequestParserContext;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
 use Lav45\MockServer\Middleware\CollectionMiddleware;
 use Lav45\MockServer\Middleware\ContentMiddleware;
+use Lav45\MockServer\Middleware\DirectMiddleware;
 use Lav45\MockServer\Middleware\FallbackMiddleware;
 use Lav45\MockServer\Middleware\ParserMiddleware;
 use Lav45\MockServer\Middleware\Pipeline;
@@ -35,6 +37,7 @@ use Lav45\MockServer\Parser\EnvParser;
 use Lav45\MockServer\Parser\FakerParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Responder\ContentResponder;
+use Lav45\MockServer\Responder\DirectHandler;
 use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
 use Lav45\MockServer\Responder\ProxyResponder;
 use Lav45\MockServer\Responder\WebHookHandler;
@@ -68,7 +71,11 @@ use Lav45\Watcher\Watcher as FileWatcher;
     $requestHandler = new ClosureRequestHandler(
         Pipeline::create(
             new ParserMiddleware(
-                new RequestParserContext($parser),
+                factory: new ParserFactory($parser),
+            ),
+            new DirectMiddleware(
+                factory: new DirectFactory(),
+                handler: new DirectHandler($httpClient->withLabel('Direct')),
             ),
             new ResponseTypeMiddleware(ContentFactory::TYPE),
             new WebHookMiddleware(

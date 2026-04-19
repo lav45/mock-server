@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Functional\Suite\Mock\Response;
+namespace Lav45\MockServer\Test\Functional\Suite\Response;
 
 use Amp\Http\Client\Form;
 use Lav45\MockServer\Responder\HttpClient;
@@ -24,8 +24,8 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
-            body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             headers: ['content-type' => 'application/json'],
+            body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -33,7 +33,7 @@ class ProxyTest extends TestCase
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
-        $this->assertEquals($data, \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR));
+        $this->assertEquals($data, $content[0]['request']);
 
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
         $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
@@ -64,7 +64,20 @@ class ProxyTest extends TestCase
         $this->assertEquals(200, $response->getStatus());
         $content = $response->getBody()->buffer();
         $this->HttpClient->request($url, 'DELETE');
-        return \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+
+        $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+        $items = \array_reverse($items);
+
+        $result = [];
+        foreach ($items as $item) {
+            $request = \base64_decode($item['request_payload_base64'], true);
+            if (\json_validate($request)) {
+                $request = \json_decode($request, true, flags: JSON_THROW_ON_ERROR);
+            }
+            $item['request'] = $request;
+            $result[] = $item;
+        }
+        return $result;
     }
 
     public function testArrayContent(): void
@@ -84,7 +97,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertEquals('n=1', Uri::new($content[0]['url'])->getQuery());
 
-        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
+        $payload = $content[0]['request'];
         $this->assertCount(6, $payload);
 
         $expected = ['id' => 3, 'name' => 'name 3'];
@@ -98,8 +111,8 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: MOCK_SERVER_URL . '/response/proxy/string-content',
             method: 'POST',
-            body: '{"name": "Company"}',
             headers: ['content-type' => 'application/json'],
+            body: '{"name": "Company"}',
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -111,8 +124,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
-        $this->assertEquals(['id' => 100], $payload);
+        $this->assertEquals(['id' => 100], $content[0]['request']);
 
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
     }
@@ -122,8 +134,8 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: MOCK_SERVER_URL . '/response/proxy/faker-content',
             method: 'POST',
-            body: '{"name": "Company"}',
             headers: ['content-type' => 'application/json'],
+            body: '{"name": "Company"}',
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -135,7 +147,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        $payload = \json_decode(\base64_decode($content[0]['request_payload_base64'], true), true, flags: JSON_THROW_ON_ERROR);
+        $payload = $content[0]['request'];
         $this->assertTrue(isset($payload['company']['id']));
 
         $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
@@ -165,8 +177,8 @@ class ProxyTest extends TestCase
         $response = $this->HttpClient->request(
             uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
-            body: $form->getContent()->read(),
             headers: ['content-type' => $form->getContentType()],
+            body: $form->getContent()->read(),
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -175,7 +187,7 @@ class ProxyTest extends TestCase
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
 
-        \parse_str(\base64_decode($content[0]['request_payload_base64'], true), $payload);
+        \parse_str($content[0]['request'], $payload);
         $this->assertEquals($data, $payload);
 
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/x-www-form-urlencoded'], $content[0]['headers']);

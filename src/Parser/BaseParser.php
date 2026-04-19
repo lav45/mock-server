@@ -2,6 +2,8 @@
 
 namespace Lav45\MockServer\Parser;
 
+use Lav45\MockServer\Helper\ArrayHelper;
+
 final readonly class BaseParser
 {
     public function __construct(

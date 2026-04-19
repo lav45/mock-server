@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Amp\Http\HttpStatus;
 use Amp\Http\Server\Response;
 use Lav45\MockServer\Domain\Response\ProxyResponse;
 
@@ -14,20 +13,12 @@ final readonly class ProxyResponder
 
     public function execute(ProxyResponse $data): Response
     {
-        try {
-            $response = $this->httpClient->request(
-                uri: $data->url->value,
-                method: $data->method->value,
-                body: $data->body->toString(),
-                headers: $data->headers->toArray(),
-            );
-        } // @codeCoverageIgnoreStart
-        catch (\Throwable $exception) {
-            return new Response(
-                status: HttpStatus::INTERNAL_SERVER_ERROR,
-                body: $exception->getMessage(),
-            );
-        } // @codeCoverageIgnoreEnd
+        $response = $this->httpClient->request(
+            uri: $data->url->value,
+            method: $data->method->value,
+            headers: $data->headers->toArray(),
+            body: $data->body->toString(),
+        );
         return new Response(
             status: $response->getStatus(),
             headers: $response->getHeaders(),

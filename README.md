@@ -31,6 +31,7 @@ webhooks, and automatic reloading of mock files.
     - [Data provider](docs/response/data.md)
 - [WebHooks](docs/webhooks.md)
     - [Faker](docs/webhooks.md#faker) - Generate random data
+- [Direct](docs/direct.md) - Delegate response generation to a remote server
 - **Auto reload mock file without restarting the server**
 
 ## Quick start

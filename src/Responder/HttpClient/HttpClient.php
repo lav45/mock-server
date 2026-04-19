@@ -24,8 +24,8 @@ final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
     public function request(
         string      $uri,
         string      $method = 'GET',
-        string|null $body = null,
         array|null  $headers = null,
+        string|null $body = null,
     ): Response {
         $request = new Request($uri, $method);
 

@@ -1,0 +1,57 @@
+[
+    {
+        "env": {
+            "webhook": {
+                "url": "{env.WEBHOOK_STORAGE_URL}/storage"
+            },
+            "uuid": "{{faker.uuid}}"
+        },
+        "request": {
+            "method": "PUT",
+            "url": "/direct/{id:\\d+}"
+        },
+        "direct": {
+            "url": "http://127.0.0.1:{env.PORT}/direct/data",
+            "headers": {
+                "x-status": "active"
+            }
+        }
+    },
+    {
+        "request": {
+            "method": "PUT",
+            "url": "/direct/data"
+        },
+        "response": {
+            "type": "content",
+            "json": {
+                "response": {
+                    "type": "content",
+                    "headers": {
+                        "x-status": "open"
+                    },
+                    "json": {
+                        "mainUrlParams": "\\{\\{request.urlParams\\}\\}",
+                        "directUrlParams": "{{request.urlParams}}",
+                        "directGet": "{{request.get}}",
+                        "directPost": "{{request.post}}",
+                        "directHeaders": "{{request.headers}}"
+                    }
+                },
+                "webhooks": [
+                    {
+                        "url": "{{env.webhook.url}}"
+                    },
+                    {
+                        "method": "PUT",
+                        "url": "{{env.webhook.url}}",
+                        "json": {
+                            "id": "{{faker.uuid}}",
+                            "name": "{{faker.name}}"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

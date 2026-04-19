@@ -35,8 +35,8 @@ final readonly class WebHookHandler
             $this->httpClient->request(
                 uri: $webHook->url->value,
                 method: $webHook->method->value,
-                body: $webHook->body->toString(),
                 headers: $webHook->headers->toArray(),
+                body: $webHook->body->toString(),
             );
         } // @codeCoverageIgnoreStart
         catch (\RuntimeException $exception) {

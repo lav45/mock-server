@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Parser;
 
-use Lav45\MockServer\Parser\ArrayHelper;
+use Lav45\MockServer\Helper\ArrayHelper;
 use PHPUnit\Framework\TestCase;
 
 final class ArrayHelperTest extends TestCase

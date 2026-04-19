@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Functional\Suite\Mock;
+namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;

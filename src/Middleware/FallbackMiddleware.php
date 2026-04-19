@@ -18,7 +18,7 @@ final readonly class FallbackMiddleware
     {
         $data = $request->getAttribute('data');
         $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        $this->logger->error("Unresolved data: {$data}");
+        $this->logger->error("Unresolved mock: {$data}");
         return new Response(
             status: HttpStatus::NOT_FOUND,
         );

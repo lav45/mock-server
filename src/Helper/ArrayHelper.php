@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Parser;
+namespace Lav45\MockServer\Helper;
 
 final class ArrayHelper
 {

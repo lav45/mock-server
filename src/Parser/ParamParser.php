@@ -2,6 +2,8 @@
 
 namespace Lav45\MockServer\Parser;
 
+use Lav45\MockServer\Helper\ArrayHelper;
+
 final class ParamParser implements VariableParser
 {
     private BaseParser $parser;
