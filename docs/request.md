@@ -24,9 +24,9 @@ You can get acquainted with the syntax in detail [nikic/fast-route](https://gith
 
 HTTP Methods for accessing the resource
 
-| Types         | Default   |
-|---------------|-----------|
-| string, array | `['GET']` |
+| Types                     | Default   |
+|---------------------------|-----------|
+| string \| array\<string\> | `['GET']` |
 
 ```json
 [

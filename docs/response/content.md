@@ -25,7 +25,7 @@ Response HTTP headers
 
 | Types  | Default |
 |--------|---------|
-| object | `[]`    |
+| object | `{}`    |
 
 ```json
 [

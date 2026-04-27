@@ -60,7 +60,7 @@ Response HTTP headers
 
 | Types  | Default |
 |--------|---------|
-| object | `[]`    |
+| object | `{}`    |
 
 ```json
 [
@@ -85,7 +85,7 @@ The `content` will be passed to the proxy endpoint.
 
 | Types               | Default |
 |---------------------|---------|
-| array\|string\|null | null    |
+| array\|string\|null | `null`  |
 
 ```json
 [
