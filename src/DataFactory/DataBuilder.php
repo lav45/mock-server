@@ -78,14 +78,13 @@ final readonly class DataBuilder
     public function createBodyContent(): Body
     {
         if (isset($this->data['content'])) {
-            $value = $this->data['content'];
-            if ($value) {
-                $value = $this->parser->replace($value);
-            }
-        } else {
-            $value = '';
+            return Body::new(
+                $this->parser->replace(
+                    $this->data['content'],
+                ),
+            );
         }
-        return Body::new($value);
+        return Body::fromText('');
     }
 
     public function createBody(): Body

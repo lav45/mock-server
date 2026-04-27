@@ -142,7 +142,7 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
                 "url": "https://api.site.com/webhook",
                 "json": {
                     "id": "{{faker.uuid}}",
-                    "createdAt": "{{faker.unixTime}}"
+                    "createdAt": "{{date.getTimestamp()}}"
                 }
             }
         ]

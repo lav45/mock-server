@@ -60,8 +60,25 @@ headers take precedence unless overridden).
   include:
     - `response` – defines the final HTTP response (status, headers, body, etc.)
     - `webhooks` – an array of [webhooks](webhooks.md) to trigger after sending the response
-- The mock server processes the returned configuration (evaluating any placeholders or Faker expressions) and sends the
-  final response back to the original client.
+- The mock server processes the returned configuration (evaluating any placeholders or Faker expressions), applies the
+  override/merge rules described in the next section, and sends the final response back to the original client.
+
+## Overriding and merging with existing mock data
+
+When a mock definition contains a `direct` property, it may also have its own `response` and/or `webhooks` fields. The
+configuration returned by the direct server interacts with these as follows:
+
+- **`response`** – if the direct server returns a `response` object, it **fully replaces** any `response` defined in the
+  original mock definition. A warning is logged when this override occurs.
+- **`webhooks`** – if the direct server returns a `webhooks` array, it is **merged** with the `webhooks` array from the
+  original mock definition (if any). The original webhooks come first, followed by those from the direct server. If the
+  original mock has no `webhooks`, the direct server's webhooks are used as-is.
+
+All other fields of the mock definition (e.g., `request`, `env`) remain unchanged and are still used for matching and
+placeholder resolution.
+
+This behaviour allows the direct server to dynamically adjust the response while preserving or extending side-effect
+triggers such as webhooks.
 
 ## Direct server response example
 
@@ -132,7 +149,7 @@ The final response sent to the client will contain:
 ```
 
 ---
-**Note**: 
+**Note**:
 In practice this is rarely needed, but it is available for edge cases where you need literal braces in the output.
 ---
 
@@ -189,7 +206,7 @@ In practice this is rarely needed, but it is available for edge cases where you 
 ```
 
 ---
-**Note**: 
-The direct property is intended for scenarios where the response must be generated dynamically by an external service. 
+**Note**:
+The direct property is intended for scenarios where the response must be generated dynamically by an external service.
 The direct server is responsible for returning a valid response configuration.
 ---
