@@ -10,7 +10,7 @@
         },
         "request": {
             "method": "POST",
-            "url": "/webhook/{id}"
+            "path": "/webhook/{id}"
         },
         "webhooks": [
             {

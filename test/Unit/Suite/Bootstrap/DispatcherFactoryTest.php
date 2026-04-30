@@ -30,14 +30,14 @@ final class DispatcherFactoryTest extends TestCase
                 [
                     'request' => [
                         'method' => 'GET',
-                        'url' => '/users',
+                        'path' => '/users',
                     ],
                     'response' => ['id' => 1],
                 ],
                 [
                     'request' => [
                         'method' => ['POST', 'PUT'],
-                        'url' => '/users',
+                        'path' => '/users',
                     ],
                     'response' => ['created' => true],
                 ],
@@ -46,7 +46,7 @@ final class DispatcherFactoryTest extends TestCase
                 [
                     'request' => [
                         'method' => 'DELETE',
-                        'url' => '/users/1',
+                        'path' => '/users/1',
                     ],
                     'response' => ['deleted' => true],
                 ],
@@ -71,7 +71,7 @@ final class DispatcherFactoryTest extends TestCase
         $expends = [
             'request' => [
                 'method' => 'GET',
-                'url' => '/users',
+                'path' => '/users',
             ],
             'response' => ['id' => 1],
         ];
@@ -82,7 +82,7 @@ final class DispatcherFactoryTest extends TestCase
         $expends = [
             'request' => [
                 'method' => ['POST', 'PUT'],
-                'url' => '/users',
+                'path' => '/users',
             ],
             'response' => ['created' => true],
         ];
@@ -97,7 +97,7 @@ final class DispatcherFactoryTest extends TestCase
         $expends = [
             'request' => [
                 'method' => 'DELETE',
-                'url' => '/users/1',
+                'path' => '/users/1',
             ],
             'response' => ['deleted' => true],
         ];
@@ -116,14 +116,14 @@ final class DispatcherFactoryTest extends TestCase
                 [
                     'request' => [
                         'method' => 'GET',
-                        'url' => '/valid',
+                        'path' => '/valid',
                     ],
                     'response' => 'ok',
                 ],
                 [
                     'request' => [
                         'method' => 'GET',
-                        'url' => 'invalid',
+                        'path' => 'invalid',
                     ],
                     'response' => 'should not be added',
                 ],
@@ -136,7 +136,7 @@ final class DispatcherFactoryTest extends TestCase
         $errorMessages = $this->logger->getMessages('error');
         $this->assertCount(1, $errorMessages);
         $this->assertInstanceOf(\InvalidArgumentException::class, $errorMessages[0]);
-        $this->assertStringContainsString('Invalid url: "invalid"', $errorMessages[0]->getMessage());
+        $this->assertStringContainsString('Invalid path: "invalid"', $errorMessages[0]->getMessage());
 
         // debug только для валидного маршрута
         $debugMessages = $this->logger->getMessages('debug');
@@ -175,7 +175,7 @@ final class DispatcherFactoryTest extends TestCase
                 [
                     'request' => [
                         'method' => 'GET',
-                        'url' => '/test',
+                        'path' => '/test',
                     ],
                     'response' => 'ok',
                 ],
@@ -194,7 +194,7 @@ final class DispatcherFactoryTest extends TestCase
         $expected = [
             'request' => [
                 'method' => 'GET',
-                'url' => '/test',
+                'path' => '/test',
             ],
             'response' => 'ok',
         ];

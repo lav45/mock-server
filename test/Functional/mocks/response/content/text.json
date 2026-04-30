@@ -1,7 +1,7 @@
 [
     {
         "request": {
-            "url": "/response/content/text"
+            "path": "/response/content/text"
         },
         "response": {
             "type": "content",

@@ -21,7 +21,7 @@ webhooks, and automatic reloading of mock files.
     - [Server environment](docs/env.md#server-environment) - Server environment
     - [Faker](docs/env.md#faker) - Generate random data
 - [Request](docs/request.md)
-    - [Routing](docs/request.md#requesturl)
+    - [Routing](docs/request.md#requestpath)
 - [Response](docs/response.md)
     - [Content](docs/response/content.md)
       - [Delay](docs/response/content.md#responsedelay)
@@ -43,11 +43,13 @@ Create mock file `./mocks/index.json` and put the content in it:
     {
         "request": {
             "method": "GET",
-            "url": "/"
+            "path": "/"
         },
         "response": {
             "type": "content",
-            "text": "Hello world!"
+            "json": {
+                "text": "Hello world!"
+            }
         }
     }
 ]
@@ -63,6 +65,14 @@ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-se
 
 ```shell
 curl http://127.0.0.1:8080/
+```
+
+### Migrate old mocks data from 4.x to 5.x
+
+If you are upgrading from an older version, you may need to migrate your mock files:
+
+```shell
+docker run --rm -it --init -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest bin/upgrade
 ```
 
 ## Environment Variables

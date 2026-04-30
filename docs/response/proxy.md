@@ -4,7 +4,7 @@
 
 Redirects your [request](../request.md) to the `url` and returns its response to you.
 
-The parse param `{path}` from [request.url](../request.md#requesturl) will be overwritten in `response.url`.
+The parse param `{path}` from [request.path](../request.md#requestpath) will be overwritten in `response.url`.
 
 For convenience, you can specify all the [request.method](../request.md#requestmethod) used.
 
@@ -25,7 +25,7 @@ The request to the proxy endpoint will use the `request.method`.
                 "DELETE",
                 "OPTIONS"
             ],
-            "url": "/proxy/{path:.+}"
+            "path": "/proxy/{path:.+}"
         },
         "response": {
             "type": "proxy",
@@ -66,7 +66,7 @@ Response HTTP headers
 [
     {
         "request": {
-            "url": "/proxy/{path:.+}"
+            "path": "/proxy/{path:.+}"
         },
         "response": {
             "type": "proxy",
@@ -91,7 +91,7 @@ The `content` will be passed to the proxy endpoint.
 [
     {
         "request": {
-            "url": "/proxy/{path:.+}"
+            "path": "/proxy/{path:.+}"
         },
         "response": {
             "type": "proxy",

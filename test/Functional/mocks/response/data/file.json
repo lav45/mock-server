@@ -1,7 +1,7 @@
 [
     {
         "request": {
-            "url": "/response/data/file"
+            "path": "/response/data/file"
         },
         "response": {
             "type": "data",

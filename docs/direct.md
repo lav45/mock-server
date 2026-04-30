@@ -16,7 +16,7 @@ URL of the remote server that will provide the dynamic response configuration.
 [
     {
         "request": {
-            "url": "/forward/{id}"
+            "path": "/forward/{id}"
         },
         "direct": {
             "url": "http://internal.api/dynamic-response"
@@ -38,7 +38,7 @@ headers take precedence unless overridden).
 [
     {
         "request": {
-            "url": "/forward/{id}"
+            "path": "/forward/{id}"
         },
         "direct": {
             "url": "http://internal.api/dynamic-response",
@@ -163,7 +163,7 @@ In practice this is rarely needed, but it is available for edge cases where you 
         },
         "request": {
             "method": "PUT",
-            "url": "/direct/{id:\\d+}"
+            "path": "/direct/{id:\\d+}"
         },
         "direct": {
             "url": "{env.directEndpoint}",
@@ -175,7 +175,7 @@ In practice this is rarely needed, but it is available for edge cases where you 
     {
         "request": {
             "method": "PUT",
-            "url": "/direct/data"
+            "path": "/direct/data"
         },
         "response": {
             "type": "content",

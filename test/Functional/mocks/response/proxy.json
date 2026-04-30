@@ -2,7 +2,7 @@
     {
         "request": {
             "method": "POST",
-            "url": "/response/proxy/array-content"
+            "path": "/response/proxy/array-content"
         },
         "response": {
             "type": "proxy",
@@ -38,7 +38,7 @@
     {
         "request": {
             "method": "POST",
-            "url": "/response/proxy/string-content"
+            "path": "/response/proxy/string-content"
         },
         "response": {
             "type": "proxy",
@@ -49,7 +49,7 @@
     {
         "request": {
             "method": "POST",
-            "url": "/response/proxy/faker-content"
+            "path": "/response/proxy/faker-content"
         },
         "response": {
             "type": "proxy",
@@ -67,7 +67,7 @@
                 "GET",
                 "POST"
             ],
-            "url": "/response/proxy/{path:.+}"
+            "path": "/response/proxy/{path:.+}"
         },
         "response": {
             "type": "proxy",

@@ -1,7 +1,7 @@
 [
     {
         "request": {
-            "url": "/response/delay"
+            "path": "/response/delay"
         },
         "response": {
             "delay": 0.2
