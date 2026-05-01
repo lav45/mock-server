@@ -29,7 +29,7 @@ The request to the proxy endpoint will use the `request.method`.
         },
         "response": {
             "type": "proxy",
-            "url": "https://api.site.com/{request.urlParams.path}"
+            "url": "https://api.site.com/{request.params.path}"
         }
     }
 ]
@@ -70,7 +70,7 @@ Response HTTP headers
         },
         "response": {
             "type": "proxy",
-            "url": "https://api.site.com/{request.urlParams.path}",
+            "url": "https://api.site.com/{request.params.path}",
             "headers": {
                 "Authorization": "Bearer JWT.token"
             }

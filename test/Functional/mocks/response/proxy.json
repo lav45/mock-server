@@ -71,7 +71,7 @@
         },
         "response": {
             "type": "proxy",
-            "url": "{env.WEBHOOK_STORAGE_URL}/{request.urlParams.path}",
+            "url": "{env.WEBHOOK_STORAGE_URL}/{request.params.path}",
             "headers": {
                 "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9"
             }

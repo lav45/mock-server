@@ -145,7 +145,7 @@ Response:
 
 You can get data from your request and use it in the response:
 
-- `urlParams` - [Parameters](../request.md#requestpath) obtained from the url
+- `params` - [Parameters](../request.md#requestpath) obtained from the path
 - `get` - Data from a GET HTTP request.
 - `post` - Data from a POST HTTP request. Contains form data or body json data
 
@@ -174,7 +174,7 @@ Parentheses when describing the path to the parameter:
                 "ID4": "ID: {{request.post.id}}",
                 "get": "{{request.get}}",
                 "post": "{{request.post}}",
-                "urlParams": "{{request.urlParams}}"
+                "params": "{{request.params}}"
             }
         }
     }
@@ -201,7 +201,7 @@ Response:
     "post": {
         "id": 300
     },
-    "urlParams": {
+    "params": {
         "id": "100"
     }
 }

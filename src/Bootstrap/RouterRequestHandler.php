@@ -31,10 +31,10 @@ final readonly class RouterRequestHandler implements RequestHandler
         };
     }
 
-    private function makeFoundResponse(Request $request, array $data, array $requestArgs): Response
+    private function makeFoundResponse(Request $request, array $data, array $params): Response
     {
         $request->setAttribute('data', $data);
-        $request->setAttribute('urlParams', $requestArgs);
+        $request->setAttribute('params', $params);
         return $this->handler->handleRequest($request);
     }
 

@@ -31,8 +31,8 @@
                         "x-status": "open"
                     },
                     "json": {
-                        "mainUrlParams": "\\{\\{request.urlParams\\}\\}",
-                        "directUrlParams": "{{request.urlParams}}",
+                        "mainParams": "\\{\\{request.params\\}\\}",
+                        "directParams": "{{request.params}}",
                         "directGet": "{{request.get}}",
                         "directPost": "{{request.post}}",
                         "directHeaders": "{{request.headers}}"

@@ -113,12 +113,12 @@ The direct server can return strings containing placeholders or [Faker](https://
 will be resolved by the mock
 server using the original request context. Available placeholders:
 
-| Placeholder             | Description                                |
-|-------------------------|--------------------------------------------|
-| `{{request.urlParams}}` | URL parameters from the original request   |
-| `{{request.get}}`       | Query parameters from the original request |
-| `{{request.post}}`      | Parsed body from the original request      |
-| `{{request.headers}}`   | Headers from the original request          |
+| Placeholder           | Description                                |
+|-----------------------|--------------------------------------------|
+| `{{request.params}}`  | Path parameters from the original request  |
+| `{{request.get}}`     | Query parameters from the original request |
+| `{{request.post}}`    | Parsed body from the original request      |
+| `{{request.headers}}` | Headers from the original request          |
 
 For a full list of placeholders and Faker usage, see Faker integration.
 
@@ -134,7 +134,7 @@ For example, if your direct server returns:
 {
     "response": {
         "json": {
-            "id": "\\{\\{request.urlParams.id\\}\\}"
+            "id": "\\{\\{request.params.id\\}\\}"
         }
     }
 }
@@ -144,7 +144,7 @@ The final response sent to the client will contain:
 
 ```json
 {
-    "regex": "{{request.urlParams.id}}"
+    "regex": "{{request.params.id}}"
 }
 ```
 
@@ -186,7 +186,7 @@ In practice this is rarely needed, but it is available for edge cases where you 
                         "x-status": "open"
                     },
                     "json": {
-                        "originalId": "{{request.urlParams.id}}",
+                        "originalId": "{{request.params.id}}",
                         "originalQuery": "{{request.get}}",
                         "originalBody": "{{request.post}}"
                     }

@@ -66,10 +66,6 @@ URL to a remote server
 ]
 ```
 
-## `webhooks[0].options`
-
-Deprecated! Will be removed in the next version.
-
 ## `webhooks[0].headers`
 
 | Types  | Default |

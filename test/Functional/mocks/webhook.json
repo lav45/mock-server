@@ -37,8 +37,8 @@
                     "ID4": "ID: {{request.post.id}}",
                     "get": "{{request.get}}",
                     "post": "{{request.post}}",
-                    "urlParams": "{{request.urlParams}}",
-                    "urlParamsId": "{{request.urlParams.id}}"
+                    "params": "{{request.params}}",
+                    "paramsId": "{{request.params.id}}"
                 }
             },
             {

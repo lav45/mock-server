@@ -33,8 +33,8 @@ final class DirectTest extends TestCase
         $content = $response->getBody()->buffer();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
-        $this->assertEquals(['id' => '100'], $content['mainUrlParams']);
-        $this->assertEquals([], $content['directUrlParams']);
+        $this->assertEquals(['id' => '100'], $content['mainParams']);
+        $this->assertEquals([], $content['directParams']);
         $this->assertEquals(['status' => '2'], $content['directGet']);
         $this->assertEquals($data, $content['directPost']);
 

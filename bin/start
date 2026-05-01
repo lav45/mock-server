@@ -71,7 +71,10 @@ use Lav45\Watcher\Watcher as FileWatcher;
     $requestHandler = new ClosureRequestHandler(
         Pipeline::create(
             new ParserMiddleware(
-                factory: new ParserFactory($parser),
+                factory: new ParserFactory(
+                    parser: $parser,
+                    logger: $logger,
+                ),
             ),
             new DirectMiddleware(
                 factory: new DirectFactory(),

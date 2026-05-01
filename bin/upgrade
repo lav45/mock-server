@@ -3,8 +3,8 @@
 
 namespace Lav45\MockServer\Bin;
 
-$mocksPath = getenv('MOCKS_PATH') ?: '/app/mocks';
-$mocksPath = rtrim($mocksPath, '/');
+$mocksPath = \getenv('MOCKS_PATH') ?: '/app/mocks';
+$mocksPath = \rtrim($mocksPath, '/');
 
 $migratePath = __DIR__ . '/../migrates';
 

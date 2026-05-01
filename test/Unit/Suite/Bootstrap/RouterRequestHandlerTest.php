@@ -37,9 +37,9 @@ final class RouterRequestHandlerTest extends TestCase
         $handler = new FakeRequestHandler($expectedResponse);
 
         $data = [true];
-        $urlParams = ['id' => '123'];
+        $params = ['id' => '123'];
         $dispatcher = new FakeDispatcher([
-            Dispatcher::FOUND, $data, $urlParams,
+            Dispatcher::FOUND, $data, $params,
         ]);
 
         $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher), $handler);
@@ -49,7 +49,7 @@ final class RouterRequestHandlerTest extends TestCase
 
         $this->assertSame($expectedResponse, $response);
         $this->assertSame($data, $request->getAttribute('data'));
-        $this->assertSame($urlParams, $request->getAttribute('urlParams'));
+        $this->assertSame($params, $request->getAttribute('params'));
     }
 
     public function testHandleRequestNotFound(): void

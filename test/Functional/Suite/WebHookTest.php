@@ -66,8 +66,8 @@ class WebHookTest extends TestCase
             'ID4' => 100,
             'get' => ['id' => '500'],
             'post' => $data,
-            'urlParams' => ['id' => '200'],
-            'urlParamsId' => '200',
+            'params' => ['id' => '200'],
+            'paramsId' => '200',
         ];
         $payload = $webhooks[2]['request'];
         $this->assertSame($expected, $payload);
