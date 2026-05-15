@@ -37,7 +37,8 @@ final class ContentFactoryTest extends TestCase
     public function testCreateWithJson(): void
     {
         $response = new ContentFactory()->create($this->createParser(), [
-            'json' => ['id' => 1, 'name' => 'test'],
+            'headers' => ['content-type' => 'application/json'],
+            'body' => ['id' => 1, 'name' => 'test'],
         ]);
 
         $this->assertSame(200, $response->status->value);
@@ -48,7 +49,7 @@ final class ContentFactoryTest extends TestCase
     public function testCreateWithText(): void
     {
         $response = new ContentFactory()->create($this->createParser(), [
-            'text' => 'hello world',
+            'body' => 'hello world',
         ]);
 
         $this->assertSame(200, $response->status->value);
@@ -60,7 +61,7 @@ final class ContentFactoryTest extends TestCase
     {
         $response = new ContentFactory()->create($this->createParser(), [
             'status' => 201,
-            'json' => ['created' => true],
+            'body' => ['created' => true],
         ]);
 
         $this->assertSame(201, $response->status->value);
@@ -71,7 +72,7 @@ final class ContentFactoryTest extends TestCase
     {
         $response = new ContentFactory()->create($this->createParser(), [
             'headers' => ['content-type' => 'text/plain; charset=utf-8'],
-            'text' => 'OK',
+            'body' => 'OK',
         ]);
 
         $this->assertSame(200, $response->status->value);
@@ -94,8 +95,11 @@ final class ContentFactoryTest extends TestCase
     {
         $response = new ContentFactory()->create($this->createParser(), [
             'status' => 422,
-            'headers' => ['X-Request-Id' => 'abc123'],
-            'json' => ['error' => 'invalid'],
+            'headers' => [
+                'content-type' => 'application/json',
+                'X-Request-Id' => 'abc123',
+            ],
+            'body' => ['error' => 'invalid'],
         ]);
 
         $this->assertSame(422, $response->status->value);

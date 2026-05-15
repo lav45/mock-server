@@ -30,9 +30,10 @@
                 "response": {
                     "type": "content",
                     "headers": {
-                        "x-status": "open"
+                        "x-status": "open",
+                        "content-type": "application/json"
                     },
-                    "json": {
+                    "body": {
                         "mainParams": "\\{\\{request.params\\}\\}",
                         "directParams": "{{request.params}}",
                         "directGet": "{{request.query}}",
@@ -47,7 +48,10 @@
                     {
                         "method": "PUT",
                         "url": "{{env.webhook.url}}",
-                        "json": {
+                        "headers": {
+                            "content-type": "application/json"
+                        },
+                        "body": {
                             "id": "{{faker.uuid}}",
                             "name": "{{faker.name}}"
                         }

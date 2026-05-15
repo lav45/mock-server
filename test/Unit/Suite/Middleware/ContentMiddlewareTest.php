@@ -96,7 +96,10 @@ final class ContentMiddlewareTest extends TestCase
         $request->setAttribute('responseType', ContentFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
-            'response' => ['json' => ['id' => 1, 'name' => 'test']],
+            'response' => [
+                'headers' => ['content-type' => 'application/json'],
+                'body' => ['id' => 1, 'name' => 'test'],
+            ],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
@@ -112,7 +115,7 @@ final class ContentMiddlewareTest extends TestCase
         $request->setAttribute('responseType', ContentFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
-            'response' => ['text' => 'hello world'],
+            'response' => ['body' => 'hello world'],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
@@ -127,7 +130,7 @@ final class ContentMiddlewareTest extends TestCase
         $request->setAttribute('responseType', ContentFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
-            'response' => ['status' => 201, 'json' => ['created' => true]],
+            'response' => ['status' => 201, 'body' => ['created' => true]],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
@@ -144,7 +147,7 @@ final class ContentMiddlewareTest extends TestCase
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'env' => ['ignored' => true],
-            'response' => ['text' => 'from response key'],
+            'response' => ['body' => 'from response key'],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
@@ -173,7 +176,7 @@ final class ContentMiddlewareTest extends TestCase
         $request->setAttribute('responseType', ContentFactory::TYPE);
         $request->setAttribute('parser', $parser);
         $request->setAttribute('data', [
-            'response' => ['text' => '{env.greeting}'],
+            'response' => ['body' => '{env.greeting}'],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));

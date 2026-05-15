@@ -40,7 +40,7 @@ final class CollectionFactoryTest extends TestCase
         $response = new CollectionFactory()->create(
             $this->createRequest(),
             $this->createParser(),
-            ['json' => $items],
+            ['items' => $items],
         );
 
         $this->assertSame(200, $response->status->value);
@@ -55,7 +55,7 @@ final class CollectionFactoryTest extends TestCase
         $response = new CollectionFactory()->create(
             $this->createRequest('https://localhost/?page=2&per-page=2'),
             $this->createParser(),
-            ['json' => $items],
+            ['items' => $items],
         );
 
         $this->assertSame([['id' => 3], ['id' => 4]], $this->decodeBody($response->body->value));
@@ -66,7 +66,7 @@ final class CollectionFactoryTest extends TestCase
         $response = new CollectionFactory()->create(
             $this->createRequest('https://localhost/?page=99'),
             $this->createParser(),
-            ['json' => [['id' => 1], ['id' => 2]]],
+            ['items' => [['id' => 1], ['id' => 2]]],
         );
 
         $this->assertSame([], $this->decodeBody($response->body->value));
@@ -80,7 +80,7 @@ final class CollectionFactoryTest extends TestCase
             $this->createRequest('https://localhost/?p=2&size=2'),
             $this->createParser(),
             [
-                'json' => $items,
+                'items' => $items,
                 'pagination' => [
                     'pageParam' => 'p',
                     'pageSizeParam' => 'size',
@@ -99,7 +99,7 @@ final class CollectionFactoryTest extends TestCase
             $this->createRequest(),
             $this->createParser(),
             [
-                'json' => [['id' => 1]],
+                'items' => [['id' => 1]],
                 'result' => $customResult,
             ],
         );
@@ -115,7 +115,7 @@ final class CollectionFactoryTest extends TestCase
             $this->createRequest(),
             $this->createParser(),
             [
-                'json' => $items,
+                'items' => $items,
                 'headers' => [
                     'X-Pagination-Total-Count' => '{{response.pagination.totalItems}}',
                     'X-Pagination-Current-Page' => '{{response.pagination.currentPage}}',
@@ -140,7 +140,7 @@ final class CollectionFactoryTest extends TestCase
             $this->createRequest('https://localhost/?_p=2&_s=2'),
             $this->createParser(),
             [
-                'json' => $items,
+                'items' => $items,
                 'pagination' => [
                     'pageParam' => '_p',
                     'pageSizeParam' => '_s',
@@ -170,7 +170,7 @@ final class CollectionFactoryTest extends TestCase
             $this->createRequest(),
             $this->createParser(),
             [
-                'json' => $items,
+                'items' => $items,
                 'result' => [
                     'data' => '{{response.items}}',
                     'info' => [

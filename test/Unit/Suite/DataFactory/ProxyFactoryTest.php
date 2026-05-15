@@ -94,6 +94,7 @@ final class ProxyFactoryTest extends TestCase
         $request = $this->createRequest('POST');
         $proxy = new ProxyFactory()->create($request, $this->createParser(), [
             'url' => 'https://upstream.example.com',
+            'headers' => ['content-type' => 'application/json'],
             'content' => ['id' => 1],
         ]);
 

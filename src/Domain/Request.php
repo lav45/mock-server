@@ -16,8 +16,7 @@ final readonly class Request
     {
         return new self(
             methods: HttpMethods::fromArray((array)($data['method'] ?? 'GET')),
-            // TODO The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.path" instead.
-            path: new Path($data['path'] ?? $data['url'] ?? '/'),
+            path: new Path($data['path'] ?? '/'),
         );
     }
 }

@@ -19,15 +19,6 @@ final readonly class WebHooksFactory
 
     private function createItem(VariableParser $parser, array $item): WebHook
     {
-        // TODO deprecated
-        $withJson = isset($item['json'])
-            || (isset($item['body']) && \is_array($item['body']));
-
-        if ($withJson && isset($item['headers']['content-type']) === false) {
-            $item['headers'] ??= [];
-            $item['headers']['content-type'] = 'application/json';
-        }
-
         $factory = new DataBuilder($parser, $item);
 
         $delay = $factory->createDelay();

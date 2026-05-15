@@ -68,7 +68,7 @@ final class CollectionMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['json' => []]]);
+        $request->setAttribute('data', ['response' => ['items' => []]]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
 
@@ -82,7 +82,7 @@ final class CollectionMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['json' => [['id' => 1], ['id' => 2]]]]);
+        $request->setAttribute('data', ['response' => ['items' => [['id' => 1], ['id' => 2]]]]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
 
@@ -100,7 +100,7 @@ final class CollectionMiddlewareTest extends TestCase
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'env' => ['ignored' => true],
-            'response' => ['json' => $items],
+            'response' => ['items' => $items],
         ]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
@@ -130,7 +130,7 @@ final class CollectionMiddlewareTest extends TestCase
         $request = $this->createRequest('https://localhost/?page=2&per-page=2');
         $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['json' => $items]]);
+        $request->setAttribute('data', ['response' => ['items' => $items]]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
 
@@ -147,7 +147,7 @@ final class CollectionMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $parser);
-        $request->setAttribute('data', ['response' => ['json' => $items]]);
+        $request->setAttribute('data', ['response' => ['items' => $items]]);
 
         $response = ($this->createMiddleware())($request, $this->nextReturning(418));
 

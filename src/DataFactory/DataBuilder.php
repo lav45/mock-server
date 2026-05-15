@@ -80,14 +80,12 @@ final readonly class DataBuilder
 
     public function createBody(): Body
     {
-        $body = $this->data['json'] // TODO deprecated
-            ?? $this->data['text'] // TODO deprecated
-            ?? $this->data['body']
-            ?? '';
-
-        return Body::new(
-            $this->parser->replace($body),
-        );
+        if (isset($this->data['body'])) {
+            $body = $this->parser->replace($this->data['body']);
+        } else {
+            $body = '';
+        }
+        return Body::new($body);
     }
 
     public function createUrl(array $get = []): Url
@@ -132,9 +130,7 @@ final readonly class DataBuilder
             );
             $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
         } else {
-            $items = $this->data['items']
-                ?? $this->data['json'] // TODO deprecated
-                ?? [];
+            $items = $this->data['items'] ?? [];
         }
         return $this->parser->replace($items);
     }

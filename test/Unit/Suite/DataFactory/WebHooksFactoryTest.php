@@ -118,7 +118,10 @@ final class WebHooksFactoryTest extends TestCase
     public function testCreateWithJsonBodyEncodesArrayToJson(): void
     {
         $webHooks = new WebHooksFactory()->create($this->createParser(), [
-            ['url' => 'https://example.com', 'json' => ['id' => 1, 'name' => 'test']],
+            [
+                'url' => 'https://example.com',
+                'body' => ['id' => 1, 'name' => 'test'],
+            ],
         ]);
 
         $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($webHooks->items[0]->body->value));
@@ -127,7 +130,11 @@ final class WebHooksFactoryTest extends TestCase
     public function testCreateWithJsonBodySetsContentTypeHeader(): void
     {
         $webHooks = new WebHooksFactory()->create($this->createParser(), [
-            ['url' => 'https://example.com', 'json' => ['id' => 1]],
+            [
+                'url' => 'https://example.com',
+                'headers' => ['content-type' => 'application/json'],
+                'body' => ['id' => 1],
+            ],
         ]);
 
         $this->assertSame('application/json', $webHooks->items[0]->headers->toArray()['content-type']);
@@ -137,7 +144,10 @@ final class WebHooksFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4]];
         $webHooks = new WebHooksFactory()->create($this->createParser(), [
-            ['url' => 'https://example.com', 'json' => $items],
+            [
+                'url' => 'https://example.com',
+                'body' => $items,
+            ],
         ]);
 
         $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->value));
@@ -147,7 +157,10 @@ final class WebHooksFactoryTest extends TestCase
     {
         $parser = $this->createParser(['env' => ['token' => 'abc123']]);
         $webHooks = new WebHooksFactory()->create($parser, [
-            ['url' => 'https://example.com', 'json' => ['token' => '{env.token}']],
+            [
+                'url' => 'https://example.com',
+                'body' => ['token' => '{env.token}'],
+            ],
         ]);
 
         $this->assertSame(['token' => 'abc123'], $this->decodeBody($webHooks->items[0]->body->value));
@@ -158,7 +171,10 @@ final class WebHooksFactoryTest extends TestCase
     public function testCreateWithTextBody(): void
     {
         $webHooks = new WebHooksFactory()->create($this->createParser(), [
-            ['url' => 'https://example.com', 'text' => '{"text": "Hello world"}'],
+            [
+                'url' => 'https://example.com',
+                'body' => '{"text": "Hello world"}',
+            ],
         ]);
 
         $this->assertSame('{"text": "Hello world"}', $webHooks->items[0]->body->value);
@@ -186,7 +202,10 @@ final class WebHooksFactoryTest extends TestCase
     {
         $parser = $this->createParser(['env' => ['msg' => 'OK']]);
         $webHooks = new WebHooksFactory()->create($parser, [
-            ['url' => 'https://example.com', 'text' => '{"text": "{env.msg}"}'],
+            [
+                'url' => 'https://example.com',
+                'body' => '{"text": "{env.msg}"}',
+            ],
         ]);
 
         $this->assertSame('{"text": "OK"}', $webHooks->items[0]->body->value);
@@ -211,8 +230,11 @@ final class WebHooksFactoryTest extends TestCase
         $webHooks = new WebHooksFactory()->create($this->createParser(), [
             [
                 'url' => 'https://example.com',
-                'headers' => ['X-Api-Token' => 'token123'],
-                'json' => ['id' => 1],
+                'headers' => [
+                    'content-type' => 'application/json',
+                    'X-Api-Token' => 'token123',
+                ],
+                'body' => ['id' => 1],
             ],
         ]);
 
@@ -227,7 +249,7 @@ final class WebHooksFactoryTest extends TestCase
             [
                 'url' => 'https://example.com',
                 'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-                'text' => 'name=John&age=12',
+                'body' => 'name=John&age=12',
             ],
         ]);
 

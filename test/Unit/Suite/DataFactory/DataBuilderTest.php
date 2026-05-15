@@ -123,18 +123,6 @@ final class DataBuilderTest extends TestCase
         $this->assertSame('', $body->value);
     }
 
-    public function testCreateBodyWithJson(): void // TODO deprecated
-    {
-        $body = new DataBuilder($this->createParser(), ['json' => ['id' => 1]])->createBody();
-        $this->assertSame(['id' => 1], \json_decode($body->value, true, flags: JSON_THROW_ON_ERROR));
-    }
-
-    public function testCreateBodyWithText(): void // TODO deprecated
-    {
-        $body = new DataBuilder($this->createParser(), ['text' => 'hello world'])->createBody();
-        $this->assertSame('hello world', $body->value);
-    }
-
     public function testCreateBodyWithBody(): void
     {
         $body = new DataBuilder($this->createParser(), ['body' => 'hello world'])->createBody();
@@ -194,7 +182,16 @@ final class DataBuilderTest extends TestCase
     {
         return [
             'default' => [[], []],
-            'json list' => [['json' => [['id' => 1], ['id' => 2]]], [['id' => 1], ['id' => 2]]],
+            'data list' => [
+                ['items' => [
+                    ['id' => 1],
+                    ['id' => 2],
+                ]],
+                [
+                    ['id' => 1],
+                    ['id' => 2],
+                ],
+            ],
         ];
     }
 

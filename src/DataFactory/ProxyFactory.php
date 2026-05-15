@@ -18,13 +18,6 @@ final readonly class ProxyFactory
 
     public function create(Request $request, VariableParser $parser, array $data): ProxyResponse
     {
-        // TODO deprecated
-        $withJson = isset($data['content']) && \is_array($data['content']);
-        if ($withJson && isset($data['headers']['content-type']) === false) {
-            $data['headers'] ??= [];
-            $data['headers']['content-type'] = 'application/json';
-        }
-
         $factory = new DataBuilder($parser, $data, $this->filterHeaders);
         $requestAdapter = new RequestAdapter($request);
 
