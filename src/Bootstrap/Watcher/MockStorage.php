@@ -7,7 +7,7 @@ use Psr\Log\NullLogger;
 
 use function Amp\File\read;
 
-final class FileStorage implements FileStorageInterface
+final class MockStorage
 {
     /** @var array<string,array<array>> */
     private array $files;
@@ -16,8 +16,9 @@ final class FileStorage implements FileStorageInterface
         string                           $watchDir,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
-        $files = $this->getFileList($watchDir);
-        $this->files = $this->parseFiles($files);
+        $this->files = $this->parseFiles(
+            $this->getFileList($watchDir),
+        );
     }
 
     public function getFiles(): array
@@ -67,15 +68,5 @@ final class FileStorage implements FileStorageInterface
     private function parseFile(string $file): array
     {
         return \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
-    }
-
-    public function setFile(string $file): void
-    {
-        $this->files[$file] = $this->parseFile($file);
-    }
-
-    public function deleteFile(string $file): void
-    {
-        unset($this->files[$file]);
     }
 }

@@ -64,10 +64,10 @@ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-se
 ### Checking
 
 ```shell
-curl http://127.0.0.1:8080/
+curl http://127.0.0.1:8080
 ```
 
-### Migrate old mocks data from 4.x to 5.x
+### Upgrade old mocks data from 4.x to 5.x
 
 If you are upgrading from an older version, you may need to migrate your mock files:
 
@@ -82,27 +82,32 @@ docker run --rm -it --init -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav
 | `PORT`               | `8080`       | Port the server will listen on.                                                                  |
 | `MOCKS_PATH`         | `/app/mocks` | Path to the directory containing mock JSON files.                                                |
 | `LOCALE`             | `en_US`      | Locale used for Faker data generation.                                                           |
-| `LOG_LEVEL`          | `info`       | Logging level (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`). |
-| `FILE_WATCH_TIMEOUT` | `0.2`        | Timeout for mock file watcher in seconds.                                                        |
+| `LOG_LEVEL`          | `info`       | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`]. |
 
 ## Development
 
-### Build Docker Containers
+### Build docker images
 
 ```shell
 ./build.sh
 ```
 
-### Local Setup
+### Install require dependency
 
 ```shell
 ./composer install
 ```
 
-### Run in Development Mode
+### Running in development mode
 
 ```shell
-docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 -e LOG_LEVEL=debug mock-server:server bin/start
+docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server bin/start
+```
+
+### Running in the tracking mode for changes in mock files
+
+```shell
+docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server bin/watch bin/start
 ```
 
 ## Tests
@@ -115,8 +120,6 @@ docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 -e LOG_LEVEL=debug moc
 ```
 
 ### Running E2E Functional Tests
-
-Requires Docker and built images (`./build.sh`).
 
 ```shell
 ./e2e-test.sh

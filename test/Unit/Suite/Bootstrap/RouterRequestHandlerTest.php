@@ -9,7 +9,6 @@ use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
 use Amp\Http\Server\Response as HttpResponse;
 use FastRoute\Dispatcher;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
-use Lav45\MockServer\Bootstrap\Watcher;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
@@ -42,7 +41,7 @@ final class RouterRequestHandlerTest extends TestCase
             Dispatcher::FOUND, $data, $params,
         ]);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, new FakeWatcher($dispatcher), $handler);
+        $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
         $request = $this->createRequest('GET', 'http://localhost/api/test/123');
 
         $response = $reactor->handleRequest($request);
@@ -60,9 +59,8 @@ final class RouterRequestHandlerTest extends TestCase
         $dispatcher = new FakeDispatcher([
             Dispatcher::NOT_FOUND,
         ]);
-        $watcher = new FakeWatcher($dispatcher);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, $watcher, $handler);
+        $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
         $request = $this->createRequest('GET', 'http://localhost/not-found');
 
         $response = $reactor->handleRequest($request);
@@ -79,9 +77,8 @@ final class RouterRequestHandlerTest extends TestCase
             Dispatcher::METHOD_NOT_ALLOWED,
             ['GET', 'POST'],
         ]);
-        $watcher = new FakeWatcher($dispatcher);
 
-        $reactor = new RouterRequestHandler($this->errorHandler, $watcher, $handler);
+        $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
         $request = $this->createRequest('PUT', 'http://localhost/api/test');
 
         $response = $reactor->handleRequest($request);
@@ -101,16 +98,6 @@ final class FakeErrorHandler implements ErrorHandler
             headers: ['content-type' => 'text/plain'],
             body: $reason ?? '',
         );
-    }
-}
-
-final readonly class FakeWatcher implements Watcher
-{
-    public function __construct(private Dispatcher $dispatcher) {}
-
-    public function getDispatcher(): Dispatcher
-    {
-        return $this->dispatcher;
     }
 }
 

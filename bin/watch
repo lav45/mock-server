@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+MOCKS_PATH=${MOCKS_PATH:-/app/mocks}
+
+watchexec \
+  --exts json \
+  --ignore ".*" \
+  --ignore "**/__*/**" \
+  --watch "$MOCKS_PATH" \
+  -E MOCKS_PATH="$MOCKS_PATH" \
+  --fs-events create,remove,modify \
+  --no-vcs-ignore \
+  --no-project-ignore \
+  --stop-signal SIGKILL \
+  --stop-timeout 0 \
+  --restart \
+  -- "$@"

@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap\Watcher;
 
-use Lav45\MockServer\Bootstrap\Watcher\FileStorage;
+use Lav45\MockServer\Bootstrap\Watcher\MockStorage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -13,7 +13,7 @@ final class FileStorageTest extends TestCase
     public function testGetFileFilter(string $filePath, bool $expectedResult, string $message): void
     {
         $watchDir = '/tmp';
-        $fileStorage = new FileStorage($watchDir, new NullLogger());
+        $fileStorage = new MockStorage($watchDir, new NullLogger());
         $actualResult = $fileStorage->isFilteredFile($watchDir . DIRECTORY_SEPARATOR . $filePath);
         $this->assertSame($expectedResult, $actualResult, $message);
     }

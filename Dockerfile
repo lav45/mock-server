@@ -2,32 +2,25 @@ FROM alpine:3.23 AS pecl
 
 RUN <<CMD
     set -eux
-    apk add --no-cache php85-dev php85-pear php85-openssl openssl-dev musl-dev autoconf make gcc libevent-dev
+    apk add --no-cache php85-dev php85-pear php85-openssl openssl-dev musl-dev make gcc libevent-dev
 
     pecl85 channel-update pecl.php.net
-    pecl85 install inotify
     pecl85 install event
 CMD
 
 FROM alpine:3.23 AS base
 
-COPY --from=pecl \
-    /usr/lib/php85/modules/inotify.so \
-    /usr/lib/php85/modules/event.so \
-    /usr/lib/php85/modules/
+COPY --from=pecl /usr/lib/php85/modules/event.so /usr/lib/php85/modules/
 
 RUN <<CMD
     set -eux
     apk upgrade --no-cache --available
-    apk add --no-cache libevent php85 php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl php85-sockets php85-posix
+    apk add --no-cache libevent watchexec php85 php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl php85-sockets php85-posix
 
     ln -s /usr/bin/php85 /bin/php
 
     echo 'memory_limit=-1' > /etc/php85/conf.d/00_main.ini
     echo 'extension=event.so' > /etc/php85/conf.d/01_event.ini
-    echo 'extension=inotify.so' > /etc/php85/conf.d/00_inotify.ini
-    echo 'fs.inotify.max_user_instances=8192' >> /etc/sysctl.conf
-    echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf
 
     mkdir /app
     chown -R 82:82 /app

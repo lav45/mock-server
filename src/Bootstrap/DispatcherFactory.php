@@ -10,7 +10,7 @@ use Psr\Log\NullLogger;
 
 use function FastRoute\simpleDispatcher;
 
-final readonly class DispatcherFactory implements Watcher\DispatcherFactory
+final readonly class DispatcherFactory
 {
     public function __construct(
         private LoggerInterface $logger = new NullLogger(),

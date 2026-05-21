@@ -14,8 +14,6 @@ final class Config
 
     private Level $logLevel = Level::Info;
 
-    private float $fileWatchTimeout = 0.2;
-
     public function port(string|int|false $port): self
     {
         if ($port || $port === 0) {
@@ -76,22 +74,6 @@ final class Config
         return $this;
     }
 
-    public function fileWatch(string|float|false $timeout): self
-    {
-        if ($timeout !== false && $timeout !== '') {
-            $validatedTimeout = \filter_var($timeout, FILTER_VALIDATE_FLOAT);
-            if ($validatedTimeout === false) {
-                throw new \InvalidArgumentException('Invalid timeout');
-            }
-            if ($validatedTimeout >= 0) {
-                $this->fileWatchTimeout = (float)$timeout;
-            } else {
-                throw new \InvalidArgumentException('Invalid timeout');
-            }
-        }
-        return $this;
-    }
-
     public function getPort(): int
     {
         return $this->port;
@@ -110,10 +92,5 @@ final class Config
     public function getLogLevel(): int
     {
         return $this->logLevel->value;
-    }
-
-    public function getFileWatchTimeout(): float
-    {
-        return $this->fileWatchTimeout;
     }
 }

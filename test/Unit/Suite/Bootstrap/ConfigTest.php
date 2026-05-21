@@ -29,7 +29,6 @@ final class ConfigTest extends TestCase
         $this->assertSame('/app/mocks', $this->config->getMocksPath());
         $this->assertSame('en_US', $this->config->getLocale());
         $this->assertSame(Level::Info->value, $this->config->getLogLevel());
-        $this->assertSame(0.2, $this->config->getFileWatchTimeout());
     }
 
     public function testListenWithValidValues(): void
@@ -153,44 +152,5 @@ final class ConfigTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid log level');
         $this->config->log('invalid_level');
-    }
-
-    #[DataProvider('validFileWatchTimeoutProvider')]
-    public function testFileWatchWithValidTimeouts(string|float $timeout, float $expected): void
-    {
-        $this->config->fileWatch($timeout);
-        $this->assertSame($expected, $this->config->getFileWatchTimeout());
-    }
-
-    public static function validFileWatchTimeoutProvider(): array
-    {
-        return [
-            [0.5, 0.5],
-            [1.0, 1.0],
-            ["2", 2.0],
-            ["0.123", 0.123],
-            [1, 1.0],
-            [0, 0.0],
-            [0.0, 0.0],
-            ["0", 0.0],
-            ["0.0", 0.0],
-        ];
-    }
-
-    #[DataProvider('invalidFileWatchTimeoutProvider')]
-    public function testFileWatchWithInvalidTimeoutThrowsException(mixed $invalidTimeout): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid timeout');
-        $this->config->fileWatch($invalidTimeout);
-    }
-
-    public static function invalidFileWatchTimeoutProvider(): array
-    {
-        return [
-            ['not_a_float'],
-            [-0.1],
-            ["-1.5"],
-        ];
     }
 }

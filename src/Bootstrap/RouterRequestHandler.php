@@ -13,13 +13,13 @@ final readonly class RouterRequestHandler implements RequestHandler
 {
     public function __construct(
         private ErrorHandler   $errorHandler,
-        private Watcher        $watcher,
+        private Dispatcher     $dispatcher,
         private RequestHandler $handler,
     ) {}
 
     public function handleRequest(Request $request): Response
     {
-        $match = $this->watcher->getDispatcher()->dispatch(
+        $match = $this->dispatcher->dispatch(
             $request->getMethod(),
             $request->getUri()->getPath(),
         );
