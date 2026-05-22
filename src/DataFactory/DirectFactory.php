@@ -12,9 +12,13 @@ final readonly class DirectFactory
 {
     public const string TYPE = 'direct';
 
+    public function __construct(
+        private array $filterHeaders = [],
+    ) {}
+
     public function create(Request $request, VariableParser $parser, array $data): Direct
     {
-        $factory = new DataBuilder($parser, $data);
+        $factory = new DataBuilder($parser, $data, $this->filterHeaders);
         $requestAdapter = new RequestAdapter($request);
 
         return new Direct(

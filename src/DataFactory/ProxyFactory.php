@@ -12,9 +12,13 @@ final readonly class ProxyFactory
 {
     public const string TYPE = 'proxy';
 
+    public function __construct(
+        private array $filterHeaders = [],
+    ) {}
+
     public function create(Request $request, VariableParser $parser, array $data): ProxyResponse
     {
-        $factory = new DataBuilder($parser, $data);
+        $factory = new DataBuilder($parser, $data, $this->filterHeaders);
         $requestAdapter = new RequestAdapter($request);
 
         $withJson = isset($data['content']) && \is_array($data['content']);

@@ -17,6 +17,7 @@ final readonly class DataBuilder
     public function __construct(
         private VariableParser $parser,
         private array          $data,
+        private array          $filterHeaders = [],
     ) {}
 
     public function createDelay(): Delay
@@ -56,15 +57,8 @@ final readonly class DataBuilder
             $headers = [];
         }
         if ($appendHeaders) {
-            $filterHeaders = [
-                'host',
-                'content-length',
-                'connection',
-                'keep-alive',
-                'transfer-encoding',
-            ];
             foreach ($appendHeaders as $name => $value) {
-                if (\in_array($name, $filterHeaders, true) === false) {
+                if (\in_array($name, $this->filterHeaders, true) === false) {
                     $headers[$name] = $value;
                 }
             }

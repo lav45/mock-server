@@ -14,6 +14,14 @@ final class Config
 
     private Level $logLevel = Level::Info;
 
+    private array $filterHeaders = [
+        'host',
+        'content-length',
+        'connection',
+        'keep-alive',
+        'transfer-encoding',
+    ];
+
     public function port(string|int|false $port): self
     {
         if ($port || $port === 0) {
@@ -89,8 +97,25 @@ final class Config
         return $this->locale;
     }
 
+    public function filterHeaders(string|false $headers): self
+    {
+        if ($headers) {
+            $this->filterHeaders = $headers
+                |> \strtolower(...)
+                |> (static fn(string $s) => \explode(',', $s))
+                |> (static fn(array $parts) => \array_map('trim', $parts))
+                |> \array_filter(...);
+        }
+        return $this;
+    }
+
     public function getLogLevel(): int
     {
         return $this->logLevel->value;
+    }
+
+    public function getFilterHeaders(): array
+    {
+        return $this->filterHeaders;
     }
 }

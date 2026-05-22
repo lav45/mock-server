@@ -24,9 +24,9 @@ webhooks, and automatic reloading of mock files.
     - [Routing](docs/request.md#requestpath)
 - [Response](docs/response.md)
     - [Content](docs/response/content.md)
-      - [Delay](docs/response/content.md#responsedelay)
-      - [Faker](docs/response/content.md#faker) - Generate random data
-      - [Request parameters](docs/response/content.md#request-parameters) - You can get data from your request and use it in the response
+        - [Delay](docs/response/content.md#responsedelay)
+        - [Faker](docs/response/content.md#faker) - Generate random data
+        - [Request parameters](docs/response/content.md#request-parameters) - You can get data from your request and use it in the response
     - [Proxy](docs/response/proxy.md)
     - [Data provider](docs/response/data.md)
 - [WebHooks](docs/webhooks.md)
@@ -77,12 +77,13 @@ docker run --rm -it --init -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav
 
 ## Environment Variables
 
-| Variable             | Default      | Description                                                                                      |
-|----------------------|--------------|--------------------------------------------------------------------------------------------------|
-| `PORT`               | `8080`       | Port the server will listen on.                                                                  |
-| `MOCKS_PATH`         | `/app/mocks` | Path to the directory containing mock JSON files.                                                |
-| `LOCALE`             | `en_US`      | Locale used for Faker data generation.                                                           |
-| `LOG_LEVEL`          | `info`       | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`]. |
+| Variable         | Default                                                       | Description                                                                                      |
+|------------------|---------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `PORT`           | `8080`                                                        | Port the server will listen on.                                                                  |
+| `MOCKS_PATH`     | `/app/mocks`                                                  | Path to the directory containing mock JSON files.                                                |
+| `LOCALE`         | `en_US`                                                       | Locale used for Faker data generation.                                                           |
+| `LOG_LEVEL`      | `info`                                                        | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`]. |
+| `FILTER_HEADERS` | `host,content-length,connection,keep-alive,transfer-encoding` | Comma-separated list of request headers to strip when forwarding the request to a remote server. |
 
 ## Development
 

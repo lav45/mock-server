@@ -29,6 +29,10 @@ final class ConfigTest extends TestCase
         $this->assertSame('/app/mocks', $this->config->getMocksPath());
         $this->assertSame('en_US', $this->config->getLocale());
         $this->assertSame(Level::Info->value, $this->config->getLogLevel());
+        $this->assertSame(
+            ['host', 'content-length', 'connection', 'keep-alive', 'transfer-encoding'],
+            $this->config->getFilterHeaders(),
+        );
     }
 
     public function testListenWithValidValues(): void
@@ -152,5 +156,31 @@ final class ConfigTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid log level');
         $this->config->log('invalid_level');
+    }
+
+    public function testFilterHeadersWithFalseKeepsDefault(): void
+    {
+        $this->config->filterHeaders(false);
+        $this->assertSame(
+            ['host', 'content-length', 'connection', 'keep-alive', 'transfer-encoding'],
+            $this->config->getFilterHeaders(),
+        );
+    }
+
+    #[DataProvider('filterHeadersProvider')]
+    public function testFilterHeadersParsesInput(string $input, array $expected): void
+    {
+        $this->config->filterHeaders($input);
+        $this->assertArraysHaveEqualValues($expected, $this->config->getFilterHeaders());
+    }
+
+    public static function filterHeadersProvider(): array
+    {
+        return [
+            'simple list' => ['host,content-length', ['host', 'content-length']],
+            'uppercase' => ['HOST,Content-Length', ['host', 'content-length']],
+            'spaces around' => ['host, content-length , connection', ['host', 'content-length', 'connection']],
+            'empty parts' => ['host,,content-length', ['host', 'content-length']],
+        ];
     }
 }

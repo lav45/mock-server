@@ -47,7 +47,8 @@ use Lav45\MockServer\Responder\WebHookHandler;
         ->port(getenv('PORT'))
         ->mocks(getenv('MOCKS_PATH'))
         ->locale(getenv('LOCALE'))
-        ->log(getenv('LOG_LEVEL'));
+        ->log(getenv('LOG_LEVEL'))
+        ->filterHeaders(getenv('FILTER_HEADERS'));
 
     $logHandler = Cluster::isWorker() ? Cluster::createLogHandler($config->getLogLevel()) : null;
     $logName = 'mock-server-' . (Cluster::getContextId() ?? getmypid());
@@ -73,7 +74,7 @@ use Lav45\MockServer\Responder\WebHookHandler;
                 ),
             ),
             new DirectMiddleware(
-                factory: new DirectFactory(),
+                factory: new DirectFactory($config->getFilterHeaders()),
                 handler: new DirectHandler($httpClient->withLabel('Direct')),
             ),
             new ResponseTypeMiddleware(ContentFactory::TYPE),
@@ -90,7 +91,7 @@ use Lav45\MockServer\Responder\WebHookHandler;
                 responder: new ContentResponder(),
             ),
             new ProxyMiddleware(
-                factory: new ProxyFactory(),
+                factory: new ProxyFactory($config->getFilterHeaders()),
                 responder: new ProxyResponder(
                     httpClient: $httpClient->withLabel('Proxy'),
                 ),
