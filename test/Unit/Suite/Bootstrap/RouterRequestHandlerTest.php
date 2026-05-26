@@ -42,7 +42,7 @@ final class RouterRequestHandlerTest extends TestCase
         ]);
 
         $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
-        $request = $this->createRequest('GET', 'http://localhost/api/test/123');
+        $request = $this->createRequest('GET', 'https://localhost/api/test/123');
 
         $response = $reactor->handleRequest($request);
 
@@ -61,7 +61,7 @@ final class RouterRequestHandlerTest extends TestCase
         ]);
 
         $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
-        $request = $this->createRequest('GET', 'http://localhost/not-found');
+        $request = $this->createRequest('GET', 'https://localhost/not-found');
 
         $response = $reactor->handleRequest($request);
 
@@ -79,7 +79,7 @@ final class RouterRequestHandlerTest extends TestCase
         ]);
 
         $reactor = new RouterRequestHandler($this->errorHandler, $dispatcher, $handler);
-        $request = $this->createRequest('PUT', 'http://localhost/api/test');
+        $request = $this->createRequest('PUT', 'https://localhost/api/test');
 
         $response = $reactor->handleRequest($request);
 

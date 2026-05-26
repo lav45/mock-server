@@ -3,9 +3,15 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap\Watcher;
 
 use Lav45\MockServer\Bootstrap\Watcher\MockStorage;
+use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+
+use function Amp\File\createDirectory;
+use function Amp\File\deleteDirectory;
+use function Amp\File\deleteFile;
+use function Amp\File\write;
 
 final class FileStorageTest extends TestCase
 {
@@ -30,5 +36,48 @@ final class FileStorageTest extends TestCase
             'json with __ in name' => ['__file.json', true, 'Json with __ in filename (not directory) should pass'],
             'no extension' => ['file', false, 'File with no extension should not pass'],
         ];
+    }
+
+    public function testGetFilesLogsDebugOnSuccess(): void
+    {
+        $tempDir = \sys_get_temp_dir() . '/mock_storage_test_' . \uniqid('', true);
+        createDirectory($tempDir);
+        $filePath = $tempDir . '/test.json';
+
+        try {
+            write($filePath, '[{"request":{"path":"/"}}]');
+
+            $logger = new FakeLogger();
+            $storage = new MockStorage($tempDir, $logger);
+
+            $this->assertSame(
+                [['request' => ['path' => '/']]],
+                $storage->getFiles()[$filePath],
+            );
+            $this->assertSame(["Parse: {$filePath}"], $logger->getMessages('debug'));
+        } finally {
+            deleteFile($filePath);
+            deleteDirectory($tempDir);
+        }
+    }
+
+    public function testGetFilesLogsErrorOnInvalidJson(): void
+    {
+        $tempDir = \sys_get_temp_dir() . '/mock_storage_test_' . \uniqid('', true);
+        createDirectory($tempDir);
+        $filePath = $tempDir . '/broken.json';
+
+        try {
+            write($filePath, 'not valid json');
+
+            $logger = new FakeLogger();
+            $storage = new MockStorage($tempDir, $logger);
+
+            $this->assertArrayNotHasKey($filePath, $storage->getFiles());
+            $this->assertCount(1, $logger->getMessages('error'));
+        } finally {
+            deleteFile($filePath);
+            deleteDirectory($tempDir);
+        }
     }
 }

@@ -19,14 +19,4 @@ final readonly class FileSystem
         }
         return $list;
     }
-
-    public static function getDirList(string $directory): array
-    {
-        $list = [$directory => $directory];
-        $dirList = \glob($directory . '/*', GLOB_ONLYDIR);
-        foreach ($dirList as $path) {
-            $list += self::getDirList($path);
-        }
-        return $list;
-    }
 }

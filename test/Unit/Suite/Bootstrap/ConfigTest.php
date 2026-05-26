@@ -64,7 +64,6 @@ final class ConfigTest extends TestCase
 
     public function testMocksWithValidPath(): void
     {
-        // Create a temporary readable directory
         $tempDir = \sys_get_temp_dir() . '/mocks_test_' . \uniqid('', true);
         createDirectory($tempDir);
         if (isDirectory($tempDir) === false) {
@@ -75,7 +74,6 @@ final class ConfigTest extends TestCase
             $this->config->mocks($tempDir);
             $this->assertSame($tempDir, $this->config->getMocksPath());
         } finally {
-            // Clean up
             if (isDirectory($tempDir)) {
                 deleteDirectory($tempDir);
             }
@@ -86,7 +84,6 @@ final class ConfigTest extends TestCase
     public function testMocksWithInvalidPathThrowsException(string $invalidPath, bool $createFile = false): void
     {
         if ($createFile) {
-            // Create a file instead of a directory to test is_dir failure
             $tempFile = \sys_get_temp_dir() . '/' . \basename($invalidPath);
             touch($tempFile);
             $invalidPath = $tempFile;

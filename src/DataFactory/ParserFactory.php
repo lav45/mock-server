@@ -25,8 +25,8 @@ final readonly class ParserFactory
                 'params' => $params = $request->getAttribute('params'),
                 'urlParams' => function () use ($params) {
                     // TODO The parameter "request.urlParams" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.params" instead.
-                    $this->logger->warning('The parameter "request.urlParams" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.');
-                    return $params;
+                    $this->logger->warning('The parameter "request.urlParams" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
+                    return $params; // @codeCoverageIgnore
                 },
                 'get' => static fn() => $requestAdapter->getQuery(),
                 'post' => static fn() => $requestAdapter->getData(),

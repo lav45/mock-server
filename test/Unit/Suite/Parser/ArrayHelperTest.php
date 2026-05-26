@@ -29,10 +29,10 @@ final class ArrayHelperTest extends TestCase
         $data = [
             'integer' => 42,
             'boolean' => true,
-            'float'   => 3.14,
-            'null'    => null,
-            'object'  => new \stdClass(),
-            'nested'  => [
+            'float' => 3.14,
+            'null' => null,
+            'object' => new \stdClass(),
+            'nested' => [
                 'deep_int' => 100,
                 'deep_string' => 'hello',
             ],

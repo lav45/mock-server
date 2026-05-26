@@ -38,9 +38,8 @@ final readonly class WebHookHandler
                 headers: $webHook->headers->toArray(),
                 body: $webHook->body->toString(),
             );
-        } // @codeCoverageIgnoreStart
-        catch (\RuntimeException $exception) {
+        } catch (\RuntimeException $exception) {
             $this->logger->error($exception->getMessage());
-        } // @codeCoverageIgnoreEnd
+        }
     }
 }

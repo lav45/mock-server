@@ -2,16 +2,19 @@
 
 namespace Lav45\MockServer\Responder\HttpClient;
 
-use Amp\Http\Client\HttpClient as Client;
+use Amp\Cancellation;
+use Amp\Http\Client\DelegateHttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
+use Amp\NullCancellation;
 
 final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
 {
     private string|null $logLabel = null;
 
     public function __construct(
-        private readonly Client $client,
+        private readonly Client       $client,
+        private readonly Cancellation $cancellation = new NullCancellation(),
     ) {}
 
     public function withLabel(string $label): self
@@ -38,6 +41,6 @@ final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
         if ($this->logLabel) {
             $request->setAttribute('logLabel', $this->logLabel);
         }
-        return $this->client->request($request);
+        return $this->client->request($request, $this->cancellation);
     }
 }

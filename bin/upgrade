@@ -8,8 +8,6 @@ $mocksPath = \rtrim($mocksPath, '/');
 
 $migratePath = __DIR__ . '/../migrates';
 
-$jsonEncodeFlags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR;
-
 // ----------------------------------------------------------------------------
 
 $migrateList = scanDir($migratePath, static function (string $path): bool {
@@ -37,7 +35,7 @@ $mocksList = scanDir($mocksPath, static function (string $path): bool {
 });
 
 foreach ($mocksList as $path) {
-    $data = \json_decode(\file_get_contents($path), true);
+    $data = \json_decode(\file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
     $result = [];
     foreach ($data as $item) {
         foreach ($migrates as $migrate) {
@@ -46,7 +44,8 @@ foreach ($mocksList as $path) {
         $result[] = $item;
     }
     if ($data !== $result) {
-        \file_put_contents($path, \json_encode($result, $jsonEncodeFlags));
+        $content = \json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        \file_put_contents($path, $content);
         echo '.';
     }
 }

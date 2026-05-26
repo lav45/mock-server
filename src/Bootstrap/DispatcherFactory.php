@@ -40,7 +40,7 @@ final readonly class DispatcherFactory
                     ));
                     if (isset($mock['request']['url'])) {
                         // TODO The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.path" instead.
-                        $this->logger->warning('The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.');
+                        $this->logger->warning('The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
                     }
                 }
             }

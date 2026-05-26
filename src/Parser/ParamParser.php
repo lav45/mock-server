@@ -8,7 +8,7 @@ final class ParamParser implements VariableParser
 {
     private BaseParser $parser;
 
-    public array $data = [];
+    private array $data = [];
 
     public function __construct(
         private readonly InlineParser $inlineParser,
