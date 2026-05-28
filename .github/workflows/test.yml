@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -43,13 +43,13 @@ jobs:
         run: ./build.sh
 
       - name: Cache composer
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('./composer.lock') }}
 
       - name: Cache tools
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./tools
           key: ${{ runner.os }}-tools-${{ hashFiles('./tools/*/composer.lock') }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         if: github.ref == 'refs/heads/master'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
