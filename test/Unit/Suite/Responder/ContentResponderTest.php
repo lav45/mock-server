@@ -18,7 +18,7 @@ final class ContentResponderTest extends TestCase
         $data = new ContentResponse(
             status: new HttpStatus(201),
             headers: HttpHeaders::fromArray([]),
-            body: Body::fromText(''),
+            body: Body::new(''),
         );
 
         $response = new ContentResponder()->execute($data);
@@ -31,7 +31,7 @@ final class ContentResponderTest extends TestCase
         $data = new ContentResponse(
             status: new HttpStatus(200),
             headers: HttpHeaders::fromArray([]),
-            body: Body::fromText('hello world'),
+            body: Body::new('hello world'),
         );
 
         $response = new ContentResponder()->execute($data);
@@ -44,7 +44,7 @@ final class ContentResponderTest extends TestCase
         $data = new ContentResponse(
             status: new HttpStatus(200),
             headers: HttpHeaders::fromArray(['content-type' => 'application/json', 'x-custom' => 'value']),
-            body: Body::fromText(''),
+            body: Body::new(''),
         );
 
         $response = new ContentResponder()->execute($data);

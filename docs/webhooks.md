@@ -87,11 +87,13 @@ URL to a remote server
 ]
 ```
 
-## `webhooks[0].json`
+## `webhooks[0].body`
 
-| Types  | Default |
-|--------|---------|
-| object | `{}`    |
+Request body — plain text string or JSON object/array.
+
+| Types                 | Default |
+|-----------------------|---------|
+| string, array, object | `''`    |
 
 ```json
 [
@@ -99,7 +101,7 @@ URL to a remote server
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "json": {
+                "body": {
                     "ping": true
                 }
             }
@@ -108,19 +110,13 @@ URL to a remote server
 ]
 ```
 
-## `webhooks[0].text`
-
-| Types  | Default |
-|--------|---------|
-| string | `''`    |
-
 ```json
 [
     {
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "text": "<note><body>Don't forget me this weekend!</body></note>"
+                "body": "<note><body>Don't forget me this weekend!</body></note>"
             }
         ]
     }
@@ -137,7 +133,7 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "json": {
+                "body": {
                     "id": "{{faker.uuid}}",
                     "createdAt": "{{date.getTimestamp()}}"
                 }

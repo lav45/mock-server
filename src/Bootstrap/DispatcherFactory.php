@@ -38,10 +38,33 @@ final readonly class DispatcherFactory
                         \implode(',', $request->methods->toArray()),
                         $request->path->value,
                     ));
-                    if (isset($mock['request']['url'])) {
-                        // TODO The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.path" instead.
-                        $this->logger->warning('The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
+
+                    // @codeCoverageIgnoreStart
+                    if (isset($mock['request']['url'])) { // TODO deprecated
+                        $this->logger->warning('The parameter "request.url" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.path" instead or run `bin/upgrade` to update your data.');
                     }
+                    if (isset($mock['response']['json'])) { // TODO deprecated
+                        switch ($mock['response']['type'] ?? 'content') {
+                            case 'content':
+                                $this->logger->warning('The parameter "response(type=content).json" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "response.body" instead or run `bin/upgrade` to update your data.');
+                                break;
+                            case 'data':
+                                $this->logger->warning('The parameter "response(type=data).json" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "response.items" instead or run `bin/upgrade` to update your data.');
+                                break;
+                        }
+                    }
+                    if (isset($mock['response']['text'])) { // TODO deprecated
+                        $this->logger->warning('The parameter "response(type=content).text" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "response.body" instead or run `bin/upgrade` to update your data.');
+                    }
+                    if (isset($mock['webhooks'])) { // TODO deprecated
+                        if (\array_column($mock['webhooks'], 'text')) {
+                            $this->logger->warning('The parameter "webhooks[].text" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "webhooks[].body" instead or run `bin/upgrade` to update your data.');
+                        }
+                        if (\array_column($mock['webhooks'], 'json')) {
+                            $this->logger->warning('The parameter "webhooks[].json" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "webhooks[].body" instead or run `bin/upgrade` to update your data.');
+                        }
+                    }
+                    // @codeCoverageIgnoreEnd
                 }
             }
         };

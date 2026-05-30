@@ -13,9 +13,12 @@ final readonly class ContentFactory
     {
         $factory = new DataBuilder($parser, $data);
 
+        $isJson = (isset($data['json']) && \is_array($data['json'])) // TODO deprecated
+            || (isset($data['body']) && \is_array($data['body']));
+
         return new ContentResponse(
             status: $factory->createStatus(),
-            headers: $factory->createHeaders(isset($data['json'])),
+            headers: $factory->createHeaders($isJson),
             body: $factory->createBody(),
         );
     }

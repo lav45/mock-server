@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\DataFactory;
 
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\WebHooks;
 use Lav45\MockServer\Domain\WebHooks\WebHook;
 use Lav45\MockServer\Parser\VariableParser;
@@ -26,18 +25,11 @@ final readonly class WebHooksFactory
         $url = $factory->createUrl();
         $method = $factory->createMethod();
 
-        $isJson = isset($item['json']);
-        $headers = $factory->createHeaders($isJson);
+        $isJson = (isset($item['json']) && \is_array($item['json'])) // TODO deprecated
+            || (isset($item['body']) && \is_array($item['body']));
 
-        if ($isJson) {
-            $body = Body::fromJson(
-                $parser->replace($item['json']),
-            );
-        } else {
-            $body = Body::fromText(
-                $parser->replace($item['text'] ?? ''),
-            );
-        }
+        $headers = $factory->createHeaders($isJson);
+        $body = $factory->createBody();
 
         return new WebHook(
             delay: $delay,

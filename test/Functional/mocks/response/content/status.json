@@ -6,7 +6,7 @@
         "response": {
             "type": "content",
             "status": 401,
-            "text": "Unauthorized"
+            "body": "Unauthorized"
         }
     }
 ]

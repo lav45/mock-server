@@ -25,7 +25,7 @@ final readonly class DirectFactory
             url: $factory->createUrl($requestAdapter->getQuery()),
             method: new HttpMethod($request->getMethod()),
             headers: $factory->createHeaders(appendHeaders: $requestAdapter->getHeaders()),
-            body: Body::fromText($requestAdapter->getBody()),
+            body: Body::new($requestAdapter->getBody()),
         );
     }
 }

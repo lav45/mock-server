@@ -69,35 +69,28 @@ final readonly class DataBuilder
         return HttpHeaders::fromArray($headers);
     }
 
-    public function createBodyContent(): Body
+    public function createBodyContent(): Body|null
     {
-        if (isset($this->data['content'])) {
-            return Body::new(
-                $this->parser->replace(
-                    $this->data['content'],
-                ),
-            );
+        if (isset($this->data['content']) === false) {
+            return null;
         }
-        return Body::fromText('');
+        return Body::new(
+            $this->parser->replace(
+                $this->data['content'],
+            ),
+        );
     }
 
     public function createBody(): Body
     {
-        if (isset($this->data['json'])) {
-            return Body::fromJson(
-                $this->parser->replace(
-                    $this->data['json'],
-                ),
-            );
-        }
-        if (isset($this->data['text'])) {
-            return Body::fromText(
-                $this->parser->replace(
-                    $this->data['text'],
-                ),
-            );
-        }
-        return Body::fromText('');
+        $body = $this->data['json'] // TODO deprecated
+            ?? $this->data['text'] // TODO deprecated
+            ?? $this->data['body']
+            ?? '';
+
+        return Body::new(
+            $this->parser->replace($body),
+        );
     }
 
     public function createUrl(array $get = []): Url
@@ -142,7 +135,9 @@ final readonly class DataBuilder
             );
             $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
         } else {
-            $items = $this->data['json'] ?? [];
+            $items = $this->data['items']
+                ?? $this->data['json'] // TODO deprecated
+                ?? [];
         }
         return $this->parser->replace($items);
     }

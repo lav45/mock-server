@@ -56,6 +56,7 @@ $config = new Config('mock-server')
 $finder = $config->getFinder();
 $finder
     ->append(glob(__DIR__ . '/bin/*'))
+    ->in(__DIR__ . '/migrates')
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/test');
 

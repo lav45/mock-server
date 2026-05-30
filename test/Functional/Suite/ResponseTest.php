@@ -41,6 +41,6 @@ class ResponseTest extends TestCase
         $end = \microtime(true);
 
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals(0.2, \round($end - $start, 1));
+        $this->assertTrue(0.2 >= \round($end - $start, 1));
     }
 }

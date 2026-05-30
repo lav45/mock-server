@@ -83,7 +83,7 @@ HTTP GET request the default page size.
 |---------|---------|
 | integer | `20`    |
 
-## `response.json`
+## `response.items`
 
 An array of data in json format
 
@@ -96,7 +96,7 @@ An array of data in json format
     {
         "response": {
             "type": "data",
-            "json": [
+            "items": [
                 {
                     "id": "537b0bc3-57c2-383b-8819-040dc731963f",
                     "name": "Dana Kilback"
@@ -115,7 +115,7 @@ An array of data in json format
 
 The path to a file with an array of data in json format
 
-The file contains a data set as from the example `response.json`
+The file contains a data set as from the example `response.items`
 
 | Types  | Default |
 |--------|---------|

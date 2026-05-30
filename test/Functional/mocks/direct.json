@@ -24,7 +24,7 @@
         },
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "response": {
                     "type": "content",
                     "headers": {

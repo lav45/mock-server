@@ -27,7 +27,7 @@ final class ProxyResponderTest extends TestCase
             url: new Url($url),
             method: new HttpMethod($method),
             headers: HttpHeaders::fromArray($headers),
-            body: Body::fromText($body),
+            body: Body::new($body),
         );
     }
 

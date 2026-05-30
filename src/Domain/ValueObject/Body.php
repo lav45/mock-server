@@ -13,20 +13,9 @@ final readonly class Body
 
     public static function new(array|string $data): self
     {
-        return \is_array($data)
-            ? self::fromJson($data)
-            : self::fromText($data);
-    }
-
-    public static function fromText(string $content): self
-    {
-        return new self($content);
-    }
-
-    public static function fromJson(array $data): self
-    {
-        return new self(
-            \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-        );
+        if (\is_array($data)) {
+            $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+        return new self($data);
     }
 }

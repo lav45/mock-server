@@ -59,39 +59,31 @@ Response HTTP status code
 ]
 ```
 
-## `response.text`
+## `response.body`
 
-Response text content
+Response body — plain text string or JSON object/array.
 
-| Types  | Default |
-|--------|---------|
-| string | `''`    |
+| Types                  | Default |
+|------------------------|---------|
+| string, array, object  | `''`    |
 
 ```json
 [
     {
         "response": {
             "type": "content",
-            "text": "<html><body><h1>Hello world!</h1></body></html>"
+            "body": "<html><body><h1>Hello world!</h1></body></html>"
         }
     }
 ]
 ```
 
-## `response.json`
-
-Response content in json format
-
-| Types         | Default |
-|---------------|---------|
-| array, object | `null`  |
-
 ```json
 [
     {
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "status": "OK"
             }
         }
@@ -108,7 +100,7 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
     {
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "id": "{{faker.uuid}}",
                 "iban": "{{faker.iban('LV')}}",
                 "time": "{{faker.dateTimeBetween('-1 week', '+1 week').getTimestamp()}}",
@@ -167,7 +159,7 @@ Parentheses when describing the path to the parameter:
         },
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "ID1": "ID: {request.get.id}",
                 "ID2": "ID: {{request.get.id}}",
                 "ID3": "ID: {request.post.id}",

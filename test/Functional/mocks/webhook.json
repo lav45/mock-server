@@ -22,7 +22,7 @@
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "text": "{\"text\": \"Hello world\"}"
+                "body": "{\"text\": \"Hello world\"}"
             },
             {
                 "method": "POST",
@@ -30,7 +30,7 @@
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 },
-                "json": {
+                "body": {
                     "ID1": "ID: {request.get.id}",
                     "ID2": "ID: {{request.get.id}}",
                     "ID3": "ID: {request.post.id}",
@@ -47,7 +47,7 @@
                 "headers": {
                     "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
                 },
-                "json": [
+                "body": [
                     {
                         "id": "{{faker.uuid}}",
                         "name": "{{faker.name}}"
@@ -86,7 +86,7 @@
                 "headers": {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
-                "text": "name=John&age=12"
+                "body": "name=John&age=12"
             },
             {
                 "method": "POST",
@@ -94,11 +94,11 @@
                 "headers": {
                     "Content-Type": "multipart/form-data; boundary=FB"
                 },
-                "text": "--FB\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nJohn\r\n--FB\r\nContent-Disposition: form-data; name=\"age\"\r\n\r\n12\r\n--FB--\r\n"
+                "body": "--FB\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nJohn\r\n--FB\r\nContent-Disposition: form-data; name=\"age\"\r\n\r\n12\r\n--FB--\r\n"
             },
             {
                 "url": "{{env.webhook.url}}",
-                "json": {
+                "body": {
                     "id": "{{faker.bothify('TEST####')}}",
                     "correlationId": "{{env.correlationId}}",
                     "uuid": "{{env.uuid}}"
@@ -112,7 +112,7 @@
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "text": "{\"text\": \"OK\"}"
+                "body": "{\"text\": \"OK\"}"
             }
         ]
     }

@@ -21,18 +21,17 @@ final readonly class ProxyFactory
         $factory = new DataBuilder($parser, $data, $this->filterHeaders);
         $requestAdapter = new RequestAdapter($request);
 
+        $url = $factory->createUrl($requestAdapter->getQuery());
+        $method = new HttpMethod($request->getMethod());
+
         $withJson = isset($data['content']) && \is_array($data['content']);
         $headers = $factory->createHeaders($withJson, $requestAdapter->getHeaders());
 
-        if (isset($data['content'])) {
-            $body = $factory->createBodyContent();
-        } else {
-            $body = Body::fromText($requestAdapter->getBody());
-        }
+        $body = $factory->createBodyContent() ?? Body::new($requestAdapter->getBody());
 
         return new ProxyResponse(
-            url: $factory->createUrl($requestAdapter->getQuery()),
-            method: new HttpMethod($request->getMethod()),
+            url: $url,
+            method: $method,
             headers: $headers,
             body: $body,
         );

@@ -16,7 +16,7 @@
                 "pageSizeParam": "_s",
                 "defaultPageSize": 6
             },
-            "json": [
+            "items": [
                 {
                     "id": 1,
                     "name": "name 1"
