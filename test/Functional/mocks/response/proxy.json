@@ -32,7 +32,10 @@
                     "id": 6,
                     "name": "name 6"
                 }
-            ]
+            ],
+            "headers": {
+                "content-type": "application/json"
+            }
         }
     },
     {
@@ -58,6 +61,9 @@
                 "company": {
                     "id": "{{faker.uuid}}"
                 }
+            },
+            "headers": {
+                "content-type": "application/json"
             }
         }
     },

@@ -28,7 +28,8 @@
                 "method": "POST",
                 "url": "{env.WEBHOOK_STORAGE_URL}/storage?id=300",
                 "headers": {
-                    "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
+                    "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c",
+                    "content-type": "application/json"
                 },
                 "body": {
                     "ID1": "ID: {request.get.id}",
@@ -45,7 +46,8 @@
                 "method": "PUT",
                 "url": "{{env.webhook.url}}",
                 "headers": {
-                    "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c"
+                    "x-api-token": "e71ad173-dacf-493c-be55-643074fdf41c",
+                    "content-type": "application/json"
                 },
                 "body": [
                     {
@@ -104,7 +106,8 @@
                     "uuid": "{{env.uuid}}"
                 },
                 "headers": {
-                    "X-API-Token": "{{env.webhook.token}}"
+                    "X-API-Token": "{{env.webhook.token}}",
+                    "content-type": "application/json"
                 }
             },
             {

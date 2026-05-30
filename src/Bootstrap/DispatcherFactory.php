@@ -56,12 +56,32 @@ final readonly class DispatcherFactory
                     if (isset($mock['response']['text'])) { // TODO deprecated
                         $this->logger->warning('The parameter "response(type=content).text" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "response.body" instead or run `bin/upgrade` to update your data.');
                     }
+                    if (isset($mock['response']['type']) === false || $mock['response']['type'] === 'content') { // TODO deprecated
+                        $withJson = isset($mock['response']['json'])
+                            || (isset($mock['response']['body']) && \is_array($mock['response']['body']));
+                        if ($withJson && isset($mock['response']['headers']['content-type']) === false) {
+                            $this->logger->warning('Auto-adding "content-type: application/json" for response is deprecated since 4.3.1 and will be removed in 5.0.0. Please set "response.headers.content-type" explicitly or run `bin/upgrade` to update your data.');
+                        }
+                    }
+                    if (isset($mock['response']['type']) && $mock['response']['type'] === 'proxy') { // TODO deprecated
+                        $withJson = isset($mock['response']['content']) && \is_array($mock['response']['content']);
+                        if ($withJson && isset($mock['response']['headers']['content-type']) === false) {
+                            $this->logger->warning('Auto-adding "content-type: application/json" for proxy response is deprecated since 4.3.1 and will be removed in 5.0.0. Please set "response.headers.content-type" explicitly or run `bin/upgrade` to update your data.');
+                        }
+                    }
                     if (isset($mock['webhooks'])) { // TODO deprecated
                         if (\array_column($mock['webhooks'], 'text')) {
                             $this->logger->warning('The parameter "webhooks[].text" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "webhooks[].body" instead or run `bin/upgrade` to update your data.');
                         }
                         if (\array_column($mock['webhooks'], 'json')) {
                             $this->logger->warning('The parameter "webhooks[].json" is deprecated since 4.3.1 and will be removed in 5.0.0. Please use "webhooks[].body" instead or run `bin/upgrade` to update your data.');
+                        }
+                        foreach ($mock['webhooks'] as $webhook) {
+                            $withJson = isset($webhook['json'])
+                                || (isset($webhook['body']) && \is_array($webhook['body']));
+                            if ($withJson && isset($webhook['headers']['content-type']) === false) {
+                                $this->logger->warning('Auto-adding "content-type: application/json" for webhooks is deprecated since 4.3.1 and will be removed in 5.0.0. Please set "webhooks[].headers.content-type" explicitly or run `bin/upgrade` to update your data.');
+                            }
                         }
                     }
                     // @codeCoverageIgnoreEnd

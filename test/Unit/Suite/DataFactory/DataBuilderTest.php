@@ -59,12 +59,6 @@ final class DataBuilderTest extends TestCase
         $this->assertSame([], $headers->toArray());
     }
 
-    public function testCreateHeadersAddsContentTypeForJson(): void
-    {
-        $headers = new DataBuilder($this->createParser(), [])->createHeaders(withJson: true);
-        $this->assertSame('application/json', $headers->toArray()['content-type']);
-    }
-
     public function testCreateHeadersWithCustomHeaders(): void
     {
         $headers = new DataBuilder($this->createParser(), [

@@ -46,7 +46,7 @@ final readonly class DataBuilder
         return new HttpStatus($value);
     }
 
-    public function createHeaders(bool $withJson = false, array $appendHeaders = []): HttpHeaders
+    public function createHeaders(array $appendHeaders = []): HttpHeaders
     {
         if (isset($this->data['headers'])) {
             $headers = $this->data['headers'];
@@ -62,9 +62,6 @@ final readonly class DataBuilder
                     $headers[$name] = $value;
                 }
             }
-        }
-        if ($withJson) {
-            $headers['content-type'] = 'application/json';
         }
         return HttpHeaders::fromArray($headers);
     }

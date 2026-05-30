@@ -11,14 +11,20 @@ final readonly class ContentFactory
 
     public function create(VariableParser $parser, array $data): ContentResponse
     {
-        $factory = new DataBuilder($parser, $data);
-
-        $isJson = (isset($data['json']) && \is_array($data['json'])) // TODO deprecated
+        // TODO deprecated
+        $withJson = isset($data['json'])
             || (isset($data['body']) && \is_array($data['body']));
+
+        if ($withJson && isset($data['headers']['content-type']) === false) {
+            $data['headers'] ??= [];
+            $data['headers']['content-type'] = 'application/json';
+        }
+
+        $factory = new DataBuilder($parser, $data);
 
         return new ContentResponse(
             status: $factory->createStatus(),
-            headers: $factory->createHeaders($isJson),
+            headers: $factory->createHeaders(),
             body: $factory->createBody(),
         );
     }

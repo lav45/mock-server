@@ -14,6 +14,9 @@
                 "domain": "{{env.DOMAIN}}",
                 "url": "https://{env.DOMAIN}/v1",
                 "value": "{{env.value}}"
+            },
+            "headers": {
+                "content-type": "application/json"
             }
         }
     }
