@@ -72,7 +72,7 @@ curl http://127.0.0.1:8080
 If you are upgrading from an older version, you may need to migrate your mock files:
 
 ```shell
-docker run --rm -it --init -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest bin/upgrade
+docker run --rm -it -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock-server:latest bin/upgrade
 ```
 
 ## Environment Variables

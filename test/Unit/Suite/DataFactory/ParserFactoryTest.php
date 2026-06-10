@@ -54,15 +54,15 @@ final class ParserFactoryTest extends TestCase
     {
         $request = $this->createRequest(url: 'https://localhost/?search=foo&page=2');
         $parser = new ParserFactory($this->createParser())->create($request, []);
-        $this->assertSame('foo', $parser->replace('{{request.get.search}}'));
-        $this->assertSame('2', $parser->replace('{{request.get.page}}'));
+        $this->assertSame('foo', $parser->replace('{{request.query.search}}'));
+        $this->assertSame('2', $parser->replace('{{request.query.page}}'));
     }
 
     public function testCreateExposesRawBody(): void
     {
         $request = $this->createRequest(body: 'raw content');
         $parser = new ParserFactory($this->createParser())->create($request, []);
-        $this->assertSame('raw content', $parser->replace('{{request.body}}'));
+        $this->assertSame('raw content', $parser->replace('{{request.rawBody}}'));
     }
 
     public function testCreateExposesParsedPostData(): void

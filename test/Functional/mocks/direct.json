@@ -33,7 +33,7 @@
                     "json": {
                         "mainParams": "\\{\\{request.params\\}\\}",
                         "directParams": "{{request.params}}",
-                        "directGet": "{{request.get}}",
+                        "directGet": "{{request.query}}",
                         "directPost": "{{request.post}}",
                         "directHeaders": "{{request.headers}}"
                     }

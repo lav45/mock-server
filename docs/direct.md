@@ -91,14 +91,14 @@ The direct server returns a JSON that describes the final response and optionall
         "headers": {
             "X-Custom": "dynamic-value"
         },
-        "json": {
-            "message": "Processed {{request.get.id}}"
+        "body": {
+            "message": "Processed {{request.query.id}}"
         }
     },
     "webhooks": [
         {
             "url": "https://webhook.site/audit",
-            "json": {
+            "body": {
                 "event": "forwarded",
                 "timestamp": "{{faker.unixTime}}"
             }
@@ -116,7 +116,7 @@ server using the original request context. Available placeholders:
 | Placeholder           | Description                                |
 |-----------------------|--------------------------------------------|
 | `{{request.params}}`  | Path parameters from the original request  |
-| `{{request.get}}`     | Query parameters from the original request |
+| `{{request.query}}`   | Query parameters from the original request |
 | `{{request.post}}`    | Parsed body from the original request      |
 | `{{request.headers}}` | Headers from the original request          |
 
@@ -133,7 +133,7 @@ For example, if your direct server returns:
 ```json
 {
     "response": {
-        "json": {
+        "body": {
             "id": "\\{\\{request.params.id\\}\\}"
         }
     }
@@ -179,22 +179,22 @@ In practice this is rarely needed, but it is available for edge cases where you 
         },
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "response": {
                     "type": "content",
                     "headers": {
                         "x-status": "open"
                     },
-                    "json": {
+                    "body": {
                         "originalId": "{{request.params.id}}",
-                        "originalQuery": "{{request.get}}",
+                        "originalQuery": "{{request.query}}",
                         "originalBody": "{{request.post}}"
                     }
                 },
                 "webhooks": [
                     {
                         "url": "https://api.site.com/webhook",
-                        "json": {
+                        "body": {
                             "id": "{{faker.uuid}}"
                         }
                     }

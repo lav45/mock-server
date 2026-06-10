@@ -138,7 +138,7 @@ Response:
 You can get data from your request and use it in the response:
 
 - `params` - [Parameters](../request.md#requestpath) obtained from the path
-- `get` - Data from a GET HTTP request.
+- `query` - Query parameters from the request.
 - `post` - Data from a POST HTTP request. Contains form data or body json data
 
 Parentheses when describing the path to the parameter:
@@ -160,11 +160,11 @@ Parentheses when describing the path to the parameter:
         "response": {
             "type": "content",
             "body": {
-                "ID1": "ID: {request.get.id}",
-                "ID2": "ID: {{request.get.id}}",
+                "ID1": "ID: {request.query.id}",
+                "ID2": "ID: {{request.query.id}}",
                 "ID3": "ID: {request.post.id}",
                 "ID4": "ID: {{request.post.id}}",
-                "get": "{{request.get}}",
+                "query": "{{request.query}}",
                 "post": "{{request.post}}",
                 "params": "{{request.params}}"
             }
@@ -187,7 +187,7 @@ Response:
     "ID2": "200",
     "ID3": "ID: 300",
     "ID4": 300,
-    "get": {
+    "query": {
         "id": "200"
     },
     "post": {

@@ -1,4 +1,4 @@
-FROM alpine:3.23 AS pecl
+FROM alpine:3.24 AS pecl
 
 RUN <<CMD
     set -eux
@@ -8,7 +8,7 @@ RUN <<CMD
     pecl85 install event
 CMD
 
-FROM alpine:3.23 AS base
+FROM alpine:3.24 AS base
 
 COPY --from=pecl /usr/lib/php85/modules/event.so /usr/lib/php85/modules/
 

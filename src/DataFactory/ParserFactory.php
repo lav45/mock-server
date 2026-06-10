@@ -24,13 +24,23 @@ final readonly class ParserFactory
                 'headers' => static fn() => $requestAdapter->getHeaders(),
                 'params' => $params = $request->getAttribute('params'),
                 'urlParams' => function () use ($params) {
-                    // TODO The parameter "request.urlParams" is deprecated since 4.1.1 and will be removed in 5.0.0. Please use "request.params" instead.
+                    // TODO deprecated
                     $this->logger->warning('The parameter "request.urlParams" is deprecated since 4.1.1 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
                     return $params; // @codeCoverageIgnore
                 },
-                'get' => static fn() => $requestAdapter->getQuery(),
+                'get' => function () use ($requestAdapter) {
+                    // TODO deprecated
+                    $this->logger->warning('The parameter "request.get" is deprecated since 4.3.2 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
+                    return $requestAdapter->getQuery(); // @codeCoverageIgnore
+                },
+                'query' => static fn() => $requestAdapter->getQuery(),
                 'post' => static fn() => $requestAdapter->getData(),
-                'body' => static fn() => $requestAdapter->getBody(),
+                'body' => function () use ($requestAdapter) {
+                    // TODO deprecated
+                    $this->logger->warning('The parameter "request.body" is deprecated since 4.3.2 and will be removed in 5.0.0. Please run `bin/upgrade` to update your data.'); // @codeCoverageIgnore
+                    return $requestAdapter->getBody(); // @codeCoverageIgnore
+                },
+                'rawBody' => static fn() => $requestAdapter->getBody(),
             ],
             'env' => $this->parser->replace($env),
         ]);
