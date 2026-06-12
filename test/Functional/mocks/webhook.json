@@ -1,5 +1,6 @@
 [
     {
+        "version": 8,
         "env": {
             "webhook": {
                 "token": "e71ad173-dacf-493c-be55-643074fdf41c",

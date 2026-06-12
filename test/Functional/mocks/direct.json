@@ -1,5 +1,6 @@
 [
     {
+        "version": 8,
         "env": {
             "webhook": {
                 "url": "{env.WEBHOOK_STORAGE_URL}/storage"
@@ -18,6 +19,7 @@
         }
     },
     {
+        "version": 8,
         "request": {
             "method": "PUT",
             "path": "/direct/data"

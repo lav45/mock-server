@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
 use FastRoute\Dispatcher;
 use Lav45\MockServer\Bootstrap\DispatcherFactory;
+use Lav45\MockServer\Bootstrap\Migrator;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +16,7 @@ final class DispatcherFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->logger = new FakeLogger();
-        $this->factory = new DispatcherFactory($this->logger);
+        $this->factory = new DispatcherFactory(static fn(array $data): array => $data, $this->logger);
     }
 
     protected function tearDown(): void
@@ -61,9 +62,6 @@ final class DispatcherFactoryTest extends TestCase
         // Проверяем, что ошибок не было
         $this->assertEmpty($this->logger->getMessages('error'));
 
-        // Проверяем маршруты
-        $this->assertInstanceOf(Dispatcher::class, $dispatcher);
-
         $expends = [
             'request' => [
                 'method' => 'GET',
@@ -103,6 +101,119 @@ final class DispatcherFactoryTest extends TestCase
 
         $result = $dispatcher->dispatch('GET', '/unknown');
         $this->assertEquals(Dispatcher::NOT_FOUND, $result[0]);
+    }
+
+    public function testCreateWithDeprecatedMockFormat(): void
+    {
+        $data = [
+            [
+                'request' => [
+                    'method' => 'GET',
+                    'url' => '/old/1',
+                ],
+                'response' => [
+                    'body' => 'first',
+                ],
+            ],
+            [
+                'request' => [
+                    'method' => 'GET',
+                    'url' => '/old/2',
+                ],
+                'response' => [
+                    'body' => 'second',
+                ],
+            ],
+        ];
+
+        $factory = new DispatcherFactory(Migrator::create(\dirname(__DIR__, 2) . '/migrates'), $this->logger);
+        $dispatcher = $factory->create($data);
+
+        // Один warning независимо от количества устаревших mock
+        $warningMessages = $this->logger->getMessages('warning');
+        $this->assertCount(1, $warningMessages);
+        $this->assertStringContainsString('bin/migrate', $warningMessages[0]);
+
+        $this->assertEmpty($this->logger->getMessages('error'));
+
+        // Маршруты зарегистрированы с мигрированными данными
+        $expected = [
+            'version' => 1,
+            'request' => [
+                'method' => 'GET',
+                'path' => '/old/1',
+            ],
+            'response' => [
+                'body' => 'first',
+            ],
+        ];
+        $result = $dispatcher->dispatch('GET', '/old/1');
+        $this->assertEquals(Dispatcher::FOUND, $result[0]);
+        $this->assertEquals($expected, $result[1]);
+
+        $expected = [
+            'version' => 1,
+            'request' => [
+                'method' => 'GET',
+                'path' => '/old/2',
+            ],
+            'response' => [
+                'body' => 'second',
+            ],
+        ];
+        $result = $dispatcher->dispatch('GET', '/old/2');
+        $this->assertEquals(Dispatcher::FOUND, $result[0]);
+        $this->assertEquals($expected, $result[1]);
+    }
+
+    public function testCreateWithActualMockFormatWithoutWarnings(): void
+    {
+        $data = [
+            [
+                'version' => 1,
+                'request' => [
+                    'method' => 'GET',
+                    'path' => '/users',
+                ],
+                'response' => [
+                    'body' => 'ok',
+                ],
+            ],
+        ];
+
+        $factory = new DispatcherFactory(Migrator::create(\dirname(__DIR__, 2) . '/migrates'), $this->logger);
+        $factory->create($data);
+
+        $this->assertEmpty($this->logger->getMessages('warning'));
+        $this->assertEmpty($this->logger->getMessages('error'));
+    }
+
+    public function testCreateWithCustomMigrate(): void
+    {
+        $factory = new DispatcherFactory(static function (array $data): array {
+            $data['migrated'] = true;
+            return $data;
+        }, $this->logger);
+
+        $data = [
+            [
+                'request' => [
+                    'method' => 'GET',
+                    'path' => '/users',
+                ],
+                'response' => [
+                    'body' => 'ok',
+                ],
+            ],
+        ];
+
+        $dispatcher = $factory->create($data);
+
+        $this->assertCount(1, $this->logger->getMessages('warning'));
+
+        $result = $dispatcher->dispatch('GET', '/users');
+        $this->assertEquals(Dispatcher::FOUND, $result[0]);
+        $this->assertTrue($result[1]['migrated']);
     }
 
     public function testCreateWithInvalidUrl(): void
@@ -162,7 +273,7 @@ final class DispatcherFactoryTest extends TestCase
     public function testCreateWithOptions(): void
     {
         $options = ['cacheFile' => '/tmp/routes.cache'];
-        $factory = new DispatcherFactory($this->logger, $options);
+        $factory = new DispatcherFactory(static fn(array $data): array => $data, $this->logger, $options);
 
         $data = [
             [

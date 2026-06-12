@@ -42,6 +42,7 @@ deptrac:
   ruleset:
     Bootstrap:
       - Domain
+      - Middleware
       - Vendor
     Middleware:
       - DataFactory

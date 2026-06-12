@@ -13,6 +13,7 @@ use Lav45\MockServer\Bootstrap\Config;
 use Lav45\MockServer\Bootstrap\DispatcherFactory;
 use Lav45\MockServer\Bootstrap\ErrorHandler;
 use Lav45\MockServer\Bootstrap\LoggerFactory;
+use Lav45\MockServer\Bootstrap\Migrator;
 use Lav45\MockServer\Bootstrap\MockStorage;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
 use Lav45\MockServer\DataFactory\CollectionFactory;
@@ -68,10 +69,7 @@ use Lav45\MockServer\Responder\WebHookHandler;
     $requestHandler = new ClosureRequestHandler(
         Pipeline::create(
             new ParserMiddleware(
-                factory: new ParserFactory(
-                    parser: $parser,
-                    logger: $logger,
-                ),
+                factory: new ParserFactory($parser),
             ),
             new DirectMiddleware(
                 factory: new DirectFactory($config->getFilterHeaders()),
@@ -105,7 +103,8 @@ use Lav45\MockServer\Responder\WebHookHandler;
     );
 
     $mocks = new MockStorage($config->getMocksPath(), $logger)->getData();
-    $dispatcher = new DispatcherFactory($logger)->create($mocks);
+    $migrates = Migrator::create(__DIR__ . '/../migrates');
+    $dispatcher = new DispatcherFactory($migrates, $logger)->create($mocks);
     $errorHandler = new ErrorHandler();
     $reactor = new RouterRequestHandler(
         errorHandler: $errorHandler,

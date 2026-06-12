@@ -3,7 +3,7 @@
 
 namespace Lav45\MockServer\Bin;
 
-use Lav45\MockServer\Bootstrap\FileSystem;
+use Lav45\MockServer\Bootstrap\Migrator;
 use Lav45\MockServer\Bootstrap\MockStorage;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -11,26 +11,14 @@ require __DIR__ . '/../vendor/autoload.php';
 $mocksPath = \getenv('MOCKS_PATH') ?: '/app/mocks';
 $mocksPath = \rtrim($mocksPath, '/');
 
-$migratePath = __DIR__ . '/../migrates';
-
 // ----------------------------------------------------------------------------
 
-$migrateList = FileSystem::getFileList($migratePath, static function (string $path): bool {
-    return \str_ends_with(\basename($path), '.php');
-});
-$migrates = [];
-foreach ($migrateList as $file) {
-    $migrates[] = include $file;
-}
-
+$migrate = Migrator::create(__DIR__ . '/../migrates');
 $mocksList = new MockStorage($mocksPath)->getFiles();
 foreach ($mocksList as $path => $data) {
     $result = [];
     foreach ($data as $item) {
-        foreach ($migrates as $migrate) {
-            $item = $migrate($item);
-        }
-        $result[] = $item;
+        $result[] = $migrate($item);
     }
     if ($data !== $result) {
         $content = \json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);

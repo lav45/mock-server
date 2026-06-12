@@ -10,7 +10,7 @@ use function Amp\File\read;
 final readonly class MockStorage
 {
     public function __construct(
-        private string          $watchDir,
+        private string          $mockStoragePath,
         private LoggerInterface $logger = new NullLogger(),
     ) {}
 
@@ -20,7 +20,7 @@ final readonly class MockStorage
     public function getFiles(): iterable
     {
         return $this->parseFiles(
-            $this->getFileList($this->watchDir),
+            $this->getFileList($this->mockStoragePath),
         );
     }
 
@@ -34,9 +34,9 @@ final readonly class MockStorage
         }
     }
 
-    private function getFileList(string $dir): array
+    private function getFileList(string $directory): iterable
     {
-        return FileSystem::getFileList($dir, fn(string $path): bool => $this->isFilteredFile($path));
+        return FileSystem::getFileList($directory, fn(string $path): bool => $this->isFilteredFile($path));
     }
 
     public function isFilteredFile(string $path): bool

@@ -41,7 +41,7 @@ final class FileSystemTest extends TestCase
         $this->assertSame([
             $this->tempDir . '/a.json' => $this->tempDir . '/a.json',
             $this->tempDir . '/b.json' => $this->tempDir . '/b.json',
-        ], $result);
+        ], \iterator_to_array($result));
     }
 
     public function testGetFileListWithAcceptingFilter(): void
@@ -53,7 +53,7 @@ final class FileSystemTest extends TestCase
 
         $this->assertSame([
             $this->tempDir . '/file.json' => $this->tempDir . '/file.json',
-        ], $result);
+        ], \iterator_to_array($result));
     }
 
     public function testGetFileListWithRejectingFilter(): void
@@ -62,7 +62,7 @@ final class FileSystemTest extends TestCase
 
         $result = FileSystem::getFileList($this->tempDir, static fn(string $path) => \str_ends_with($path, '.json'));
 
-        $this->assertSame([], $result);
+        $this->assertSame([], \iterator_to_array($result));
     }
 
     public function testGetFileListRecursive(): void
@@ -77,13 +77,13 @@ final class FileSystemTest extends TestCase
         $this->assertSame([
             $this->tempDir . '/root.json' => $this->tempDir . '/root.json',
             $subDir . '/nested.json' => $subDir . '/nested.json',
-        ], $result);
+        ], \iterator_to_array($result));
     }
 
     public function testGetFileListEmptyDirectory(): void
     {
         $result = FileSystem::getFileList($this->tempDir);
 
-        $this->assertSame([], $result);
+        $this->assertSame([], \iterator_to_array($result));
     }
 }
