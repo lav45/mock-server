@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Bootstrap\Watcher;
-
-use function Amp\File\isDirectory;
+namespace Lav45\MockServer\Bootstrap;
 
 final readonly class FileSystem
 {
@@ -11,9 +9,9 @@ final readonly class FileSystem
         $list = [];
         $items = \glob($directory . '/*');
         foreach ($items as $path) {
-            if (isDirectory($path)) {
+            if (\is_dir($path)) {
                 $list += self::getFileList($path, $filter);
-            } elseif ($filter === null || $filter($path) === true) {
+            } elseif (\is_file($path) && ($filter === null || $filter($path) === true)) {
                 $list[$path] = $path;
             }
         }

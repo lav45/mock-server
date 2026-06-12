@@ -1,29 +1,37 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Bootstrap\Watcher;
+namespace Lav45\MockServer\Bootstrap;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 use function Amp\File\read;
 
-final class MockStorage
+final readonly class MockStorage
 {
-    /** @var array<string,array<array>> */
-    private array $files;
-
     public function __construct(
-        string                           $watchDir,
-        private readonly LoggerInterface $logger = new NullLogger(),
-    ) {
-        $this->files = $this->parseFiles(
-            $this->getFileList($watchDir),
+        private string          $watchDir,
+        private LoggerInterface $logger = new NullLogger(),
+    ) {}
+
+    /**
+     * @return array<string,array<array>>
+     */
+    public function getFiles(): iterable
+    {
+        return $this->parseFiles(
+            $this->getFileList($this->watchDir),
         );
     }
 
-    public function getFiles(): array
+    /**
+     * @return array<array>
+     */
+    public function getData(): iterable
     {
-        return $this->files;
+        foreach ($this->getFiles() as $data) {
+            yield from $data;
+        }
     }
 
     private function getFileList(string $dir): array
@@ -48,21 +56,19 @@ final class MockStorage
 
     /**
      * @param string[] $files
-     * @return array<string,array<array>>
+     * @return array<array>
      */
-    private function parseFiles(iterable $files): array
+    private function parseFiles(iterable $files): iterable
     {
-        $result = [];
         foreach ($files as $file) {
             try {
-                $result[$file] = $this->parseFile($file);
+                yield $file => $this->parseFile($file);
                 $this->logger->debug("Parse: {$file}");
             } catch (\Throwable $exception) {
                 $this->logger->error($exception);
                 continue;
             }
         }
-        return $result;
     }
 
     private function parseFile(string $file): array

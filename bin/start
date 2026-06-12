@@ -13,8 +13,8 @@ use Lav45\MockServer\Bootstrap\Config;
 use Lav45\MockServer\Bootstrap\DispatcherFactory;
 use Lav45\MockServer\Bootstrap\ErrorHandler;
 use Lav45\MockServer\Bootstrap\LoggerFactory;
+use Lav45\MockServer\Bootstrap\MockStorage;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
-use Lav45\MockServer\Bootstrap\Watcher\MockStorage;
 use Lav45\MockServer\DataFactory\CollectionFactory;
 use Lav45\MockServer\DataFactory\ContentFactory;
 use Lav45\MockServer\DataFactory\DirectFactory;
@@ -104,7 +104,7 @@ use Lav45\MockServer\Responder\WebHookHandler;
         ),
     );
 
-    $mocks = new MockStorage($config->getMocksPath(), $logger)->getFiles();
+    $mocks = new MockStorage($config->getMocksPath(), $logger)->getData();
     $dispatcher = new DispatcherFactory($logger)->create($mocks);
     $errorHandler = new ErrorHandler();
     $reactor = new RouterRequestHandler(

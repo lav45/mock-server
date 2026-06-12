@@ -27,29 +27,25 @@ final class DispatcherFactoryTest extends TestCase
     {
         $data = [
             [
-                [
-                    'request' => [
-                        'method' => 'GET',
-                        'path' => '/users',
-                    ],
-                    'response' => ['id' => 1],
+                'request' => [
+                    'method' => 'GET',
+                    'path' => '/users',
                 ],
-                [
-                    'request' => [
-                        'method' => ['POST', 'PUT'],
-                        'path' => '/users',
-                    ],
-                    'response' => ['created' => true],
-                ],
+                'response' => ['id' => 1],
             ],
             [
-                [
-                    'request' => [
-                        'method' => 'DELETE',
-                        'path' => '/users/1',
-                    ],
-                    'response' => ['deleted' => true],
+                'request' => [
+                    'method' => ['POST', 'PUT'],
+                    'path' => '/users',
                 ],
+                'response' => ['created' => true],
+            ],
+            [
+                'request' => [
+                    'method' => 'DELETE',
+                    'path' => '/users/1',
+                ],
+                'response' => ['deleted' => true],
             ],
         ];
 
@@ -113,20 +109,18 @@ final class DispatcherFactoryTest extends TestCase
     {
         $data = [
             [
-                [
-                    'request' => [
-                        'method' => 'GET',
-                        'path' => '/valid',
-                    ],
-                    'response' => 'ok',
+                'request' => [
+                    'method' => 'GET',
+                    'path' => '/valid',
                 ],
-                [
-                    'request' => [
-                        'method' => 'GET',
-                        'path' => 'invalid',
-                    ],
-                    'response' => 'should not be added',
+                'response' => 'ok',
+            ],
+            [
+                'request' => [
+                    'method' => 'GET',
+                    'path' => 'invalid',
                 ],
+                'response' => 'should not be added',
             ],
         ];
 
@@ -172,13 +166,11 @@ final class DispatcherFactoryTest extends TestCase
 
         $data = [
             [
-                [
-                    'request' => [
-                        'method' => 'GET',
-                        'path' => '/test',
-                    ],
-                    'response' => 'ok',
+                'request' => [
+                    'method' => 'GET',
+                    'path' => '/test',
                 ],
+                'response' => 'ok',
             ],
         ];
 

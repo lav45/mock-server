@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap\Watcher;
+namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
-use Lav45\MockServer\Bootstrap\Watcher\FileSystem;
+use Lav45\MockServer\Bootstrap\FileSystem;
 use PHPUnit\Framework\TestCase;
 
 use function Amp\File\createDirectory;

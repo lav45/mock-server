@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap\Watcher;
+namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
-use Lav45\MockServer\Bootstrap\Watcher\MockStorage;
+use Lav45\MockServer\Bootstrap\MockStorage;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,7 @@ use function Amp\File\deleteDirectory;
 use function Amp\File\deleteFile;
 use function Amp\File\write;
 
-final class FileStorageTest extends TestCase
+final class MockStorageTest extends TestCase
 {
     #[DataProvider('fileFilterDataProvider')]
     public function testGetFileFilter(string $filePath, bool $expectedResult, string $message): void
@@ -51,10 +51,14 @@ final class FileStorageTest extends TestCase
             $storage = new MockStorage($tempDir, $logger);
 
             $this->assertSame(
-                [['request' => ['path' => '/']]],
-                $storage->getFiles()[$filePath],
+                [$filePath => [['request' => ['path' => '/']]]],
+                \iterator_to_array($storage->getFiles()),
             );
-            $this->assertSame(["Parse: {$filePath}"], $logger->getMessages('debug'));
+            $this->assertSame(
+                [['request' => ['path' => '/']]],
+                \iterator_to_array($storage->getData()),
+            );
+            $this->assertSame(["Parse: {$filePath}", "Parse: {$filePath}"], $logger->getMessages('debug'));
         } finally {
             deleteFile($filePath);
             deleteDirectory($tempDir);
@@ -73,8 +77,9 @@ final class FileStorageTest extends TestCase
             $logger = new FakeLogger();
             $storage = new MockStorage($tempDir, $logger);
 
-            $this->assertArrayNotHasKey($filePath, $storage->getFiles());
-            $this->assertCount(1, $logger->getMessages('error'));
+            $this->assertSame([], \iterator_to_array($storage->getFiles()));
+            $this->assertSame([], \iterator_to_array($storage->getData()));
+            $this->assertCount(2, $logger->getMessages('error'));
         } finally {
             deleteFile($filePath);
             deleteDirectory($tempDir);
