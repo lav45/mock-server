@@ -11,13 +11,4 @@ final readonly class Conditions
     {
         $this->items = $items;
     }
-
-    public static function fromArray(array $data): self
-    {
-        $items = [];
-        foreach ($data as $condition) {
-            $items[] = Condition::fromArray($condition);
-        }
-        return new self(...$items);
-    }
 }

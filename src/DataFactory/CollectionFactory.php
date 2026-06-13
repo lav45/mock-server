@@ -12,11 +12,20 @@ use Yiisoft\Data\Reader\Iterable\IterableDataReader;
 
 final readonly class CollectionFactory
 {
-    public const string TYPE = 'data';
+    private const string TYPE = 'data';
+
+    public function __construct(
+        private DataBuilder $dataBuilder,
+    ) {}
+
+    public function has(array $data): bool
+    {
+        return isset($data['type']) && $data['type'] === self::TYPE;
+    }
 
     public function create(Request $request, VariableParser $parser, array $data): ContentResponse
     {
-        $factory = new DataBuilder($parser, $data);
+        $factory = $this->dataBuilder->withData($data)->withParser($parser);
 
         $dataItems = $factory->createItems();
 
@@ -58,7 +67,7 @@ final readonly class CollectionFactory
             ],
         ]);
 
-        $factory = new DataBuilder($parser, $data);
+        $factory = $factory->withParser($parser);
         $headers = $factory->createHeaders(['content-type' => 'application/json']);
 
         $result = $data['result'] ?? '{{response.items}}';

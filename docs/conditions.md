@@ -14,7 +14,7 @@ fallback.
         },
         "conditions": [
             {
-                "match": ["request.body.amount", ">", 1000],
+                "match": [">", "{{request.body.amount}}", 1000],
                 "response": {
                     "status": 402,
                     "body": {
@@ -40,26 +40,32 @@ fallback.
 A `match` is an **expression** — either a single condition or a logical combination of conditions:
 
 ```
-expr = [field, operator, value]
-      | ["exists", field]
+expr = [operator, "{{field}}", value]
+      | ["exists", "{{field}}"]
       | ["and", expr, expr, ...]
       | ["or", expr, expr, ...]
       | ["not", expr]
 ```
 
+Every expression starts with the operator. For comparisons the field comes second and the value third; the logical
+operators (`and`/`or`/`not`) and the unary `exists`/`empty` follow the same operator-first shape.
+
 ### Field references
 
-| Field                    | What it targets                                             |
-|--------------------------|-------------------------------------------------------------|
-| `request.body.<key>`     | Parsed request body (JSON, form-encoded, plain text)        |
-| `request.query.<key>`    | URL query parameters                                        |
-| `request.headers.<name>` | Request headers (case-insensitive names)                    |
-| `request.params.<name>`  | Path parameters captured by the route pattern (`{id}`, etc) |
-| `request.method`         | HTTP method string (`GET`, `POST`, …)                       |
-| `request.path`           | Full request path string (e.g. `/api/users/42`)             |
-| `env.<key>`              | Value from the mock's `env` block                           |
+A field is written as a template `"{{...}}"` — the same syntax used everywhere else in a mock. It is resolved against
+the incoming request (and `env`) at match time; if it resolves to nothing, the field is treated as absent.
 
-Keys in `request.body` and `request.query` support dot-notation for nested properties: `"request.body.user.address.city"`.
+| Field                        | What it targets                                             |
+|------------------------------|-------------------------------------------------------------|
+| `{{request.body.<key>}}`     | Parsed request body (JSON, form-encoded, plain text)        |
+| `{{request.query.<key>}}`    | URL query parameters                                        |
+| `{{request.headers.<name>}}` | Request headers (case-insensitive names)                    |
+| `{{request.params.<name>}}`  | Path parameters captured by the route pattern (`{id}`, etc) |
+| `{{request.method}}`         | HTTP method string (`GET`, `POST`, …)                       |
+| `{{request.path}}`           | Full request path string (e.g. `/api/users/42`)             |
+| `{{env.<key>}}`              | Value from the mock's `env` block                           |
+
+Keys in `request.body` and `request.query` support dot-notation for nested properties: `"{{request.body.user.address.city}}"`.
 
 ### Values
 
@@ -73,38 +79,38 @@ Use template syntax to reference dynamic values:
 
 ### Operators
 
-| Operator   | Description                                      | Syntax                         |
-|------------|--------------------------------------------------|--------------------------------|
-| `=`        | Strict equality                                  | `[field, "=", value]`          |
-| `!=`       | Not equal                                        | `[field, "!=", value]`         |
-| `>`        | Greater than                                     | `[field, ">", number]`         |
-| `>=`       | Greater than or equal                            | `[field, ">=", number]`        |
-| `<`        | Less than                                        | `[field, "<", number]`         |
-| `<=`       | Less than or equal                               | `[field, "<=", number]`        |
-| `contains` | Substring present / array includes value         | `[field, "contains", string]`  |
-| `~`        | Regex match (no leading/trailing slashes needed) | `[field, "~", regex]`          |
-| `in`       | Value is one of the listed items                 | `[field, "in", [v1, v2, ...]]` |
-| `exists`   | Field is present                                 | `["exists", field]`            |
-| `empty`    | Value is `null` or empty string                  | `["empty", field]`             |
+| Operator   | Description                                      | Syntax                               |
+|------------|--------------------------------------------------|--------------------------------------|
+| `=`        | Strict equality                                  | `["=", "{{field}}", value]`          |
+| `!=`       | Not equal                                        | `["!=", "{{field}}", value]`         |
+| `>`        | Greater than                                     | `[">", "{{field}}", number]`         |
+| `>=`       | Greater than or equal                            | `[">=", "{{field}}", number]`        |
+| `<`        | Less than                                        | `["<", "{{field}}", number]`         |
+| `<=`       | Less than or equal                               | `["<=", "{{field}}", number]`        |
+| `contains` | Substring present / array includes value         | `["contains", "{{field}}", string]`  |
+| `~`        | Regex match (no leading/trailing slashes needed) | `["~", "{{field}}", regex]`          |
+| `in`       | Value is one of the listed items                 | `["in", "{{field}}", [v1, v2, ...]]` |
+| `exists`   | Field is present                                 | `["exists", "{{field}}"]`            |
+| `empty`    | Value is `null` or empty string                  | `["empty", "{{field}}"]`             |
 
 To negate any expression, wrap it in `["not", ...]`:
 
 ```json
 [
-    ["not", ["request.body.tag", "contains", "foo"]],
-    ["not", ["request.params.id", "~", "^test-"]],
-    ["not", ["request.body.currency", "in", ["USD", "EUR"]]]
+    ["not", ["contains", "{{request.body.tag}}", "foo"]],
+    ["not", ["~", "{{request.params.id}}", "^test-"]],
+    ["not", ["in", "{{request.body.currency}}", ["USD", "EUR"]]]
 ]
 ```
 
 **Field presence and emptiness** use the standard operators:
 
-| Intent                      | Expression                   |
-|-----------------------------|------------------------------|
-| Field is present            | `["exists", field]`          |
-| Field is absent             | `["not", ["exists", field]]` |
-| Value is `null` or `""`     | `["empty", field]`           |
-| Value is not `null` or `""` | `["not", ["empty", field]]`  |
+| Intent                      | Expression                         |
+|-----------------------------|------------------------------------|
+| Field is present            | `["exists", "{{field}}"]`          |
+| Field is absent             | `["not", ["exists", "{{field}}"]]` |
+| Value is `null` or `""`     | `["empty", "{{field}}"]`           |
+| Value is not `null` or `""` | `["not", ["empty", "{{field}}"]]`  |
 
 ---
 
@@ -133,9 +139,9 @@ Omit the key entirely to fall back to the root-level `webhooks`.
         "conditions": [
             {
                 "match": ["and",
-                    ["request.body.amount", ">", 1000],
-                    ["request.body.currency", "in", ["USD", "EUR"]],
-                    ["request.headers.x-role", "!=", "premium"]
+                    [">", "{{request.body.amount}}", 1000],
+                    ["in", "{{request.body.currency}}", ["USD", "EUR"]],
+                    ["!=", "{{request.headers.x-role}}", "premium"]
                 ],
                 "response": {
                     "status": 402,
@@ -157,8 +163,8 @@ Omit the key entirely to fall back to the root-level `webhooks`.
         "conditions": [
             {
                 "match": ["or",
-                    ["request.query.dry_run", "=", "true"],
-                    ["exists", "request.headers.x-dry-run"]
+                    ["=", "{{request.query.dry_run}}", "true"],
+                    ["exists", "{{request.headers.x-dry-run}}"]
                 ],
                 "response": {
                     "status": 200,
@@ -181,7 +187,7 @@ Omit the key entirely to fall back to the root-level `webhooks`.
     {
         "conditions": [
             {
-                "match": ["request.params.id", "~", "^test-"],
+                "match": ["~", "{{request.params.id}}", "^test-"],
                 "response": {
                     "status": 200,
                     "body": {
@@ -201,7 +207,7 @@ Omit the key entirely to fall back to the root-level `webhooks`.
     {
         "conditions": [
             {
-                "match": ["request.body.user.address.city", "=", "Moscow"],
+                "match": ["=", "{{request.body.user.address.city}}", "Munichen"],
                 "response": {
                     "status": 200,
                     "body": {
@@ -224,7 +230,7 @@ Omit the key entirely to fall back to the root-level `webhooks`.
         },
         "conditions": [
             {
-                "match": ["request.body.amount", ">", "{{env.limit}}"],
+                "match": [">", "{{request.body.amount}}", "{{env.limit}}"],
                 "response": {
                     "status": 402,
                     "body": {
@@ -248,17 +254,19 @@ Logical operators compose freely — nest them to any depth:
             {
                 "match": ["or",
                     ["and",
-                        ["request.body.amount", ">", 1000],
-                        ["request.body.currency", "in", ["USD", "EUR"]]
+                        [">", "{{request.body.amount}}", 1000],
+                        ["in", "{{request.body.currency}}", ["USD", "EUR"]]
                     ],
                     ["and",
-                        ["request.headers.x-role", "!=", "premium"],
-                        ["request.headers.x-banned", "=", "true"]
+                        ["!=", "{{request.headers.x-role}}", "premium"],
+                        ["=", "{{request.headers.x-banned}}", "true"]
                     ]
                 ],
                 "response": {
                     "status": 402,
-                    "body": { "error": "limit exceeded" }
+                    "body": {
+                        "error": "limit exceeded"
+                    }
                 }
             }
         ]
@@ -285,9 +293,9 @@ Reads as: `(request.body.amount > 1000 AND request.body.currency IN [USD, EUR]) 
         "conditions": [
             {
                 "match": ["and",
-                    ["request.body.amount", ">", 1000],
-                    ["request.body.currency", "in", ["USD", "EUR"]],
-                    ["request.headers.x-role", "!=", "premium"]
+                    [">", "{{request.body.amount}}", 1000],
+                    ["in", "{{request.body.currency}}", ["USD", "EUR"]],
+                    ["!=", "{{request.headers.x-role}}", "premium"]
                 ],
                 "response": {
                     "status": 402,
@@ -298,8 +306,8 @@ Reads as: `(request.body.amount > 1000 AND request.body.currency IN [USD, EUR]) 
             },
             {
                 "match": ["or",
-                    ["request.query.dry_run", "=", "true"],
-                    ["exists", "request.headers.x-dry-run"]
+                    ["=", "{{request.query.dry_run}}", "true"],
+                    ["exists", "{{request.headers.x-dry-run}}"]
                 ],
                 "response": {
                     "status": 200,
@@ -310,7 +318,7 @@ Reads as: `(request.body.amount > 1000 AND request.body.currency IN [USD, EUR]) 
                 "webhooks": []
             },
             {
-                "match": ["request.params.id", "~", "^test-"],
+                "match": ["~", "{{request.params.id}}", "^test-"],
                 "response": {
                     "status": 200,
                     "body": {

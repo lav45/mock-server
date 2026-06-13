@@ -8,26 +8,27 @@ use Lav45\MockServer\DataFactory\DataBuilder;
 
 use function Amp\delay;
 
-final readonly class ThrottlingMiddleware
+final readonly class ThrottlingMiddleware implements Middleware
 {
-    public function __invoke(Request $request, \Closure $next): Response
+    public function __construct(
+        private DataBuilder $dataBuilder,
+    ) {}
+
+    public function process(Request $request, MiddlewareHandler $next): Response
     {
         $data = $request->getAttribute('data')['response'] ?? [];
         if (isset($data['delay']) === false) {
-            return $next($request);
+            return $next->handle($request);
         }
 
-        $factory = new DataBuilder(
-            parser: $request->getAttribute('parser'),
-            data: $data,
-        );
+        $factory = $this->dataBuilder->withData($data);
         $delay = $factory->createDelay()->value;
         if ($delay === 0.0) {
-            return $next($request);
+            return $next->handle($request);
         }
 
         $start = \microtime(true);
-        $response = $next($request);
+        $response = $next->handle($request);
         $end = \microtime(true);
 
         $timeout = $delay - ($end - $start);

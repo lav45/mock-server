@@ -2,38 +2,41 @@
 
 namespace Lav45\MockServer\DataFactory;
 
+use Lav45\MockServer\Domain\WebHook;
 use Lav45\MockServer\Domain\WebHooks;
-use Lav45\MockServer\Domain\WebHooks\WebHook;
-use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class WebHooksFactory
 {
-    public function create(VariableParser $parser, array $data): WebHooks
+    private const string TYPE = 'webhooks';
+
+    public function __construct(
+        private DataBuilder $dataBuilder,
+    ) {}
+
+    public function has(array $data): bool
+    {
+        return isset($data[self::TYPE]);
+    }
+
+    public function create(array $data): WebHooks
     {
         $items = [];
-        foreach ($data as $webHook) {
-            $items[] = $this->createItem($parser, $webHook);
+        foreach ($data[self::TYPE] as $webHook) {
+            $items[] = $this->createItem($webHook);
         }
         return new WebHooks(...$items);
     }
 
-    private function createItem(VariableParser $parser, array $item): WebHook
+    private function createItem(array $item): WebHook
     {
-        $factory = new DataBuilder($parser, $item);
-
-        $delay = $factory->createDelay();
-        $url = $factory->createUrl();
-        $method = $factory->createMethod();
-
-        $headers = $factory->createHeaders();
-        $body = $factory->createBody();
+        $factory = $this->dataBuilder->withData($item);
 
         return new WebHook(
-            delay: $delay,
-            url: $url,
-            method: $method,
-            headers: $headers,
-            body: $body,
+            delay: $factory->createDelay(),
+            url: $factory->createUrl(),
+            method: $factory->createMethod(),
+            headers: $factory->createHeaders(),
+            body: $factory->createBody(),
         );
     }
 }

@@ -5,11 +5,11 @@ namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\ContentFactory;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\Middleware\ContentMiddleware;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Responder\ContentResponder;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ final class ContentMiddlewareTest extends TestCase
 {
     private function createMiddleware(): ContentMiddleware
     {
-        return new ContentMiddleware(new ContentFactory(), new ContentResponder());
+        return new ContentMiddleware(new ContentFactory(new DataBuilder()), new ContentResponder());
     }
 
     private function createRequest(): Request
@@ -28,20 +28,9 @@ final class ContentMiddlewareTest extends TestCase
         return new Request(new FakeHttpDriverClient(), 'GET', Http::new('https://localhost/'));
     }
 
-    private function createParser(array $data = []): VariableParser
+    private function nextReturning(int $status): MiddlewareHandler
     {
-        $parser = new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
-        return $data ? $parser->withData($data) : $parser;
-    }
-
-    private function nextReturning(int $status): \Closure
-    {
-        return static fn(Request $r): Response => new Response($status);
+        return new CallableHandler(static fn(Request $r): Response => new Response($status));
     }
 
     private function readBody(Response $response): string
@@ -54,11 +43,9 @@ final class ContentMiddlewareTest extends TestCase
     public function testPassesThroughToNextWhenResponseTypeDoesNotMatch(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', 'proxy');
-        $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', []);
+        $request->setAttribute('data', ['response' => ['type' => 'proxy']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(418, $response->getStatus());
     }
@@ -66,11 +53,9 @@ final class ContentMiddlewareTest extends TestCase
     public function testDoesNotCallNextWhenResponseTypeMatches(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', []);
+        $request->setAttribute('data', ['response' => ['type' => 'content']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertNotSame(418, $response->getStatus());
     }
@@ -80,11 +65,9 @@ final class ContentMiddlewareTest extends TestCase
     public function testReturnsDefaultResponseWithEmptyData(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', []);
+        $request->setAttribute('data', ['response' => ['type' => 'content']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('', $this->readBody($response));
@@ -93,16 +76,15 @@ final class ContentMiddlewareTest extends TestCase
     public function testReturnsJsonResponse(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'response' => [
+                'type' => 'content',
                 'headers' => ['content-type' => 'application/json'],
                 'body' => ['id' => 1, 'name' => 'test'],
             ],
         ]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('application/json', $response->getHeader('content-type'));
@@ -112,13 +94,11 @@ final class ContentMiddlewareTest extends TestCase
     public function testReturnsTextResponse(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
-            'response' => ['body' => 'hello world'],
+            'response' => ['type' => 'content', 'body' => 'hello world'],
         ]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('hello world', $this->readBody($response));
@@ -127,13 +107,11 @@ final class ContentMiddlewareTest extends TestCase
     public function testReturnsCustomStatus(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
-            'response' => ['status' => 201, 'body' => ['created' => true]],
+            'response' => ['type' => 'content', 'status' => 201, 'body' => ['created' => true]],
         ]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(201, $response->getStatus());
     }
@@ -143,14 +121,12 @@ final class ContentMiddlewareTest extends TestCase
     public function testUsesResponseKeyFromDataAttribute(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'env' => ['ignored' => true],
-            'response' => ['body' => 'from response key'],
+            'response' => ['type' => 'content', 'body' => 'from response key'],
         ]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame('from response key', $this->readBody($response));
     }
@@ -158,29 +134,12 @@ final class ContentMiddlewareTest extends TestCase
     public function testDefaultsToEmptyResponseWhenResponseKeyMissing(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['env' => ['x' => '1']]);
+        $request->setAttribute('data', ['env' => ['x' => '1'], 'response' => ['type' => 'content']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('', $this->readBody($response));
     }
 
-    public function testUsesParserFromRequestAttribute(): void
-    {
-        $parser = $this->createParser(['env' => ['greeting' => 'hi']]);
-
-        $request = $this->createRequest();
-        $request->setAttribute('responseType', ContentFactory::TYPE);
-        $request->setAttribute('parser', $parser);
-        $request->setAttribute('data', [
-            'response' => ['body' => '{env.greeting}'],
-        ]);
-
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
-
-        $this->assertSame('hi', $this->readBody($response));
-    }
 }

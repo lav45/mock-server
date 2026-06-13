@@ -7,29 +7,24 @@ use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
 use Lav45\MockServer\Responder\WebHookHandler;
 
-final readonly class WebHookMiddleware
+final readonly class WebHookMiddleware implements Middleware
 {
     public function __construct(
         private WebHooksFactory $factory,
         private WebHookHandler  $handler,
     ) {}
 
-    public function __invoke(Request $request, \Closure $next): Response
+    public function process(Request $request, MiddlewareHandler $next): Response
     {
-        $response = $next($request);
+        $response = $next->handle($request);
 
-        $data = $request->getAttribute('data')['webhooks'] ?? [];
-        if (empty($data)) {
+        $data = $request->getAttribute('data');
+        if ($this->factory->has($data) === false) {
             return $response;
         }
-
         $this->handler->send(
-            $this->factory->create(
-                parser: $request->getAttribute('parser'),
-                data: $data,
-            ),
+            $this->factory->create($data),
         );
-
         return $response;
     }
 }

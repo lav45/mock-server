@@ -6,19 +6,23 @@ use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Response\ProxyResponse;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
-use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class ProxyFactory
 {
-    public const string TYPE = 'proxy';
+    private const string TYPE = 'proxy';
 
     public function __construct(
-        private array $filterHeaders = [],
+        private DataBuilder $dataBuilder,
     ) {}
 
-    public function create(Request $request, VariableParser $parser, array $data): ProxyResponse
+    public function has(array $data): bool
     {
-        $factory = new DataBuilder($parser, $data, $this->filterHeaders);
+        return isset($data['type']) && $data['type'] === self::TYPE;
+    }
+
+    public function create(Request $request, array $data): ProxyResponse
+    {
+        $factory = $this->dataBuilder->withData($data);
         $requestAdapter = new RequestAdapter($request);
 
         $url = $factory->createUrl($requestAdapter->getQuery());

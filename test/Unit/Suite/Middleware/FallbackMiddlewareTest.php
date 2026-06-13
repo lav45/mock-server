@@ -3,7 +3,10 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
 use Amp\Http\Server\Request;
+use Amp\Http\Server\Response;
 use Lav45\MockServer\Middleware\FallbackMiddleware;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use League\Uri\Http;
@@ -18,10 +21,15 @@ final class FallbackMiddlewareTest extends TestCase
         return $request;
     }
 
+    private function next(): MiddlewareHandler
+    {
+        return new CallableHandler(static fn(Request $request): Response => new Response(500));
+    }
+
     public function testReturns404(): void
     {
         $middleware = new FallbackMiddleware();
-        $response = $middleware($this->createRequest());
+        $response = $middleware->process($this->createRequest(), $this->next());
 
         $this->assertSame(404, $response->getStatus());
     }
@@ -30,7 +38,7 @@ final class FallbackMiddlewareTest extends TestCase
     {
         $logger = new FakeLogger();
         $middleware = new FallbackMiddleware($logger);
-        $middleware($this->createRequest(['response' => ['text' => 'hi']]));
+        $middleware->process($this->createRequest(['response' => ['text' => 'hi']]), $this->next());
 
         $errors = $logger->getMessages('error');
         $this->assertCount(1, $errors);
@@ -42,7 +50,7 @@ final class FallbackMiddlewareTest extends TestCase
     {
         $logger = new FakeLogger();
         $middleware = new FallbackMiddleware($logger);
-        $middleware($this->createRequest());
+        $middleware->process($this->createRequest(), $this->next());
 
         $errors = $logger->getMessages('error');
         $this->assertCount(1, $errors);

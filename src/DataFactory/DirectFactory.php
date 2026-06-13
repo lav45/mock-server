@@ -6,25 +6,29 @@ use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Direct;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
-use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class DirectFactory
 {
-    public const string TYPE = 'direct';
+    private const string TYPE = 'direct';
 
     public function __construct(
-        private array $filterHeaders = [],
+        private DataBuilder $dataBuilder,
     ) {}
 
-    public function create(Request $request, VariableParser $parser, array $data): Direct
+    public function has(array $data): bool
     {
-        $factory = new DataBuilder($parser, $data, $this->filterHeaders);
+        return isset($data[self::TYPE]);
+    }
+
+    public function create(Request $request, array $data): Direct
+    {
+        $factory = $this->dataBuilder->withData($data[self::TYPE]);
         $requestAdapter = new RequestAdapter($request);
 
         return new Direct(
             url: $factory->createUrl($requestAdapter->getQuery()),
             method: new HttpMethod($request->getMethod()),
-            headers: $factory->createHeaders(appendHeaders: $requestAdapter->getHeaders()),
+            headers: $factory->createHeaders($requestAdapter->getHeaders()),
             body: Body::new($requestAdapter->getBody()),
         );
     }

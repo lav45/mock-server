@@ -4,9 +4,12 @@ namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
+use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\ThrottlingMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
@@ -30,9 +33,9 @@ final class ThrottlingMiddlewareTest extends TestCase
         return $request;
     }
 
-    private function nextReturning(int $status): \Closure
+    private function nextReturning(int $status): MiddlewareHandler
     {
-        return static fn(Request $r): Response => new Response($status);
+        return new CallableHandler(static fn(Request $r): Response => new Response($status));
     }
 
     // --- Passthrough (synchronous) ---
@@ -41,8 +44,8 @@ final class ThrottlingMiddlewareTest extends TestCase
     {
         $request = $this->createRequest(['response' => ['text' => 'ok']]);
 
-        $middleware = new ThrottlingMiddleware();
-        $response = $middleware($request, $this->nextReturning(200));
+        $middleware = new ThrottlingMiddleware(new DataBuilder());
+        $response = $middleware->process($request, $this->nextReturning(200));
 
         $this->assertSame(200, $response->getStatus());
     }
@@ -51,8 +54,8 @@ final class ThrottlingMiddlewareTest extends TestCase
     {
         $request = $this->createRequest(['response' => ['delay' => 0.0]]);
 
-        $middleware = new ThrottlingMiddleware();
-        $response = $middleware($request, $this->nextReturning(200));
+        $middleware = new ThrottlingMiddleware(new DataBuilder());
+        $response = $middleware->process($request, $this->nextReturning(200));
 
         $this->assertSame(200, $response->getStatus());
     }
@@ -61,8 +64,8 @@ final class ThrottlingMiddlewareTest extends TestCase
     {
         $request = $this->createRequest([]);
 
-        $middleware = new ThrottlingMiddleware();
-        $response = $middleware($request, $this->nextReturning(200));
+        $middleware = new ThrottlingMiddleware(new DataBuilder());
+        $response = $middleware->process($request, $this->nextReturning(200));
 
         $this->assertSame(200, $response->getStatus());
     }
@@ -76,8 +79,8 @@ final class ThrottlingMiddlewareTest extends TestCase
         };
 
         $request = $this->createRequest(['response' => ['text' => 'ok']]);
-        $middleware = new ThrottlingMiddleware();
-        $middleware($request, $next);
+        $middleware = new ThrottlingMiddleware(new DataBuilder());
+        $middleware->process($request, new CallableHandler($next));
 
         $this->assertTrue($called);
     }
@@ -90,8 +93,8 @@ final class ThrottlingMiddlewareTest extends TestCase
 
         $capturedResponse = null;
         async(function () use ($request, &$capturedResponse): void {
-            $middleware = new ThrottlingMiddleware();
-            $capturedResponse = $middleware($request, $this->nextReturning(201));
+            $middleware = new ThrottlingMiddleware(new DataBuilder());
+            $capturedResponse = $middleware->process($request, $this->nextReturning(201));
         });
         EventLoop::run();
 
@@ -111,8 +114,8 @@ final class ThrottlingMiddlewareTest extends TestCase
 
         $capturedResponse = null;
         async(function () use ($request, $slowNext, &$capturedResponse): void {
-            $middleware = new ThrottlingMiddleware();
-            $capturedResponse = $middleware($request, $slowNext);
+            $middleware = new ThrottlingMiddleware(new DataBuilder());
+            $capturedResponse = $middleware->process($request, new CallableHandler($slowNext));
         });
         EventLoop::run();
 

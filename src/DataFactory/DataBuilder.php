@@ -8,24 +8,48 @@ use Lav45\MockServer\Domain\ValueObject\HttpHeaders;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
 use Lav45\MockServer\Domain\ValueObject\HttpStatus;
 use Lav45\MockServer\Domain\ValueObject\Url;
-use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Parser\InlineParser;
 
 use function Amp\File\read;
 
-final readonly class DataBuilder
+final class DataBuilder
 {
+    private InlineParser|null $parser = null;
+
+    private array $data = [];
+
     public function __construct(
-        private VariableParser $parser,
-        private array          $data,
-        private array          $filterHeaders = [],
+        private readonly array $filterHeaders = [],
     ) {}
+
+    public function withParser(InlineParser $parser): self
+    {
+        return clone($this, [
+            'parser' => $parser,
+        ]);
+    }
+
+    public function withData(array $data): self
+    {
+        return clone($this, [
+            'data' => $data,
+        ]);
+    }
+
+    private function resolve(mixed $value): mixed
+    {
+        if ($this->parser === null) {
+            return $value;
+        }
+        return $this->parser->replace($value);
+    }
 
     public function createDelay(): Delay
     {
         if (isset($this->data['delay'])) {
             $value = $this->data['delay'];
             if (\is_string($value)) {
-                $value = (float)$this->parser->replace($value);
+                $value = (float)$this->resolve($value);
             }
         } else {
             $value = 0.0;
@@ -38,7 +62,7 @@ final readonly class DataBuilder
         if (isset($this->data['status'])) {
             $value = $this->data['status'];
             if (\is_string($value)) {
-                $value = (int)$this->parser->replace($value);
+                $value = (int)$this->resolve($value);
             }
         } else {
             $value = 200;
@@ -51,7 +75,7 @@ final readonly class DataBuilder
         if (isset($this->data['headers'])) {
             $headers = $this->data['headers'];
             if ($headers) {
-                $headers = $this->parser->replace($headers);
+                $headers = $this->resolve($headers);
             }
         } else {
             $headers = [];
@@ -72,7 +96,7 @@ final readonly class DataBuilder
             return null;
         }
         return Body::new(
-            $this->parser->replace(
+            $this->resolve(
                 $this->data['content'],
             ),
         );
@@ -81,7 +105,7 @@ final readonly class DataBuilder
     public function createBody(): Body
     {
         if (isset($this->data['body'])) {
-            $body = $this->parser->replace($this->data['body']);
+            $body = $this->resolve($this->data['body']);
         } else {
             $body = '';
         }
@@ -91,7 +115,7 @@ final readonly class DataBuilder
     public function createUrl(array $get = []): Url
     {
         if (isset($this->data['url'])) {
-            $value = $this->parser->replace($this->data['url']);
+            $value = $this->resolve($this->data['url']);
         } else {
             $value = '';
         }
@@ -126,20 +150,20 @@ final readonly class DataBuilder
     {
         if (isset($this->data['file'])) {
             $content = read(
-                $this->parser->replace($this->data['file']),
+                $this->resolve($this->data['file']),
             );
             $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
         } else {
             $items = $this->data['items'] ?? [];
         }
-        return $this->parser->replace($items);
+        return $this->resolve($items);
     }
 
     public function createMethod(): HttpMethod
     {
         if (isset($this->data['method'])) {
             $value = \strtoupper(
-                $this->parser->replace($this->data['method']),
+                $this->resolve($this->data['method']),
             );
         } else {
             $value = 'POST';

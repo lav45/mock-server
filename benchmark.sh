@@ -49,6 +49,8 @@ fi
 
 while ! curl -s "$URL" > /dev/null; do sleep 1; done
 
+echo "Benchmark started with $CONNECTIONS connections for $DURATION"
+
 docker run --rm --init $DOCKER_ARG --name test_runner mock-server:tool \
   hey -c "$CONNECTIONS" -z "$DURATION" "$URL"
 

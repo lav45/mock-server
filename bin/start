@@ -17,10 +17,11 @@ use Lav45\MockServer\Bootstrap\Migrator;
 use Lav45\MockServer\Bootstrap\MockStorage;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
 use Lav45\MockServer\DataFactory\CollectionFactory;
+use Lav45\MockServer\DataFactory\Condition\ConditionFactory;
 use Lav45\MockServer\DataFactory\Condition\ConditionHandler;
 use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
-use Lav45\MockServer\DataFactory\ConditionFactory;
 use Lav45\MockServer\DataFactory\ContentFactory;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\DirectFactory;
 use Lav45\MockServer\DataFactory\ParserFactory;
 use Lav45\MockServer\DataFactory\ProxyFactory;
@@ -30,10 +31,9 @@ use Lav45\MockServer\Middleware\ConditionMiddleware;
 use Lav45\MockServer\Middleware\ContentMiddleware;
 use Lav45\MockServer\Middleware\DirectMiddleware;
 use Lav45\MockServer\Middleware\FallbackMiddleware;
-use Lav45\MockServer\Middleware\ParserMiddleware;
-use Lav45\MockServer\Middleware\Pipeline;
+use Lav45\MockServer\Middleware\MiddlewarePipeline;
+use Lav45\MockServer\Middleware\PrepareMiddleware;
 use Lav45\MockServer\Middleware\ProxyMiddleware;
-use Lav45\MockServer\Middleware\ResponseTypeMiddleware;
 use Lav45\MockServer\Middleware\ThrottlingMiddleware;
 use Lav45\MockServer\Middleware\WebHookMiddleware;
 use Lav45\MockServer\Parser\DateParse;
@@ -69,52 +69,55 @@ use Lav45\MockServer\Responder\WebHookHandler;
     );
 
     $httpClient = new HttpClientFactory($logger)->create();
+    $dataBuilder = new DataBuilder($config->getFilterHeaders());
 
-    $requestHandler = new ClosureRequestHandler(
-        Pipeline::create(
-            new ParserMiddleware(
-                factory: new ParserFactory($parser),
-            ),
-            new ConditionMiddleware(
-                factory: new ConditionFactory(),
-                handler: new ConditionHandler(
-                    new SpecificationFactory(),
-                ),
-            ),
-            new DirectMiddleware(
-                factory: new DirectFactory($config->getFilterHeaders()),
-                handler: new DirectHandler($httpClient->withLabel('Direct')),
-            ),
-            new ResponseTypeMiddleware(ContentFactory::TYPE),
-            new WebHookMiddleware(
-                factory: new WebHooksFactory(),
-                handler: new WebHookHandler(
-                    httpClient: $httpClient->withLabel('WebHook'),
-                    logger: $logger,
-                ),
-            ),
-            new ThrottlingMiddleware(),
-            new ContentMiddleware(
-                factory: new ContentFactory(),
-                responder: new ContentResponder(),
-            ),
-            new ProxyMiddleware(
-                factory: new ProxyFactory($config->getFilterHeaders()),
-                responder: new ProxyResponder(
-                    httpClient: $httpClient->withLabel('Proxy'),
-                ),
-            ),
-            new CollectionMiddleware(
-                factory: new CollectionFactory(),
-                responder: new ContentResponder(),
-            ),
-            new FallbackMiddleware($logger),
+    $pipeline = new MiddlewarePipeline(
+        new PrepareMiddleware(
+            parserFactory: new ParserFactory($parser),
         ),
+        new ConditionMiddleware(
+            factory: new ConditionFactory(new SpecificationFactory()),
+            handler: new ConditionHandler(),
+        ),
+        new DirectMiddleware(
+            factory: new DirectFactory($dataBuilder),
+            handler: new DirectHandler(
+                httpClient: $httpClient->withLabel('Direct'),
+                logger: $logger,
+            ),
+        ),
+        new WebHookMiddleware(
+            factory: new WebHooksFactory($dataBuilder),
+            handler: new WebHookHandler(
+                httpClient: $httpClient->withLabel('WebHook'),
+                logger: $logger,
+            ),
+        ),
+        new ThrottlingMiddleware($dataBuilder),
+        new ContentMiddleware(
+            factory: new ContentFactory($dataBuilder),
+            responder: new ContentResponder(),
+        ),
+        new ProxyMiddleware(
+            factory: new ProxyFactory($dataBuilder),
+            responder: new ProxyResponder(
+                httpClient: $httpClient->withLabel('Proxy'),
+            ),
+        ),
+        new CollectionMiddleware(
+            factory: new CollectionFactory($dataBuilder),
+            responder: new ContentResponder(),
+        ),
+        new FallbackMiddleware($logger),
     );
 
+    $requestHandler = new ClosureRequestHandler($pipeline->handle(...));
+
     $mocks = new MockStorage($config->getMocksPath(), $logger)->getData();
-    $migrates = Migrator::create(__DIR__ . '/../migrates');
-    $dispatcher = new DispatcherFactory($migrates, $logger)->create($mocks);
+    $dispatcher = new DispatcherFactory(
+        migrate: Migrator::create(__DIR__ . '/../migrates'),
+        logger: $logger,
+    )->create($mocks);
     $errorHandler = new ErrorHandler();
     $reactor = new RouterRequestHandler(
         errorHandler: $errorHandler,

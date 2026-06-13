@@ -3,28 +3,15 @@
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
 use Lav45\MockServer\DataFactory\DataBuilder;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class DataBuilderTest extends TestCase
 {
-    private function createParser(): VariableParser
-    {
-        return new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
-    }
-
     #[DataProvider('createDelayDataProvider')]
     public function testCreateDelay(array $data, float $expected): void
     {
-        $delay = new DataBuilder($this->createParser(), $data)->createDelay();
+        $delay = new DataBuilder()->withData($data)->createDelay();
         $this->assertSame($expected, $delay->value);
     }
 
@@ -40,7 +27,7 @@ final class DataBuilderTest extends TestCase
     #[DataProvider('createStatusDataProvider')]
     public function testCreateStatus(array $data, int $expected): void
     {
-        $status = new DataBuilder($this->createParser(), $data)->createStatus();
+        $status = new DataBuilder()->withData($data)->createStatus();
         $this->assertSame($expected, $status->value);
     }
 
@@ -55,13 +42,13 @@ final class DataBuilderTest extends TestCase
 
     public function testCreateHeadersDefaultsToEmpty(): void
     {
-        $headers = new DataBuilder($this->createParser(), [])->createHeaders();
+        $headers = new DataBuilder()->createHeaders();
         $this->assertSame([], $headers->toArray());
     }
 
     public function testCreateHeadersWithCustomHeaders(): void
     {
-        $headers = new DataBuilder($this->createParser(), [
+        $headers = new DataBuilder()->withData([
             'headers' => ['X-Foo' => 'bar', 'X-Baz' => 'qux'],
         ])->createHeaders();
         $this->assertSame(['X-Foo' => 'bar', 'X-Baz' => 'qux'], $headers->toArray());
@@ -69,7 +56,7 @@ final class DataBuilderTest extends TestCase
 
     public function testCreateHeadersAppendsExtraHeaders(): void
     {
-        $headers = new DataBuilder($this->createParser(), [
+        $headers = new DataBuilder()->withData([
             'headers' => ['X-Foo' => 'bar'],
         ])->createHeaders(appendHeaders: ['X-Extra' => 'val']);
         $this->assertSame(['X-Foo' => 'bar', 'X-Extra' => 'val'], $headers->toArray());
@@ -78,7 +65,7 @@ final class DataBuilderTest extends TestCase
     public function testCreateHeadersFiltersReservedAppendHeaders(): void
     {
         $filterHeaders = ['host', 'content-length', 'connection', 'keep-alive', 'transfer-encoding'];
-        $headers = new DataBuilder($this->createParser(), [], $filterHeaders)->createHeaders(
+        $headers = new DataBuilder($filterHeaders)->createHeaders(
             appendHeaders: [
                 'X-Keep' => 'yes',
                 'host' => 'example.com',
@@ -93,7 +80,7 @@ final class DataBuilderTest extends TestCase
 
     public function testCreateHeadersWithCustomFilterHeaders(): void
     {
-        $headers = new DataBuilder($this->createParser(), [], ['x-internal'])->createHeaders(
+        $headers = new DataBuilder(['x-internal'])->createHeaders(
             appendHeaders: ['x-internal' => 'secret', 'x-public' => 'visible'],
         );
         $this->assertSame(['x-public' => 'visible'], $headers->toArray());
@@ -101,47 +88,47 @@ final class DataBuilderTest extends TestCase
 
     public function testCreateBodyContentDefaultsToEmpty(): void
     {
-        $body = new DataBuilder($this->createParser(), [])->createBodyContent();
+        $body = new DataBuilder()->createBodyContent();
         $this->assertNull($body);
     }
 
     public function testCreateBodyContentWithString(): void
     {
-        $body = new DataBuilder($this->createParser(), ['content' => 'hello'])->createBodyContent();
+        $body = new DataBuilder()->withData(['content' => 'hello'])->createBodyContent();
         $this->assertSame('hello', $body->value);
     }
 
     public function testCreateBodyContentWithArray(): void
     {
-        $body = new DataBuilder($this->createParser(), ['content' => ['key' => 'val']])->createBodyContent();
+        $body = new DataBuilder()->withData(['content' => ['key' => 'val']])->createBodyContent();
         $this->assertSame(['key' => 'val'], \json_decode($body->value, true, flags: JSON_THROW_ON_ERROR));
     }
 
     public function testCreateBodyDefaultsToEmpty(): void
     {
-        $body = new DataBuilder($this->createParser(), [])->createBody();
+        $body = new DataBuilder()->createBody();
         $this->assertSame('', $body->value);
     }
 
     public function testCreateBodyWithBody(): void
     {
-        $body = new DataBuilder($this->createParser(), ['body' => 'hello world'])->createBody();
+        $body = new DataBuilder()->withData(['body' => 'hello world'])->createBody();
         $this->assertSame('hello world', $body->value);
 
-        $body = new DataBuilder($this->createParser(), ['body' => ['id' => 1]])->createBody();
+        $body = new DataBuilder()->withData(['body' => ['id' => 1]])->createBody();
         $this->assertSame(['id' => 1], \json_decode($body->value, true, flags: JSON_THROW_ON_ERROR));
     }
 
     public function testCreateUrlThrowsWhenNoUrlKey(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new DataBuilder($this->createParser(), [])->createUrl();
+        new DataBuilder()->createUrl();
     }
 
     #[DataProvider('createUrlDataProvider')]
     public function testCreateUrl(string $url, array $get, string $expected): void
     {
-        $newUrl = new DataBuilder($this->createParser(), ['url' => $url])->createUrl($get)->value;
+        $newUrl = new DataBuilder()->withData(['url' => $url])->createUrl($get)->value;
         $this->assertSame($expected, $newUrl);
     }
 
@@ -158,7 +145,7 @@ final class DataBuilderTest extends TestCase
     #[DataProvider('createMethodDataProvider')]
     public function testCreateMethod(array $data, string $expected): void
     {
-        $method = new DataBuilder($this->createParser(), $data)->createMethod();
+        $method = new DataBuilder()->withData($data)->createMethod();
         $this->assertSame($expected, $method->value);
     }
 
@@ -174,7 +161,7 @@ final class DataBuilderTest extends TestCase
     #[DataProvider('createItemsDataProvider')]
     public function testCreateItems(array $data, array $expected): void
     {
-        $items = new DataBuilder($this->createParser(), $data)->createItems();
+        $items = new DataBuilder()->withData($data)->createItems();
         $this->assertSame($expected, $items);
     }
 
@@ -202,7 +189,7 @@ final class DataBuilderTest extends TestCase
         \file_put_contents($tempFile, \json_encode($items, JSON_THROW_ON_ERROR));
 
         try {
-            $result = new DataBuilder($this->createParser(), ['file' => $tempFile])->createItems();
+            $result = new DataBuilder()->withData(['file' => $tempFile])->createItems();
             $this->assertSame($items, $result);
         } finally {
             if (\file_exists($tempFile)) {

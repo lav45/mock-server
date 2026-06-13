@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Bootstrap;
 
-use Lav45\MockServer\Middleware\Pipeline;
+use Lav45\MockServer\Bootstrap\Migrator\Pipeline;
 
 final readonly class Migrator
 {
@@ -17,8 +17,10 @@ final readonly class Migrator
             $migrates[] = new $class();
         }
 
-        $migrates[] = static fn(array $data): array => $data;
+        if ($migrates === []) {
+            return static fn(array $data): array => $data;
+        }
 
-        return Pipeline::create(...$migrates);
+        return Pipeline::create(...$migrates)(...);
     }
 }

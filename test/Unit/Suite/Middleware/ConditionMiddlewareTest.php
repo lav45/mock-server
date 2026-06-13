@@ -4,24 +4,33 @@ namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
+use Lav45\MockServer\DataFactory\Condition\ConditionFactory;
 use Lav45\MockServer\DataFactory\Condition\ConditionHandler;
 use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
-use Lav45\MockServer\DataFactory\ConditionFactory;
 use Lav45\MockServer\Middleware\ConditionMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 final class ConditionMiddlewareTest extends TestCase
 {
-    private function createMiddleware(): ConditionMiddleware
+    /**
+     * Resolves the request data (as PrepareMiddleware does at request time),
+     * then runs the middleware against the already-resolved data.
+     */
+    private function invoke(Request $request, \Closure $next): Response
     {
-        return new ConditionMiddleware(
-            new ConditionFactory(),
-            new ConditionHandler(new SpecificationFactory()),
+        $middleware = new ConditionMiddleware(
+            new ConditionFactory(new SpecificationFactory()),
+            new ConditionHandler(),
         );
+        /** @var InlineParser $parser */
+        $parser = $request->getAttribute('parser');
+        $request->setAttribute('data', $parser->replace($request->getAttribute('data')));
+        return $middleware->process($request, new CallableHandler($next));
     }
 
     private function createRequest(
@@ -80,7 +89,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['status' => 200]]);
 
-        $response = ($this->createMiddleware())($request, $this->next());
+        $response = $this->invoke($request, $this->next());
 
         $this->assertSame(200, $response->getStatus());
     }
@@ -91,7 +100,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.amount', '>', 100],
+                    'match' => ['>', '{{request.body.amount}}', 100],
                     'response' => ['status' => 402],
                 ],
             ],
@@ -99,7 +108,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(['status' => 200], $captured['response']);
     }
@@ -112,7 +121,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.amount', '>', 1000],
+                    'match' => ['>', '{{request.body.amount}}', 1000],
                     'response' => ['status' => 402, 'body' => ['error' => 'limit exceeded']],
                 ],
             ],
@@ -120,7 +129,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(402, $captured['response']['status']);
         $this->assertSame(['error' => 'limit exceeded'], $captured['response']['body']);
@@ -132,11 +141,11 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.amount', '>', 1000],
+                    'match' => ['>', '{{request.body.amount}}', 1000],
                     'response' => ['status' => 402],
                 ],
                 [
-                    'match' => ['request.body.amount', '>', 500],
+                    'match' => ['>', '{{request.body.amount}}', 500],
                     'response' => ['status' => 403],
                 ],
             ],
@@ -144,7 +153,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(402, $captured['response']['status']);
     }
@@ -157,7 +166,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.type', '=', 'vip'],
+                    'match' => ['=', '{{request.body.type}}', 'vip'],
                     'response' => ['status' => 200],
                     'webhooks' => [['url' => 'https://vip.example.com/hook']],
                 ],
@@ -167,7 +176,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame([['url' => 'https://vip.example.com/hook']], $captured['webhooks']);
     }
@@ -178,7 +187,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.dry_run', '=', true],
+                    'match' => ['=', '{{request.body.dry_run}}', true],
                     'response' => ['status' => 200],
                     'webhooks' => [],
                 ],
@@ -188,7 +197,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame([], $captured['webhooks']);
     }
@@ -199,7 +208,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.flag', '=', 'x'],
+                    'match' => ['=', '{{request.body.flag}}', 'x'],
                     'response' => ['status' => 201],
                 ],
             ],
@@ -208,7 +217,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame([['url' => 'https://example.com/hook']], $captured['webhooks']);
     }
@@ -221,7 +230,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.query.dry_run', '=', 'true'],
+                    'match' => ['=', '{{request.query.dry_run}}', 'true'],
                     'response' => ['status' => 204],
                 ],
             ],
@@ -229,7 +238,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(204, $captured['response']['status']);
     }
@@ -240,7 +249,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.headers.x-role', '=', 'admin'],
+                    'match' => ['=', '{{request.headers.x-role}}', 'admin'],
                     'response' => ['status' => 403],
                 ],
             ],
@@ -248,7 +257,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(403, $captured['response']['status']);
     }
@@ -259,7 +268,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.params.id', '~', '^test-'],
+                    'match' => ['~', '{{request.params.id}}', '^test-'],
                     'response' => ['status' => 200, 'body' => ['mode' => 'test']],
                 ],
             ],
@@ -267,7 +276,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame('test', $captured['response']['body']['mode']);
     }
@@ -278,7 +287,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.method', '=', 'DELETE'],
+                    'match' => ['=', '{{request.method}}', 'DELETE'],
                     'response' => ['status' => 405],
                 ],
             ],
@@ -286,7 +295,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(405, $captured['response']['status']);
     }
@@ -297,7 +306,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.path', '~', '^/api/v2/'],
+                    'match' => ['~', '{{request.path}}', '^/api/v2/'],
                     'response' => ['status' => 301],
                 ],
             ],
@@ -305,7 +314,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(301, $captured['response']['status']);
     }
@@ -319,8 +328,8 @@ final class ConditionMiddlewareTest extends TestCase
             'conditions' => [
                 [
                     'match' => ['and',
-                        ['request.body.amount', '>', 1000],
-                        ['request.body.currency', 'in', ['USD', 'EUR']],
+                        ['>', '{{request.body.amount}}', 1000],
+                        ['in', '{{request.body.currency}}', ['USD', 'EUR']],
                     ],
                     'response' => ['status' => 402],
                 ],
@@ -329,7 +338,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(402, $captured['response']['status']);
     }
@@ -341,8 +350,8 @@ final class ConditionMiddlewareTest extends TestCase
             'conditions' => [
                 [
                     'match' => ['or',
-                        ['request.query.dry_run', '=', 'true'],
-                        ['exists', 'request.headers.x-dry-run'],
+                        ['=', '{{request.query.dry_run}}', 'true'],
+                        ['exists', '{{request.headers.x-dry-run}}'],
                     ],
                     'response' => ['status' => 204],
                 ],
@@ -351,7 +360,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(204, $captured['response']['status']);
     }
@@ -372,7 +381,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(418, $captured['response']['status']);
     }
@@ -385,7 +394,7 @@ final class ConditionMiddlewareTest extends TestCase
         $request->setAttribute('data', [
             'conditions' => [
                 [
-                    'match' => ['request.body.amount', '>', '{{env.limit}}'],
+                    'match' => ['>', '{{request.body.amount}}', '{{env.limit}}'],
                     'response' => ['status' => 402],
                 ],
             ],
@@ -393,7 +402,7 @@ final class ConditionMiddlewareTest extends TestCase
         ]);
 
         $captured = [];
-        ($this->createMiddleware())($request, $this->nextCapturing($captured));
+        $this->invoke($request, $this->nextCapturing($captured));
 
         $this->assertSame(402, $captured['response']['status']);
     }

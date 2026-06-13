@@ -8,13 +8,13 @@ use Amp\Http\Server\Response;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-final readonly class FallbackMiddleware
+final readonly class FallbackMiddleware implements Middleware
 {
     public function __construct(
         private LoggerInterface $logger = new NullLogger(),
     ) {}
 
-    public function __invoke(Request $request): Response
+    public function process(Request $request, MiddlewareHandler $next): Response
     {
         $data = $request->getAttribute('data');
         $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

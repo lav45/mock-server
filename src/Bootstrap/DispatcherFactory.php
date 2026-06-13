@@ -20,15 +20,15 @@ final readonly class DispatcherFactory
 
     public function create(iterable $mocks): Dispatcher
     {
-        $routeDefinitionCallback = function (RouteCollector $router) use ($mocks): void {
-            $deprecated = false;
+        $deprecated = false;
+        $routeDefinitionCallback = function (RouteCollector $router) use ($mocks, &$deprecated): void {
             foreach ($mocks as $mock) {
-                $data = ($this->migrate)($mock);
-                if ($deprecated === false && $data !== $mock) {
-                    $deprecated = true;
-                    $this->logger->warning('Deprecated mock format detected and migrated on the fly. Please run `bin/migrate` to update your mock files.');
-                }
                 try {
+                    $data = ($this->migrate)($mock);
+                    if ($deprecated === false && $data !== $mock) {
+                        $deprecated = true;
+                        $this->logger->warning('Deprecated mock format detected and migrated on the fly. Please run `bin/migrate` to update your mock files.');
+                    }
                     $request = Request::fromArray($data['request'] ?? []);
                 } catch (\Throwable $exception) {
                     $this->logger->error($exception);

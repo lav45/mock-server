@@ -5,17 +5,19 @@ namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\ParserFactory;
-use Lav45\MockServer\Middleware\ParserMiddleware;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
+use Lav45\MockServer\Middleware\PrepareMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 final class ParserMiddlewareTest extends TestCase
 {
-    private function createMiddleware(): ParserMiddleware
+    private function createMiddleware(): PrepareMiddleware
     {
         $baseParser = new ParamParser(new class implements InlineParser {
             public function replace(mixed $data): mixed
@@ -23,7 +25,7 @@ final class ParserMiddlewareTest extends TestCase
                 return $data;
             }
         });
-        return new ParserMiddleware(new ParserFactory($baseParser));
+        return new PrepareMiddleware(new ParserFactory($baseParser));
     }
 
     private function createRequest(string $url = 'https://localhost/', array $params = []): Request
@@ -34,12 +36,20 @@ final class ParserMiddlewareTest extends TestCase
         return $request;
     }
 
-    private function nextCapturing(VariableParser|null &$capturedParser): \Closure
+    private function nextCapturing(VariableParser|null &$capturedParser): MiddlewareHandler
     {
-        return static function (Request $request) use (&$capturedParser): Response {
+        return new CallableHandler(static function (Request $request) use (&$capturedParser): Response {
             $capturedParser = $request->getAttribute('parser');
             return new Response(200);
-        };
+        });
+    }
+
+    private function nextCapturingData(array|null &$capturedData): MiddlewareHandler
+    {
+        return new CallableHandler(static function (Request $request) use (&$capturedData): Response {
+            $capturedData = $request->getAttribute('data');
+            return new Response(200);
+        });
     }
 
     public function testAlwaysCallsNext(): void
@@ -54,7 +64,7 @@ final class ParserMiddlewareTest extends TestCase
         };
 
         $middleware = $this->createMiddleware();
-        $middleware($request, $next);
+        $middleware->process($request, new CallableHandler($next));
 
         $this->assertTrue($called);
     }
@@ -66,7 +76,7 @@ final class ParserMiddlewareTest extends TestCase
 
         $capturedParser = null;
         $middleware = $this->createMiddleware();
-        $middleware($request, $this->nextCapturing($capturedParser));
+        $middleware->process($request, $this->nextCapturing($capturedParser));
 
         $this->assertInstanceOf(VariableParser::class, $capturedParser);
     }
@@ -78,7 +88,7 @@ final class ParserMiddlewareTest extends TestCase
 
         $capturedParser = null;
         $middleware = $this->createMiddleware();
-        $middleware($request, $this->nextCapturing($capturedParser));
+        $middleware->process($request, $this->nextCapturing($capturedParser));
 
         $this->assertSame('secret123', $capturedParser->replace('{env.token}'));
     }
@@ -90,7 +100,7 @@ final class ParserMiddlewareTest extends TestCase
 
         $capturedParser = null;
         $middleware = $this->createMiddleware();
-        $middleware($request, $this->nextCapturing($capturedParser));
+        $middleware->process($request, $this->nextCapturing($capturedParser));
 
         $this->assertInstanceOf(VariableParser::class, $capturedParser);
     }
@@ -102,8 +112,28 @@ final class ParserMiddlewareTest extends TestCase
 
         $capturedParser = null;
         $middleware = $this->createMiddleware();
-        $middleware($request, $this->nextCapturing($capturedParser));
+        $middleware->process($request, $this->nextCapturing($capturedParser));
 
         $this->assertSame('42', $capturedParser->replace('{request.params.id}'));
+    }
+
+    public function testResolvesDataAttribute(): void
+    {
+        $request = $this->createRequest(params: ['id' => '42']);
+        $request->setAttribute('data', [
+            'env' => ['token' => 'secret123'],
+            'response' => [
+                'body' => [
+                    'id' => '{{request.params.id}}',
+                    'token' => '{{env.token}}',
+                ],
+            ],
+        ]);
+
+        $capturedData = null;
+        $middleware = $this->createMiddleware();
+        $middleware->process($request, $this->nextCapturingData($capturedData));
+
+        $this->assertSame(['id' => '42', 'token' => 'secret123'], $capturedData['response']['body']);
     }
 }

@@ -3,24 +3,18 @@
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
 use Amp\Http\Server\Request;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\DirectFactory;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Domain\Direct;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 final class DirectFactoryTest extends TestCase
 {
-    private function createParser(): VariableParser
+    private function create(Request $request, array $direct, array $filterHeaders = []): Direct
     {
-        return new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
+        return new DirectFactory(new DataBuilder($filterHeaders))->create($request, ['direct' => $direct]);
     }
 
     private function createRequest(
@@ -37,7 +31,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateUsesRequestMethod(): void
     {
         $request = $this->createRequest('PUT');
-        $direct = new DirectFactory()->create($request, $this->createParser(), ['url' => 'https://upstream.example.com']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com']);
 
         $this->assertSame('PUT', $direct->method->value);
     }
@@ -45,7 +39,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateBuildsUrlFromData(): void
     {
         $request = $this->createRequest();
-        $direct = new DirectFactory()->create($request, $this->createParser(), ['url' => 'https://upstream.example.com/api']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com/api']);
 
         $this->assertSame('https://upstream.example.com/api', $direct->url->value);
     }
@@ -53,7 +47,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateAppendsRequestQueryToUrl(): void
     {
         $request = $this->createRequest('GET', 'https://localhost/?page=2&per-page=10');
-        $direct = new DirectFactory()->create($request, $this->createParser(), ['url' => 'https://upstream.example.com/api']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com/api']);
 
         $this->assertSame('https://upstream.example.com/api?page=2&per-page=10', $direct->url->value);
     }
@@ -61,7 +55,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateForwardsRequestBody(): void
     {
         $request = $this->createRequest('POST', body: '{"key":"value"}');
-        $direct = new DirectFactory()->create($request, $this->createParser(), ['url' => 'https://upstream.example.com']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com']);
 
         $this->assertSame('{"key":"value"}', $direct->body->value);
     }
@@ -69,7 +63,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateForwardsRequestHeaders(): void
     {
         $request = $this->createRequest(headers: ['x-custom' => ['myvalue']]);
-        $direct = new DirectFactory()->create($request, $this->createParser(), ['url' => 'https://upstream.example.com']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com']);
 
         $this->assertSame('myvalue', $direct->headers->toArray()['x-custom']);
     }
@@ -80,7 +74,7 @@ final class DirectFactoryTest extends TestCase
             'x-keep' => ['yes'],
             'host' => ['example.com'],
         ]);
-        $direct = new DirectFactory(['host'])->create($request, $this->createParser(), ['url' => 'https://upstream.example.com']);
+        $direct = $this->create($request, ['url' => 'https://upstream.example.com'], ['host']);
 
         $headers = $direct->headers->toArray();
         $this->assertArrayHasKey('x-keep', $headers);
@@ -90,7 +84,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateIncludesDataHeaders(): void
     {
         $request = $this->createRequest();
-        $direct = new DirectFactory()->create($request, $this->createParser(), [
+        $direct = $this->create($request, [
             'url' => 'https://upstream.example.com',
             'headers' => ['x-status' => 'active'],
         ]);
@@ -101,7 +95,7 @@ final class DirectFactoryTest extends TestCase
     public function testCreateMergesDataAndRequestHeaders(): void
     {
         $request = $this->createRequest(headers: ['x-request-id' => ['abc123']]);
-        $direct = new DirectFactory()->create($request, $this->createParser(), [
+        $direct = $this->create($request, [
             'url' => 'https://upstream.example.com',
             'headers' => ['x-status' => 'active'],
         ]);

@@ -3,15 +3,26 @@
 namespace Lav45\MockServer\DataFactory;
 
 use Lav45\MockServer\Domain\Response\ContentResponse;
-use Lav45\MockServer\Parser\VariableParser;
 
 final readonly class ContentFactory
 {
-    public const string TYPE = 'content';
+    private const string TYPE = 'content';
 
-    public function create(VariableParser $parser, array $data): ContentResponse
+    public function __construct(
+        private DataBuilder $dataBuilder,
+    ) {}
+
+    /**
+     * Content is the default response type, so a missing type is treated as a match.
+     */
+    public function has(array $data): bool
     {
-        $factory = new DataBuilder($parser, $data);
+        return empty($data['type']) || $data['type'] === self::TYPE;
+    }
+
+    public function create(array $data): ContentResponse
+    {
+        $factory = $this->dataBuilder->withData($data);
 
         return new ContentResponse(
             status: $factory->createStatus(),

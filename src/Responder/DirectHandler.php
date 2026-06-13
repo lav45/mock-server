@@ -4,24 +4,32 @@ namespace Lav45\MockServer\Responder;
 
 use Amp\Http\HttpStatus;
 use Lav45\MockServer\Domain\Direct;
+use Lav45\MockServer\Helper\ArrayHelper;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 final readonly class DirectHandler
 {
     public function __construct(
-        private HttpClient $httpClient,
+        private HttpClient      $httpClient,
+        private LoggerInterface $logger = new NullLogger(),
     ) {}
 
-    public function request(Direct $data): array
+    public function request(Direct $direct): DirectDataInjector
     {
         $response = $this->httpClient->request(
-            uri: $data->url->value,
-            method: $data->method->value,
-            headers: $data->headers->toArray(),
-            body: $data->body->value,
+            uri: $direct->url->value,
+            method: $direct->method->value,
+            headers: $direct->headers->toArray(),
+            body: $direct->body->value,
         );
         $body = $response->getBody()->buffer();
         if (\json_validate($body) && HttpStatus::isSuccessful($response->getStatus())) {
-            return \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+            $directData = \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+            $directData = ArrayHelper::map($directData, static function (string $value): string {
+                return \str_replace(['\\{', '\\}'], ['{', '}'], $value);
+            });
+            return new DirectDataInjector($directData, $this->logger);
         }
         throw new \RuntimeException(message: $body, code: $response->getStatus());
     }

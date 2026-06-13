@@ -2,23 +2,16 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Domain\WebHooks;
 use PHPUnit\Framework\TestCase;
 
 final class WebHooksFactoryTest extends TestCase
 {
-    private function createParser(array $data = []): VariableParser
+    private function create(array $webhooks): WebHooks
     {
-        $parser = new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
-        return $data ? $parser->withData($data) : $parser;
+        return new WebHooksFactory(new DataBuilder())->create(['webhooks' => $webhooks]);
     }
 
     private function decodeBody(string $json): mixed
@@ -30,7 +23,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithEmptyDataReturnsEmptyWebHooks(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), []);
+        $webHooks = $this->create([]);
 
         $this->assertCount(0, $webHooks->items);
     }
@@ -42,7 +35,7 @@ final class WebHooksFactoryTest extends TestCase
             ['url' => 'https://b.example.com'],
             ['url' => 'https://c.example.com'],
         ];
-        $webHooks = new WebHooksFactory()->create($this->createParser(), $data);
+        $webHooks = $this->create($data);
 
         $this->assertCount(3, $webHooks->items);
     }
@@ -51,7 +44,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateDefaultsToPostMethodWhenNotSpecified(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['url' => 'https://example.com'],
         ]);
 
@@ -65,7 +58,7 @@ final class WebHooksFactoryTest extends TestCase
             ['method' => 'GET', 'url' => 'https://example.com'],
             ['method' => 'DELETE', 'url' => 'https://example.com'],
         ];
-        $webHooks = new WebHooksFactory()->create($this->createParser(), $data);
+        $webHooks = $this->create($data);
 
         $this->assertSame('PUT', $webHooks->items[0]->method->value);
         $this->assertSame('GET', $webHooks->items[1]->method->value);
@@ -76,7 +69,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateDefaultsToZeroDelay(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['url' => 'https://example.com'],
         ]);
 
@@ -85,7 +78,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithExplicitDelay(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['delay' => 0.5, 'url' => 'https://example.com'],
         ]);
 
@@ -96,28 +89,18 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateBuildsUrlFromData(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['url' => 'https://example.com/hook?id=300'],
         ]);
 
         $this->assertSame('https://example.com/hook?id=300', $webHooks->items[0]->url->value);
     }
 
-    public function testCreateAppliesParserToUrl(): void
-    {
-        $parser = $this->createParser(['env' => ['base' => 'https://example.com']]);
-        $webHooks = new WebHooksFactory()->create($parser, [
-            ['url' => '{env.base}/hook'],
-        ]);
-
-        $this->assertSame('https://example.com/hook', $webHooks->items[0]->url->value);
-    }
-
     // --- JSON body ---
 
     public function testCreateWithJsonBodyEncodesArrayToJson(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'body' => ['id' => 1, 'name' => 'test'],
@@ -129,7 +112,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithJsonBodySetsContentTypeHeader(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'headers' => ['content-type' => 'application/json'],
@@ -143,7 +126,7 @@ final class WebHooksFactoryTest extends TestCase
     public function testCreateWithJsonArrayBody(): void
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4]];
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'body' => $items,
@@ -153,24 +136,11 @@ final class WebHooksFactoryTest extends TestCase
         $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->value));
     }
 
-    public function testCreateAppliesParserToJsonBody(): void
-    {
-        $parser = $this->createParser(['env' => ['token' => 'abc123']]);
-        $webHooks = new WebHooksFactory()->create($parser, [
-            [
-                'url' => 'https://example.com',
-                'body' => ['token' => '{env.token}'],
-            ],
-        ]);
-
-        $this->assertSame(['token' => 'abc123'], $this->decodeBody($webHooks->items[0]->body->value));
-    }
-
     // --- Text body ---
 
     public function testCreateWithTextBody(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'body' => '{"text": "Hello world"}',
@@ -182,7 +152,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithNoBodyKeyDefaultsToEmptyBody(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['url' => 'https://example.com'],
         ]);
 
@@ -191,31 +161,18 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithTextBodyDoesNotSetContentTypeHeader(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             ['url' => 'https://example.com', 'text' => 'hello'],
         ]);
 
         $this->assertArrayNotHasKey('content-type', $webHooks->items[0]->headers->toArray());
     }
 
-    public function testCreateAppliesParserToTextBody(): void
-    {
-        $parser = $this->createParser(['env' => ['msg' => 'OK']]);
-        $webHooks = new WebHooksFactory()->create($parser, [
-            [
-                'url' => 'https://example.com',
-                'body' => '{"text": "{env.msg}"}',
-            ],
-        ]);
-
-        $this->assertSame('{"text": "OK"}', $webHooks->items[0]->body->value);
-    }
-
     // --- Headers ---
 
     public function testCreateWithCustomHeaders(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'headers' => ['X-Api-Token' => 'e71ad173-dacf-493c-be55-643074fdf41c'],
@@ -227,7 +184,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithJsonBodyAndCustomHeadersMergesContentType(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'headers' => [
@@ -245,7 +202,7 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testCreateWithExplicitContentTypeAndTextBody(): void
     {
-        $webHooks = new WebHooksFactory()->create($this->createParser(), [
+        $webHooks = $this->create([
             [
                 'url' => 'https://example.com',
                 'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],

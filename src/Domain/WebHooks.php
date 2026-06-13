@@ -2,8 +2,6 @@
 
 namespace Lav45\MockServer\Domain;
 
-use Lav45\MockServer\Domain\WebHooks\WebHook;
-
 final readonly class WebHooks
 {
     /** @var WebHook[] */

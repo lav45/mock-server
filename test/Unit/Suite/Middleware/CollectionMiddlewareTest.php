@@ -5,11 +5,14 @@ namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\CollectionFactory;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\Middleware\CollectionMiddleware;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Responder\ContentResponder;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +23,7 @@ final class CollectionMiddlewareTest extends TestCase
 {
     private function createMiddleware(): CollectionMiddleware
     {
-        return new CollectionMiddleware(new CollectionFactory(), new ContentResponder());
+        return new CollectionMiddleware(new CollectionFactory(new DataBuilder()), new ContentResponder());
     }
 
     private function createRequest(string $url = 'https://localhost/'): Request
@@ -39,9 +42,9 @@ final class CollectionMiddlewareTest extends TestCase
         return $data ? $parser->withData($data) : $parser;
     }
 
-    private function nextReturning(int $status): \Closure
+    private function nextReturning(int $status): MiddlewareHandler
     {
-        return static fn(Request $r): Response => new Response($status);
+        return new CallableHandler(static fn(Request $r): Response => new Response($status));
     }
 
     private function decodeBody(Response $response): mixed
@@ -54,11 +57,10 @@ final class CollectionMiddlewareTest extends TestCase
     public function testPassesThroughToNextWhenResponseTypeDoesNotMatch(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', 'content');
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', []);
+        $request->setAttribute('data', ['response' => ['type' => 'proxy']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(418, $response->getStatus());
     }
@@ -66,11 +68,10 @@ final class CollectionMiddlewareTest extends TestCase
     public function testDoesNotCallNextWhenResponseTypeMatches(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['items' => []]]);
+        $request->setAttribute('data', ['response' => ['type' => 'data', 'items' => []]]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertNotSame(418, $response->getStatus());
     }
@@ -80,11 +81,10 @@ final class CollectionMiddlewareTest extends TestCase
     public function testReturnsJsonResponseWhenTypeMatches(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['items' => [['id' => 1], ['id' => 2]]]]);
+        $request->setAttribute('data', ['response' => ['type' => 'data', 'items' => [['id' => 1], ['id' => 2]]]]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('application/json', $response->getHeader('content-type'));
@@ -96,14 +96,13 @@ final class CollectionMiddlewareTest extends TestCase
         $items = [['id' => 10], ['id' => 20]];
 
         $request = $this->createRequest();
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'env' => ['ignored' => true],
-            'response' => ['items' => $items],
+            'response' => ['type' => 'data', 'items' => $items],
         ]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame($items, $this->decodeBody($response));
     }
@@ -111,11 +110,10 @@ final class CollectionMiddlewareTest extends TestCase
     public function testDefaultsToEmptyItemsWhenResponseKeyMissing(): void
     {
         $request = $this->createRequest();
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', []);
+        $request->setAttribute('data', ['response' => ['type' => 'data']]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame([], $this->decodeBody($response));
@@ -128,11 +126,10 @@ final class CollectionMiddlewareTest extends TestCase
         $items = [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]];
 
         $request = $this->createRequest('https://localhost/?page=2&per-page=2');
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $this->createParser());
-        $request->setAttribute('data', ['response' => ['items' => $items]]);
+        $request->setAttribute('data', ['response' => ['type' => 'data', 'items' => $items]]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame([['id' => 3], ['id' => 4]], $this->decodeBody($response));
     }
@@ -145,11 +142,10 @@ final class CollectionMiddlewareTest extends TestCase
         $parser = $this->createParser(['env' => ['label' => 'hello']]);
 
         $request = $this->createRequest();
-        $request->setAttribute('responseType', CollectionFactory::TYPE);
         $request->setAttribute('parser', $parser);
-        $request->setAttribute('data', ['response' => ['items' => $items]]);
+        $request->setAttribute('data', ['response' => ['type' => 'data', 'items' => $items]]);
 
-        $response = ($this->createMiddleware())($request, $this->nextReturning(418));
+        $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame([['name' => 'hello']], $this->decodeBody($response));
     }

@@ -47,6 +47,8 @@ deptrac:
     Middleware:
       - DataFactory
       - Responder
+      - Parser
+      - Domain
       - Vendor
     DataFactory:
       - Domain

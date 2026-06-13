@@ -3,31 +3,34 @@
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
 use Lav45\MockServer\DataFactory\ContentFactory;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class ContentFactoryTest extends TestCase
 {
-    private function createParser(): VariableParser
-    {
-        return new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
-    }
-
     private function decodeBody(string $json): mixed
     {
         return \json_decode($json, true, flags: JSON_THROW_ON_ERROR);
     }
 
+    public function testHasMatchesContentType(): void
+    {
+        $this->assertTrue(new ContentFactory(new DataBuilder())->has(['type' => 'content']));
+    }
+
+    public function testHasMatchesWhenTypeMissing(): void
+    {
+        $this->assertTrue(new ContentFactory(new DataBuilder())->has([]));
+    }
+
+    public function testHasDoesNotMatchOtherType(): void
+    {
+        $this->assertFalse(new ContentFactory(new DataBuilder())->has(['type' => 'proxy']));
+    }
+
     public function testCreateWithDefaults(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), []);
+        $response = new ContentFactory(new DataBuilder())->create([]);
 
         $this->assertSame(200, $response->status->value);
         $this->assertSame([], $response->headers->toArray());
@@ -36,7 +39,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithJson(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'headers' => ['content-type' => 'application/json'],
             'body' => ['id' => 1, 'name' => 'test'],
         ]);
@@ -48,7 +51,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithText(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'body' => 'hello world',
         ]);
 
@@ -59,7 +62,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithCustomStatus(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'status' => 201,
             'body' => ['created' => true],
         ]);
@@ -70,7 +73,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithTextAndExplicitContentType(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'headers' => ['content-type' => 'text/plain; charset=utf-8'],
             'body' => 'OK',
         ]);
@@ -82,7 +85,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithCustomHeaders(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'headers' => ['X-Foo' => 'bar', 'X-Baz' => 'qux'],
         ]);
 
@@ -93,7 +96,7 @@ final class ContentFactoryTest extends TestCase
 
     public function testCreateWithJsonAndCustomHeaders(): void
     {
-        $response = new ContentFactory()->create($this->createParser(), [
+        $response = new ContentFactory(new DataBuilder())->create([
             'status' => 422,
             'headers' => [
                 'content-type' => 'application/json',

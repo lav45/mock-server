@@ -5,8 +5,6 @@ namespace Lav45\MockServer\Bootstrap;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-use function Amp\File\read;
-
 final readonly class MockStorage
 {
     public function __construct(
@@ -73,6 +71,6 @@ final readonly class MockStorage
 
     private function parseFile(string $file): array
     {
-        return \json_decode(read($file), true, flags: JSON_THROW_ON_ERROR);
+        return \json_decode(\file_get_contents($file), true, flags: JSON_THROW_ON_ERROR);
     }
 }

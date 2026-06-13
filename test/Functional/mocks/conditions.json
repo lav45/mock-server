@@ -1,0 +1,129 @@
+[
+    {
+        "version": 8,
+        "request": {
+            "method": "POST",
+            "path": "/conditions/payment/{id}"
+        },
+        "env": {
+            "limit": 1000
+        },
+        "conditions": [
+            {
+                "match": ["and",
+                    [">", "{{request.body.amount}}", "{{env.limit}}"],
+                    ["in", "{{request.body.currency}}", ["USD", "EUR"]],
+                    ["!=", "{{request.headers.x-role}}", "premium"]
+                ],
+                "response": {
+                    "status": 402,
+                    "body": {"result": "limit_exceeded"}
+                }
+            },
+            {
+                "match": ["or",
+                    ["=", "{{request.query.dry_run}}", "true"],
+                    ["exists", "{{request.headers.x-dry-run}}"]
+                ],
+                "response": {
+                    "status": 200,
+                    "body": {"result": "dry_run"}
+                }
+            },
+            {
+                "match": ["~", "{{request.params.id}}", "^test-"],
+                "response": {
+                    "status": 200,
+                    "body": {"result": "test_mode"}
+                }
+            },
+            {
+                "match": ["empty", "{{request.body.note}}"],
+                "response": {
+                    "status": 422,
+                    "body": {"result": "note_required"}
+                }
+            }
+        ],
+        "response": {
+            "status": 200,
+            "body": {"result": "ok", "id": "{{request.params.id}}"}
+        }
+    },
+    {
+        "version": 8,
+        "request": {
+            "method": "POST",
+            "path": "/conditions/operators"
+        },
+        "conditions": [
+            {
+                "match": [">=", "{{request.body.score}}", 10],
+                "response": {"status": 200, "body": {"op": "gte"}}
+            },
+            {
+                "match": ["<", "{{request.body.low}}", 5],
+                "response": {"status": 200, "body": {"op": "lt"}}
+            },
+            {
+                "match": ["<=", "{{request.body.high}}", 100],
+                "response": {"status": 200, "body": {"op": "lte"}}
+            },
+            {
+                "match": ["contains", "{{request.body.roles}}", "admin"],
+                "response": {"status": 200, "body": {"op": "contains"}}
+            },
+            {
+                "match": ["not", ["=", "{{request.body.stage}}", "prod"]],
+                "response": {"status": 200, "body": {"op": "not"}}
+            }
+        ],
+        "response": {
+            "status": 200,
+            "body": {"op": "none"}
+        }
+    },
+    {
+        "version": 8,
+        "env": {
+            "webhook": {
+                "url": "{env.WEBHOOK_STORAGE_URL}/storage"
+            }
+        },
+        "request": {
+            "method": "POST",
+            "path": "/conditions/webhooks/{action}"
+        },
+        "conditions": [
+            {
+                "match": ["=", "{{request.params.action}}", "override"],
+                "response": {"status": 200, "body": {"result": "override"}},
+                "webhooks": [
+                    {
+                        "method": "POST",
+                        "url": "{env.webhook.url}?case=override",
+                        "headers": {"content-type": "application/json"},
+                        "body": {"event": "override"}
+                    }
+                ]
+            },
+            {
+                "match": ["=", "{{request.params.action}}", "suppress"],
+                "response": {"status": 200, "body": {"result": "suppress"}},
+                "webhooks": []
+            }
+        ],
+        "response": {
+            "status": 200,
+            "body": {"result": "fallback"}
+        },
+        "webhooks": [
+            {
+                "method": "POST",
+                "url": "{env.webhook.url}?case=fallback",
+                "headers": {"content-type": "application/json"},
+                "body": {"event": "fallback"}
+            }
+        ]
+    }
+]

@@ -2,60 +2,63 @@
 
 namespace Lav45\MockServer\DataFactory\Condition;
 
-use Lav45\MockServer\DataFactory\Condition\Specification\AndSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\ComparisonSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\ContainsSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\EmptySpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\EqSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\ExistsSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\FieldSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\InSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\MatchesSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\NeverSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\NormalizedActualSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\NotSpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\OrSpecification;
-use Lav45\MockServer\Domain\ValueObject\Value;
-use Lav45\MockServer\Parser\InlineParser;
+use Lav45\MockServer\Domain\Condition\Specification;
+use Lav45\MockServer\Domain\Condition\Specification\AlwaysSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\AndSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\ComparisonSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\ContainsSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\EmptySpecification;
+use Lav45\MockServer\Domain\Condition\Specification\EqSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\ExistsSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\FieldSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\InSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\MatchesSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\NeverSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\NormalizedActualSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\NotSpecification;
+use Lav45\MockServer\Domain\Condition\Specification\OrSpecification;
 
 final readonly class SpecificationFactory
 {
-    public function create(array $expression, InlineParser $parser): Specification
+    public function create(array $expression): Specification
     {
+        if ($expression === []) {
+            return new AlwaysSpecification();
+        }
         $operator = \strtolower($expression[0]);
         if ($operator === 'and') {
             return new AndSpecification(...\array_map(
-                fn(array $expression) => $this->create($expression, $parser),
+                fn(array $expression) => $this->create($expression),
                 \array_slice($expression, 1),
             ));
         }
         if ($operator === 'or') {
             return new OrSpecification(...\array_map(
-                fn(array $expression) => $this->create($expression, $parser),
+                fn(array $expression) => $this->create($expression),
                 \array_slice($expression, 1),
             ));
         }
         if ($operator === 'not') {
             return new NotSpecification(
-                $this->create($expression[1], $parser),
+                $this->create($expression[1]),
             );
         }
         if ($operator === 'exists') {
             return new FieldSpecification(
-                $this->resolveField($expression[1], $parser),
+                $expression[1],
                 new ExistsSpecification(),
             );
         }
         if ($operator === 'empty') {
             return new FieldSpecification(
-                $this->resolveField($expression[1], $parser),
+                $expression[1],
                 new EmptySpecification(),
             );
         }
         if (\count($expression) >= 3) {
             return new FieldSpecification(
-                $this->resolveField($expression[0], $parser),
-                $this->build($expression[1], $parser->replace($expression[2])),
+                $expression[1],
+                $this->build($operator, $expression[2]),
             );
         }
         return new NeverSpecification();
@@ -76,12 +79,5 @@ final readonly class SpecificationFactory
             default => new NeverSpecification(),
         };
         return new NormalizedActualSpecification($spec);
-    }
-
-    private function resolveField(string $field, InlineParser $parser): mixed
-    {
-        $template = '{{' . $field . '}}';
-        $result = $parser->replace($template);
-        return $result === $template ? Value::Undefined : $result;
     }
 }

@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
 use Amp\Http\Server\Request;
 use Lav45\MockServer\DataFactory\CollectionFactory;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
@@ -33,11 +34,26 @@ final class CollectionFactoryTest extends TestCase
         return \json_decode($json, true, flags: JSON_THROW_ON_ERROR);
     }
 
+    public function testHasMatchesDataType(): void
+    {
+        $this->assertTrue(new CollectionFactory(new DataBuilder())->has(['type' => 'data']));
+    }
+
+    public function testHasDoesNotMatchWhenTypeMissing(): void
+    {
+        $this->assertFalse(new CollectionFactory(new DataBuilder())->has([]));
+    }
+
+    public function testHasDoesNotMatchOtherType(): void
+    {
+        $this->assertFalse(new CollectionFactory(new DataBuilder())->has(['type' => 'content']));
+    }
+
     public function testCreateWithDefaultPagination(): void
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest(),
             $this->createParser(),
             ['items' => $items],
@@ -52,7 +68,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest('https://localhost/?page=2&per-page=2'),
             $this->createParser(),
             ['items' => $items],
@@ -63,7 +79,7 @@ final class CollectionFactoryTest extends TestCase
 
     public function testCreateWithOutOfRangePage(): void
     {
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest('https://localhost/?page=99'),
             $this->createParser(),
             ['items' => [['id' => 1], ['id' => 2]]],
@@ -76,7 +92,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest('https://localhost/?p=2&size=2'),
             $this->createParser(),
             [
@@ -95,7 +111,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $customResult = [['custom' => true]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest(),
             $this->createParser(),
             [
@@ -111,7 +127,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest(),
             $this->createParser(),
             [
@@ -136,7 +152,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest('https://localhost/?_p=2&_s=2'),
             $this->createParser(),
             [
@@ -166,7 +182,7 @@ final class CollectionFactoryTest extends TestCase
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3]];
 
-        $response = new CollectionFactory()->create(
+        $response = new CollectionFactory(new DataBuilder())->create(
             $this->createRequest(),
             $this->createParser(),
             [

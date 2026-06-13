@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\DataFactory\Condition\Specification;
+namespace Lav45\MockServer\Domain\Condition\Specification;
 
-use Lav45\MockServer\DataFactory\Condition\Specification;
+use Lav45\MockServer\Domain\Condition\Specification;
 
 final readonly class ComparisonSpecification implements Specification
 {
     public function __construct(
-        private float|int $threshold,
-        private string    $operator,
+        private mixed  $threshold,
+        private string $operator,
     ) {}
 
     public function isSatisfiedBy(mixed $actual): bool

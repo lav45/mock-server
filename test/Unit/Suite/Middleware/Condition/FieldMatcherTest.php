@@ -2,9 +2,9 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware\Condition;
 
-use Lav45\MockServer\DataFactory\Condition\Specification\EmptySpecification;
-use Lav45\MockServer\DataFactory\Condition\Specification\ExistsSpecification;
 use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
+use Lav45\MockServer\Domain\Condition\Specification\EmptySpecification;
+use Lav45\MockServer\Domain\Condition\Specification\ExistsSpecification;
 use Lav45\MockServer\Domain\ValueObject\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +37,7 @@ final class FieldMatcherTest extends TestCase
             'string match' => ['foo', 'foo', true],
             'string mismatch' => ['foo', 'bar', false],
             'int match' => [42, 42, true],
-            'string coerced to int' => ['42', 42, true],
+            'string vs int is strict' => ['42', 42, false],
             'non-numeric int' => ['foo', 42, false],
             'null match' => [null, null, true],
             'bool stays strict' => ['1', true, false],
@@ -59,7 +59,7 @@ final class FieldMatcherTest extends TestCase
         return [
             'different values' => ['foo', 'bar', true],
             'same values' => ['foo', 'foo', false],
-            'string coerced to int' => ['42', 42, false],
+            'string vs int is strict' => ['42', 42, true],
             'non-numeric ne int' => ['foo', 42, true],
         ];
     }

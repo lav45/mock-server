@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Responder;
 
+use Lav45\MockServer\Domain\WebHook;
 use Lav45\MockServer\Domain\WebHooks;
-use Lav45\MockServer\Domain\WebHooks\WebHook;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 

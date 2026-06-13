@@ -6,13 +6,13 @@ use Amp\Http\Client\Request as HttpClientRequest;
 use Amp\Http\Client\Response as HttpClientResponse;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Response;
+use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
+use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\WebHookMiddleware;
-use Lav45\MockServer\Parser\InlineParser;
-use Lav45\MockServer\Parser\ParamParser;
-use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Responder\WebHookHandler;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +22,7 @@ final class WebHookMiddlewareTest extends TestCase
 {
     private function createMiddleware(HttpClient $httpClient): WebHookMiddleware
     {
-        return new WebHookMiddleware(new WebHooksFactory(), new WebHookHandler($httpClient));
+        return new WebHookMiddleware(new WebHooksFactory(new DataBuilder()), new WebHookHandler($httpClient));
     }
 
     private function createRequest(): Request
@@ -30,17 +30,6 @@ final class WebHookMiddlewareTest extends TestCase
         $request = new Request(new FakeHttpDriverClient(), 'POST', Http::new('https://localhost/'));
         $request->setAttribute('body', '');
         return $request;
-    }
-
-    private function createParser(array $data = []): VariableParser
-    {
-        $parser = new ParamParser(new class implements InlineParser {
-            public function replace(mixed $data): mixed
-            {
-                return $data;
-            }
-        });
-        return $data ? $parser->withData($data) : $parser;
     }
 
     private function createCapturingHttpClient(): HttpClient
@@ -61,9 +50,9 @@ final class WebHookMiddlewareTest extends TestCase
         };
     }
 
-    private function nextReturning(int $status): \Closure
+    private function nextReturning(int $status): MiddlewareHandler
     {
-        return static fn(Request $r): Response => new Response($status);
+        return new CallableHandler(static fn(Request $r): Response => new Response($status));
     }
 
     // --- Response passthrough ---
@@ -73,7 +62,6 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', []);
 
         $called = false;
@@ -83,7 +71,7 @@ final class WebHookMiddlewareTest extends TestCase
         };
 
         $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $next);
+        $middleware->process($request, new CallableHandler($next));
 
         $this->assertTrue($called);
     }
@@ -93,11 +81,10 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', []);
 
         $middleware = $this->createMiddleware($httpClient);
-        $response = $middleware($request, $this->nextReturning(204));
+        $response = $middleware->process($request, $this->nextReturning(204));
 
         $this->assertSame(204, $response->getStatus());
     }
@@ -107,13 +94,12 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'webhooks' => [['url' => 'https://hook.example.com']],
         ]);
 
         $middleware = $this->createMiddleware($httpClient);
-        $response = $middleware($request, $this->nextReturning(201));
+        $response = $middleware->process($request, $this->nextReturning(201));
 
         $this->assertSame(201, $response->getStatus());
     }
@@ -125,11 +111,10 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', ['response' => ['text' => 'ok']]);
 
         $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $this->nextReturning(200));
+        $middleware->process($request, $this->nextReturning(200));
 
         $this->assertCount(0, $httpClient->calls);
     }
@@ -139,11 +124,10 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', ['webhooks' => []]);
 
         $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $this->nextReturning(200));
+        $middleware->process($request, $this->nextReturning(200));
 
         $this->assertCount(0, $httpClient->calls);
     }
@@ -153,13 +137,12 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'webhooks' => [['url' => 'https://hook.example.com']],
         ]);
 
         $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $this->nextReturning(200));
+        $middleware->process($request, $this->nextReturning(200));
         EventLoop::run();
 
         $this->assertCount(1, $httpClient->calls);
@@ -171,7 +154,6 @@ final class WebHookMiddlewareTest extends TestCase
         $httpClient = $this->createCapturingHttpClient();
 
         $request = $this->createRequest();
-        $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', [
             'webhooks' => [
                 ['url' => 'https://hook1.example.com'],
@@ -180,30 +162,11 @@ final class WebHookMiddlewareTest extends TestCase
         ]);
 
         $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $this->nextReturning(200));
+        $middleware->process($request, $this->nextReturning(200));
         EventLoop::run();
 
         $this->assertCount(2, $httpClient->calls);
         $this->assertSame('https://hook1.example.com', $httpClient->calls[0]['uri']);
         $this->assertSame('https://hook2.example.com', $httpClient->calls[1]['uri']);
-    }
-
-    public function testUsesParserFromRequestAttribute(): void
-    {
-        $httpClient = $this->createCapturingHttpClient();
-        $parser = $this->createParser(['env' => ['hook_url' => 'https://hook.example.com']]);
-
-        $request = $this->createRequest();
-        $request->setAttribute('parser', $parser);
-        $request->setAttribute('data', [
-            'webhooks' => [['url' => '{env.hook_url}']],
-        ]);
-
-        $middleware = $this->createMiddleware($httpClient);
-        $middleware($request, $this->nextReturning(200));
-        EventLoop::run();
-
-        $this->assertCount(1, $httpClient->calls);
-        $this->assertSame('https://hook.example.com', $httpClient->calls[0]['uri']);
     }
 }

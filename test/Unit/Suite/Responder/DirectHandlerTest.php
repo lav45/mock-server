@@ -121,24 +121,34 @@ final class DirectHandlerTest extends TestCase
 
     // --- Response handling ---
 
-    public function testReturnsDecodedJsonOnSuccessfulResponse(): void
+    public function testInjectsRemoteResponse(): void
     {
-        $httpClient = $this->createHttpClientStub(200, '{"id":42,"name":"test"}');
+        $httpClient = $this->createHttpClientStub(200, '{"response":{"status":201}}');
         $handler = new DirectHandler($httpClient);
 
-        $result = $handler->request($this->createDirect());
+        $result = $handler->request($this->createDirect())->replace([]);
 
-        $this->assertSame(['id' => 42, 'name' => 'test'], $result);
+        $this->assertSame(['status' => 201], $result['response']);
     }
 
-    public function testReturnsEmptyArrayWhenBodyIsEmptyJsonObject(): void
+    public function testUnescapesBracesInRemoteData(): void
+    {
+        $body = \json_encode(['response' => ['body' => '\{\{x\}\}']], JSON_THROW_ON_ERROR);
+        $handler = new DirectHandler($this->createHttpClientStub(200, $body));
+
+        $result = $handler->request($this->createDirect())->replace([]);
+
+        $this->assertSame('{{x}}', $result['response']['body']);
+    }
+
+    public function testEmptyJsonObjectInjectsNothing(): void
     {
         $httpClient = $this->createHttpClientStub(200, '{}');
         $handler = new DirectHandler($httpClient);
 
-        $result = $handler->request($this->createDirect());
+        $result = $handler->request($this->createDirect())->replace(['response' => ['status' => 200]]);
 
-        $this->assertSame([], $result);
+        $this->assertSame(['status' => 200], $result['response']);
     }
 
     public function testThrowsRuntimeExceptionOnNonSuccessfulStatus(): void

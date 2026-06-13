@@ -24,28 +24,16 @@ final class ArrayHelper
 
     public static function map(array $data, \Closure $fn): array
     {
-        return self::mapTail($data, $fn);
-    }
-
-    private static function mapTail(array $data, \Closure $fn, array $result = [], array|null $keys = null): array
-    {
-        if ($keys === null) {
-            $keys = \array_keys($data);
+        $result = [];
+        foreach ($data as $key => $value) {
+            if (\is_array($value)) {
+                $result[$key] = self::map($value, $fn);
+            } elseif (\is_string($value)) {
+                $result[$key] = $fn($value);
+            } else {
+                $result[$key] = $value;
+            }
         }
-        if (empty($keys)) {
-            return $result;
-        }
-
-        $key = \array_shift($keys);
-        $value = $data[$key];
-
-        if (\is_array($value)) {
-            $result[$key] = self::mapTail($value, $fn);
-        } elseif (\is_string($value)) {
-            $result[$key] = $fn($value);
-        } else {
-            $result[$key] = $value;
-        }
-        return self::mapTail($data, $fn, $result, $keys);
+        return $result;
     }
 }

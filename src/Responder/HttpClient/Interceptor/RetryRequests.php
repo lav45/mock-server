@@ -33,6 +33,8 @@ final class RetryRequests implements ApplicationInterceptor
                 if ($request->isIdempotent() || $request->isUnprocessed()) {
                     // Request was deemed retryable by connection, so carry on.
                     $request = $clonedRequest;
+                } else {
+                    throw $exception;
                 }
             }
         } while ($attempt++ <= $this->retryLimit);

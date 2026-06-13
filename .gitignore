@@ -6,4 +6,5 @@ vendor
 /.draft
 /coverage.xml
 /coverage
+/.claude
 CLAUDE.md

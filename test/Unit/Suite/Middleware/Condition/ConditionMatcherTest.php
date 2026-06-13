@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware\Condition;
 
-use Lav45\MockServer\DataFactory\Condition\ConditionHandler;
 use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
@@ -10,11 +9,19 @@ use PHPUnit\Framework\TestCase;
 
 final class ConditionMatcherTest extends TestCase
 {
-    private ConditionHandler $matcher;
+    private SpecificationFactory $factory;
 
     protected function setUp(): void
     {
-        $this->matcher = new ConditionHandler(new SpecificationFactory());
+        $this->factory = new SpecificationFactory();
+    }
+
+    /**
+     * The expression is resolved up front (as PrepareMiddleware does), then matched on literals.
+     */
+    private function check(array $expression, InlineParser $parser): bool
+    {
+        return $this->factory->create($parser->replace($expression))->isSatisfiedBy(null);
     }
 
     private function parser(array $request = [], array $env = []): InlineParser
@@ -39,23 +46,23 @@ final class ConditionMatcherTest extends TestCase
 
     public function testEmptyMatchAlwaysTrue(): void
     {
-        $this->assertTrue($this->matcher->matches([], $this->parser()));
+        $this->assertTrue($this->check([], $this->parser()));
     }
 
     // --- field = value ---
 
     public function testFieldEqMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.body.status', '=', 'active'],
+        $this->assertTrue($this->check(
+            ['=', '{{request.body.status}}', 'active'],
             $this->parser(['body' => ['status' => 'active']]),
         ));
     }
 
     public function testFieldEqMismatch(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.status', '=', 'active'],
+        $this->assertFalse($this->check(
+            ['=', '{{request.body.status}}', 'active'],
             $this->parser(['body' => ['status' => 'inactive']]),
         ));
     }
@@ -64,12 +71,12 @@ final class ConditionMatcherTest extends TestCase
 
     public function testFieldGt(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.body.amount', '>', 1000],
+        $this->assertTrue($this->check(
+            ['>', '{{request.body.amount}}', 1000],
             $this->parser(['body' => ['amount' => 1500]]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.amount', '>', 1000],
+        $this->assertFalse($this->check(
+            ['>', '{{request.body.amount}}', 1000],
             $this->parser(['body' => ['amount' => 500]]),
         ));
     }
@@ -78,20 +85,20 @@ final class ConditionMatcherTest extends TestCase
 
     public function testDotNotationNestedKey(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.body.user.address.city', '=', 'Moscow'],
+        $this->assertTrue($this->check(
+            ['=', '{{request.body.user.address.city}}', 'Moscow'],
             $this->parser(['body' => ['user' => ['address' => ['city' => 'Moscow']]]]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.user.address.city', '=', 'Moscow'],
+        $this->assertFalse($this->check(
+            ['=', '{{request.body.user.address.city}}', 'Moscow'],
             $this->parser(['body' => ['user' => ['address' => ['city' => 'London']]]]),
         ));
     }
 
     public function testDotNotationMissingPath(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.user.address.city', '=', 'Moscow'],
+        $this->assertFalse($this->check(
+            ['=', '{{request.body.user.address.city}}', 'Moscow'],
             $this->parser(['body' => ['user' => []]]),
         ));
     }
@@ -100,8 +107,8 @@ final class ConditionMatcherTest extends TestCase
 
     public function testQueryFieldMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.query.dry_run', '=', 'true'],
+        $this->assertTrue($this->check(
+            ['=', '{{request.query.dry_run}}', 'true'],
             $this->parser(['query' => ['dry_run' => 'true']]),
         ));
     }
@@ -110,16 +117,16 @@ final class ConditionMatcherTest extends TestCase
 
     public function testHeaderMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.headers.x-role', '=', 'admin'],
+        $this->assertTrue($this->check(
+            ['=', '{{request.headers.x-role}}', 'admin'],
             $this->parser(['headers' => ['x-role' => 'admin']]),
         ));
     }
 
     public function testHeaderMismatch(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['request.headers.x-role', '!=', 'premium'],
+        $this->assertFalse($this->check(
+            ['!=', '{{request.headers.x-role}}', 'premium'],
             $this->parser(['headers' => ['x-role' => 'premium']]),
         ));
     }
@@ -128,12 +135,12 @@ final class ConditionMatcherTest extends TestCase
 
     public function testParamsRegexMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.params.id', '~', '^test-'],
+        $this->assertTrue($this->check(
+            ['~', '{{request.params.id}}', '^test-'],
             $this->parser(['params' => ['id' => 'test-123']]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.params.id', '~', '^test-'],
+        $this->assertFalse($this->check(
+            ['~', '{{request.params.id}}', '^test-'],
             $this->parser(['params' => ['id' => 'prod-456']]),
         ));
     }
@@ -142,12 +149,12 @@ final class ConditionMatcherTest extends TestCase
 
     public function testMethodMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.method', '=', 'POST'],
+        $this->assertTrue($this->check(
+            ['=', '{{request.method}}', 'POST'],
             $this->parser(['method' => 'POST']),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.method', '=', 'POST'],
+        $this->assertFalse($this->check(
+            ['=', '{{request.method}}', 'POST'],
             $this->parser(['method' => 'GET']),
         ));
     }
@@ -156,12 +163,12 @@ final class ConditionMatcherTest extends TestCase
 
     public function testPathRegexMatch(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.path', '~', '^/api/'],
+        $this->assertTrue($this->check(
+            ['~', '{{request.path}}', '^/api/'],
             $this->parser(['path' => '/api/users/42']),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.path', '~', '^/api/'],
+        $this->assertFalse($this->check(
+            ['~', '{{request.path}}', '^/api/'],
             $this->parser(['path' => '/health']),
         ));
     }
@@ -170,12 +177,12 @@ final class ConditionMatcherTest extends TestCase
 
     public function testInOperator(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.body.currency', 'in', ['USD', 'EUR']],
+        $this->assertTrue($this->check(
+            ['in', '{{request.body.currency}}', ['USD', 'EUR']],
             $this->parser(['body' => ['currency' => 'USD']]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.currency', 'in', ['USD', 'EUR']],
+        $this->assertFalse($this->check(
+            ['in', '{{request.body.currency}}', ['USD', 'EUR']],
             $this->parser(['body' => ['currency' => 'GBP']]),
         ));
     }
@@ -184,16 +191,16 @@ final class ConditionMatcherTest extends TestCase
 
     public function testExistsTrueWhenFieldPresent(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['exists', 'request.headers.x-dry-run'],
+        $this->assertTrue($this->check(
+            ['exists', '{{request.headers.x-dry-run}}'],
             $this->parser(['headers' => ['x-dry-run' => '1']]),
         ));
     }
 
     public function testExistsFalseWhenFieldAbsent(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['exists', 'request.headers.x-dry-run'],
+        $this->assertFalse($this->check(
+            ['exists', '{{request.headers.x-dry-run}}'],
             $this->parser(['headers' => []]),
         ));
     }
@@ -202,32 +209,32 @@ final class ConditionMatcherTest extends TestCase
 
     public function testEmptyTrueWhenNull(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['empty', 'request.body.note'],
+        $this->assertTrue($this->check(
+            ['empty', '{{request.body.note}}'],
             $this->parser(['body' => ['note' => null]]),
         ));
     }
 
     public function testEmptyTrueWhenEmptyString(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['empty', 'request.body.note'],
+        $this->assertTrue($this->check(
+            ['empty', '{{request.body.note}}'],
             $this->parser(['body' => ['note' => '']]),
         ));
     }
 
     public function testEmptyFalseWhenHasValue(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['empty', 'request.body.note'],
+        $this->assertFalse($this->check(
+            ['empty', '{{request.body.note}}'],
             $this->parser(['body' => ['note' => 'hello']]),
         ));
     }
 
     public function testEmptyFalseWhenFieldAbsent(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['empty', 'request.body.note'],
+        $this->assertFalse($this->check(
+            ['empty', '{{request.body.note}}'],
             $this->parser(['body' => []]),
         ));
     }
@@ -236,24 +243,24 @@ final class ConditionMatcherTest extends TestCase
 
     public function testNotExists(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['not', ['exists', 'request.headers.x-dry-run']],
+        $this->assertTrue($this->check(
+            ['not', ['exists', '{{request.headers.x-dry-run}}']],
             $this->parser(['headers' => []]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['not', ['exists', 'request.headers.x-dry-run']],
+        $this->assertFalse($this->check(
+            ['not', ['exists', '{{request.headers.x-dry-run}}']],
             $this->parser(['headers' => ['x-dry-run' => '1']]),
         ));
     }
 
     public function testNotIn(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['not', ['request.body.currency', 'in', ['USD', 'EUR']]],
+        $this->assertTrue($this->check(
+            ['not', ['in', '{{request.body.currency}}', ['USD', 'EUR']]],
             $this->parser(['body' => ['currency' => 'GBP']]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['not', ['request.body.currency', 'in', ['USD', 'EUR']]],
+        $this->assertFalse($this->check(
+            ['not', ['in', '{{request.body.currency}}', ['USD', 'EUR']]],
             $this->parser(['body' => ['currency' => 'USD']]),
         ));
     }
@@ -263,16 +270,16 @@ final class ConditionMatcherTest extends TestCase
     public function testAndAllMustMatch(): void
     {
         $expr = ['and',
-            ['request.body.amount', '>', 1000],
-            ['request.body.currency', 'in', ['USD', 'EUR']],
-            ['request.headers.x-role', '!=', 'premium'],
+            ['>', '{{request.body.amount}}', 1000],
+            ['in', '{{request.body.currency}}', ['USD', 'EUR']],
+            ['!=', '{{request.headers.x-role}}', 'premium'],
         ];
 
-        $this->assertTrue($this->matcher->matches($expr, $this->parser([
+        $this->assertTrue($this->check($expr, $this->parser([
             'body' => ['amount' => 1500, 'currency' => 'USD'],
             'headers' => ['x-role' => 'user'],
         ])));
-        $this->assertFalse($this->matcher->matches($expr, $this->parser([
+        $this->assertFalse($this->check($expr, $this->parser([
             'body' => ['amount' => 1500, 'currency' => 'USD'],
             'headers' => ['x-role' => 'premium'],
         ])));
@@ -283,19 +290,19 @@ final class ConditionMatcherTest extends TestCase
     public function testOrAnyCanMatch(): void
     {
         $expr = ['or',
-            ['request.query.dry_run', '=', 'true'],
-            ['exists', 'request.headers.x-dry-run'],
+            ['=', '{{request.query.dry_run}}', 'true'],
+            ['exists', '{{request.headers.x-dry-run}}'],
         ];
 
-        $this->assertTrue($this->matcher->matches($expr, $this->parser([
+        $this->assertTrue($this->check($expr, $this->parser([
             'query' => ['dry_run' => 'true'],
             'headers' => [],
         ])));
-        $this->assertTrue($this->matcher->matches($expr, $this->parser([
+        $this->assertTrue($this->check($expr, $this->parser([
             'query' => [],
             'headers' => ['x-dry-run' => '1'],
         ])));
-        $this->assertFalse($this->matcher->matches($expr, $this->parser([
+        $this->assertFalse($this->check($expr, $this->parser([
             'query' => [],
             'headers' => [],
         ])));
@@ -308,22 +315,22 @@ final class ConditionMatcherTest extends TestCase
         // (amount > 1000 AND currency IN [USD,EUR]) OR (x-role != premium AND x-banned = true)
         $expr = ['or',
             ['and',
-                ['request.body.amount', '>', 1000],
-                ['request.body.currency', 'in', ['USD', 'EUR']],
+                ['>', '{{request.body.amount}}', 1000],
+                ['in', '{{request.body.currency}}', ['USD', 'EUR']],
             ],
             ['and',
-                ['request.headers.x-role', '!=', 'premium'],
-                ['request.headers.x-banned', '=', 'true'],
+                ['!=', '{{request.headers.x-role}}', 'premium'],
+                ['=', '{{request.headers.x-banned}}', 'true'],
             ],
         ];
 
-        $this->assertTrue($this->matcher->matches($expr, $this->parser([
+        $this->assertTrue($this->check($expr, $this->parser([
             'body' => ['amount' => 1500, 'currency' => 'USD'],
         ])));
-        $this->assertTrue($this->matcher->matches($expr, $this->parser([
+        $this->assertTrue($this->check($expr, $this->parser([
             'headers' => ['x-role' => 'user', 'x-banned' => 'true'],
         ])));
-        $this->assertFalse($this->matcher->matches($expr, $this->parser([
+        $this->assertFalse($this->check($expr, $this->parser([
             'body' => ['amount' => 500, 'currency' => 'USD'],
             'headers' => ['x-role' => 'premium'],
         ])));
@@ -333,30 +340,30 @@ final class ConditionMatcherTest extends TestCase
 
     public function testIncompleteExpressionNeverMatches(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.status'],
+        $this->assertFalse($this->check(
+            ['{{request.body.status}}'],
             $this->parser(['body' => ['status' => 'active']]),
         ));
     }
 
     public function testFieldWithoutValueNeverMatches(): void
     {
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.status', '='],
+        $this->assertFalse($this->check(
+            ['=', '{{request.body.status}}'],
             $this->parser(['body' => ['status' => 'active']]),
         ));
     }
 
-    // --- env value in template ---
+    // --- env value in expected ---
 
     public function testEnvValueInExpected(): void
     {
-        $this->assertTrue($this->matcher->matches(
-            ['request.body.amount', '>', '{{env.limit}}'],
+        $this->assertTrue($this->check(
+            ['>', '{{request.body.amount}}', '{{env.limit}}'],
             $this->parser(['body' => ['amount' => 1500]], ['limit' => 1000]),
         ));
-        $this->assertFalse($this->matcher->matches(
-            ['request.body.amount', '>', '{{env.limit}}'],
+        $this->assertFalse($this->check(
+            ['>', '{{request.body.amount}}', '{{env.limit}}'],
             $this->parser(['body' => ['amount' => 500]], ['limit' => 1000]),
         ));
     }
