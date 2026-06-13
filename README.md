@@ -29,6 +29,7 @@ webhooks, and automatic reloading of mock files.
         - [Request parameters](docs/response/content.md#request-parameters) - You can get data from your request and use it in the response
     - [Proxy](docs/response/proxy.md)
     - [Data provider](docs/response/data.md)
+- [Conditions](docs/conditions.md) - Conditional response overrides evaluated before the default response
 - [WebHooks](docs/webhooks.md)
     - [Faker](docs/webhooks.md#faker) - Generate random data
 - [Direct](docs/direct.md) - Delegate response generation to a remote server

@@ -138,7 +138,7 @@ final class DispatcherFactoryTest extends TestCase
 
         // Маршруты зарегистрированы с мигрированными данными
         $expected = [
-            'version' => 1,
+            'version' => 2,
             'request' => [
                 'method' => 'GET',
                 'path' => '/old/1',
@@ -152,7 +152,7 @@ final class DispatcherFactoryTest extends TestCase
         $this->assertEquals($expected, $result[1]);
 
         $expected = [
-            'version' => 1,
+            'version' => 2,
             'request' => [
                 'method' => 'GET',
                 'path' => '/old/2',
@@ -170,7 +170,7 @@ final class DispatcherFactoryTest extends TestCase
     {
         $data = [
             [
-                'version' => 1,
+                'version' => 2,
                 'request' => [
                     'method' => 'GET',
                     'path' => '/users',

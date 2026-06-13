@@ -1,6 +1,6 @@
 {
     "name": "lav45/mock-server",
-    "version": "4.3.1",
+    "version": "4.4.0",
     "type": "library",
     "description": "HTTP mocking application for testing",
     "keywords": [
@@ -70,12 +70,18 @@
     "autoload": {
         "psr-4": {
             "Lav45\\MockServer\\": "src"
-        }
+        },
+        "classmap": [
+            "migrates/"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "Lav45\\MockServer\\Test\\": "test"
-        }
+        },
+        "classmap": [
+            "test/Unit/migrates/"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -24,6 +24,7 @@ $config = new Config('mock-server')
         'line_ending' => true,
         'multiline_whitespace_before_semicolons' => true,
         'native_function_invocation' => ['include' => ['@internal'], 'scope' => 'namespaced'],
+        'new_expression_parentheses' => true,
         'no_empty_phpdoc' => true,
         'no_extra_blank_lines' => ['tokens' => ['extra']],
         'no_superfluous_phpdoc_tags' => true,

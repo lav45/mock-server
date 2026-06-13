@@ -162,10 +162,10 @@ Parentheses when describing the path to the parameter:
             "body": {
                 "ID1": "ID: {request.query.id}",
                 "ID2": "ID: {{request.query.id}}",
-                "ID3": "ID: {request.post.id}",
-                "ID4": "ID: {{request.post.id}}",
+                "ID3": "ID: {request.body.id}",
+                "ID4": "ID: {{request.body.id}}",
                 "query": "{{request.query}}",
-                "post": "{{request.post}}",
+                "body": "{{request.body}}",
                 "params": "{{request.params}}"
             }
         }
@@ -190,7 +190,7 @@ Response:
     "query": {
         "id": "200"
     },
-    "post": {
+    "body": {
         "id": 300
     },
     "params": {

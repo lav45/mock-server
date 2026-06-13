@@ -8,17 +8,11 @@ final readonly class Migrator
 {
     public static function create(string $path): \Closure
     {
-        $abstract = $path . '/Migration.php';
-        if (\is_file($abstract)) {
-            include_once $abstract;
-        }
-
         $files = \glob($path . '/v*_*.php') ?: [];
         \sort($files, SORT_NATURAL);
 
         $migrates = [];
         foreach ($files as $file) {
-            include_once $file;
             $class = \basename($file, '.php');
             $migrates[] = new $class();
         }

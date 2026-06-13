@@ -18,10 +18,11 @@ final readonly class ParserFactory
         return $this->parser->withData([
             'request' => [
                 'method' => $request->getMethod(),
+                'path' => $request->getUri()->getPath(),
                 'headers' => static fn() => $requestAdapter->getHeaders(),
                 'params' => $request->getAttribute('params'),
                 'query' => static fn() => $requestAdapter->getQuery(),
-                'post' => static fn() => $requestAdapter->getData(),
+                'body' => static fn() => $requestAdapter->getData(),
                 'rawBody' => static fn() => $requestAdapter->getBody(),
             ],
             'env' => $this->parser->replace($env),

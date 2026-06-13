@@ -110,15 +110,18 @@ The direct server returns a JSON that describes the final response and optionall
 ## Placeholders and Faker
 
 The direct server can return strings containing placeholders or [Faker](https://fakerphp.github.io) expressions. These
-will be resolved by the mock
-server using the original request context. Available placeholders:
+will be resolved by the mock server using the original request context. Available placeholders:
 
-| Placeholder           | Description                                |
-|-----------------------|--------------------------------------------|
-| `{{request.params}}`  | Path parameters from the original request  |
-| `{{request.query}}`   | Query parameters from the original request |
-| `{{request.post}}`    | Parsed body from the original request      |
-| `{{request.headers}}` | Headers from the original request          |
+| Placeholder           | Description                                                  |
+|-----------------------|--------------------------------------------------------------|
+| `{{request.method}}`  | HTTP method of the original request                          |
+| `{{request.path}}`    | URL path of the original request                             |
+| `{{request.params}}`  | Path parameters from the original request                    |
+| `{{request.query}}`   | Query parameters from the original request                   |
+| `{{request.headers}}` | Headers from the original request                            |
+| `{{request.body}}`    | Parsed body from the original request                        |
+| `{{request.rawBody}}` | Raw body string from the original request                    |
+| `{{env.KEY}}`         | Value from the `env` block or a server environment variable  |
 
 For a full list of placeholders and Faker usage, see Faker integration.
 
@@ -188,7 +191,7 @@ In practice this is rarely needed, but it is available for edge cases where you 
                     "body": {
                         "originalId": "{{request.params.id}}",
                         "originalQuery": "{{request.query}}",
-                        "originalBody": "{{request.post}}"
+                        "originalBody": "{{request.body}}"
                     }
                 },
                 "webhooks": [

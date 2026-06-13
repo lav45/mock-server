@@ -17,12 +17,16 @@ use Lav45\MockServer\Bootstrap\Migrator;
 use Lav45\MockServer\Bootstrap\MockStorage;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
 use Lav45\MockServer\DataFactory\CollectionFactory;
+use Lav45\MockServer\DataFactory\Condition\ConditionHandler;
+use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
+use Lav45\MockServer\DataFactory\ConditionFactory;
 use Lav45\MockServer\DataFactory\ContentFactory;
 use Lav45\MockServer\DataFactory\DirectFactory;
 use Lav45\MockServer\DataFactory\ParserFactory;
 use Lav45\MockServer\DataFactory\ProxyFactory;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
 use Lav45\MockServer\Middleware\CollectionMiddleware;
+use Lav45\MockServer\Middleware\ConditionMiddleware;
 use Lav45\MockServer\Middleware\ContentMiddleware;
 use Lav45\MockServer\Middleware\DirectMiddleware;
 use Lav45\MockServer\Middleware\FallbackMiddleware;
@@ -70,6 +74,12 @@ use Lav45\MockServer\Responder\WebHookHandler;
         Pipeline::create(
             new ParserMiddleware(
                 factory: new ParserFactory($parser),
+            ),
+            new ConditionMiddleware(
+                factory: new ConditionFactory(),
+                handler: new ConditionHandler(
+                    new SpecificationFactory(),
+                ),
             ),
             new DirectMiddleware(
                 factory: new DirectFactory($config->getFilterHeaders()),

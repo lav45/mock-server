@@ -1,0 +1,8 @@
+<?php declare(strict_types=1);
+
+namespace Lav45\MockServer\Domain\ValueObject;
+
+enum Value
+{
+    case Undefined;
+}

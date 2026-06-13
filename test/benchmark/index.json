@@ -1,9 +1,13 @@
 [
     {
+        "version": 8,
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "text": "Hello world!"
+            },
+            "headers": {
+                "content-type": "application/json"
             }
         }
     }

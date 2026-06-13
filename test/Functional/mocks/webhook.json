@@ -35,10 +35,10 @@
                 "body": {
                     "ID1": "ID: {request.query.id}",
                     "ID2": "ID: {{request.query.id}}",
-                    "ID3": "ID: {request.post.id}",
-                    "ID4": "ID: {{request.post.id}}",
+                    "ID3": "ID: {request.body.id}",
+                    "ID4": "ID: {{request.body.id}}",
                     "get": "{{request.query}}",
-                    "post": "{{request.post}}",
+                    "post": "{{request.body}}",
                     "params": "{{request.params}}",
                     "paramsId": "{{request.params.id}}"
                 }

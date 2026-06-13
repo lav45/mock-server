@@ -37,7 +37,7 @@
                         "mainParams": "\\{\\{request.params\\}\\}",
                         "directParams": "{{request.params}}",
                         "directGet": "{{request.query}}",
-                        "directPost": "{{request.post}}",
+                        "directPost": "{{request.body}}",
                         "directHeaders": "{{request.headers}}"
                     }
                 },

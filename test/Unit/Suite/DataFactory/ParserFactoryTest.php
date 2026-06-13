@@ -73,7 +73,7 @@ final class ParserFactoryTest extends TestCase
             body: '{"id":1}',
         );
         $parser = new ParserFactory($this->createParser())->create($request, []);
-        $this->assertSame(1, $parser->replace('{{request.post.id}}'));
+        $this->assertSame(1, $parser->replace('{{request.body.id}}'));
     }
 
     public function testCreateExposesRequestHeaders(): void

@@ -13,7 +13,7 @@ final class ParamParser implements VariableParser
     public function __construct(
         private readonly InlineParser $inlineParser,
     ) {
-        $this->parser = new BaseParser('([.\w]+)');
+        $this->parser = new BaseParser('([.\w-]+)');
     }
 
     public function withData(array $data): self

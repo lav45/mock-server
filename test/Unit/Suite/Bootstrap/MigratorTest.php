@@ -11,7 +11,7 @@ final class MigratorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->migrate = Migrator::create(\dirname(__DIR__, 4) . '/migrates');
+        $this->migrate = Migrator::create(\dirname(__DIR__, 2) . '/migrates');
     }
 
     public function testMigrateDeprecatedFormat(): void
@@ -24,88 +24,18 @@ final class MigratorTest extends TestCase
                 'url' => '/user/{id}',
             ],
             'response' => [
-                'json' => [
-                    'id' => '{request.urlParams.id}',
-                    'page' => '{request.get.page}',
-                    'content' => '{request.body}',
-                ],
-            ],
-            'webhooks' => [
-                [
-                    'url' => 'http://example.com/hook',
-                    'text' => 'id={request.urlParams.id}',
-                ],
-                [
-                    'url' => 'http://example.com/hook',
-                    'json' => ['id' => '{request.get.id}'],
-                ],
+                'text' => 'Hello',
             ],
         ];
 
         $expected = [
-            'version' => 8,
+            'version' => 2,
             'request' => [
                 'method' => 'POST',
                 'path' => '/user/{id}',
             ],
             'response' => [
-                'body' => [
-                    'id' => '{request.params.id}',
-                    'page' => '{request.query.page}',
-                    'content' => '{request.rawBody}',
-                ],
-                'headers' => [
-                    'content-type' => 'application/json',
-                ],
-            ],
-            'webhooks' => [
-                [
-                    'url' => 'http://example.com/hook',
-                    'body' => 'id={request.params.id}',
-                ],
-                [
-                    'url' => 'http://example.com/hook',
-                    'body' => ['id' => '{request.query.id}'],
-                    'headers' => [
-                        'content-type' => 'application/json',
-                    ],
-                ],
-            ],
-        ];
-
-        $this->assertSame($expected, $migrate($data));
-    }
-
-    public function testMigrateDeprecatedDataType(): void
-    {
-        $migrate = $this->migrate;
-
-        $data = [
-            'request' => [
-                'method' => 'GET',
-                'path' => '/users',
-            ],
-            'response' => [
-                'type' => 'data',
-                'json' => [
-                    ['id' => 1],
-                    ['id' => 2],
-                ],
-            ],
-        ];
-
-        $expected = [
-            'version' => 8,
-            'request' => [
-                'method' => 'GET',
-                'path' => '/users',
-            ],
-            'response' => [
-                'type' => 'data',
-                'items' => [
-                    ['id' => 1],
-                    ['id' => 2],
-                ],
+                'body' => 'Hello',
             ],
         ];
 
@@ -117,24 +47,15 @@ final class MigratorTest extends TestCase
         $migrate = $this->migrate;
 
         $data = [
-            'version' => 8,
+            'version' => 2,
             'request' => [
                 'method' => 'POST',
                 'path' => '/user/{id}',
             ],
             'response' => [
                 'status' => 200,
-                'headers' => [
-                    'content-type' => 'application/json',
-                ],
                 'body' => [
                     'id' => '{request.params.id}',
-                ],
-            ],
-            'webhooks' => [
-                [
-                    'url' => 'http://example.com/hook',
-                    'body' => 'plain text',
                 ],
             ],
         ];
@@ -148,13 +69,13 @@ final class MigratorTest extends TestCase
 
         // Устаревший формат, но версия актуальная — миграции не применяются
         $data = [
-            'version' => 8,
+            'version' => 2,
             'request' => [
                 'method' => 'GET',
                 'url' => '/user/{id}',
             ],
             'response' => [
-                'json' => ['id' => '{request.urlParams.id}'],
+                'text' => 'Hello',
             ],
         ];
 
@@ -165,28 +86,24 @@ final class MigratorTest extends TestCase
     {
         $migrate = $this->migrate;
 
-        // Версия ниже текущей — данные обновляются, версия прописывается первой
+        // Версия 1 — v1 пропускается (url остаётся), v2 применяется, версия прописывается первой
         $data = [
-            'version' => 2,
+            'version' => 1,
             'request' => [
-                'path' => '/response/content/status',
+                'url' => '/user/{id}',
             ],
             'response' => [
-                'type' => 'content',
-                'status' => 401,
-                'body' => 'Unauthorized',
+                'text' => 'Hello',
             ],
         ];
 
         $expected = [
-            'version' => 8,
+            'version' => 2,
             'request' => [
-                'path' => '/response/content/status',
+                'url' => '/user/{id}',
             ],
             'response' => [
-                'type' => 'content',
-                'status' => 401,
-                'body' => 'Unauthorized',
+                'body' => 'Hello',
             ],
         ];
 

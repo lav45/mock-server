@@ -24,6 +24,9 @@ final readonly class v8_request_query extends Migration
                 if (str_contains($value, '{request.body')) {
                     $value = str_replace('{request.body', '{request.rawBody', $value);
                 }
+                if (str_contains($value, '{request.post')) {
+                    $value = str_replace('{request.post', '{request.body', $value);
+                }
             } elseif (is_array($value)) {
                 $value = $this->replaceRequestData($value);
             }

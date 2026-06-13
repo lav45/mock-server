@@ -57,6 +57,7 @@ FROM tool AS build
 
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
+COPY migrates /app/migrates
 
 RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
 
@@ -78,4 +79,5 @@ FROM base-server AS server
 
 COPY bin /app/bin
 COPY src /app/src
+COPY migrates /app/migrates
 COPY --from=build --chown=root:root /app/vendor /app/vendor
