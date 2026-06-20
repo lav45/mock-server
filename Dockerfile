@@ -79,5 +79,6 @@ FROM base-server AS server
 
 COPY bin /app/bin
 COPY src /app/src
+COPY schema /app/schema
 COPY migrates /app/migrates
 COPY --from=build --chown=root:root /app/vendor /app/vendor

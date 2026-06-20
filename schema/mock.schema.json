@@ -1,0 +1,194 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/lav45/mock-server/schema/mock.schema.json",
+    "title": "Mock definition",
+    "description": "Schema for a single mock object (one element of a mock file array), validated after migration.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "version": {"type": "integer"},
+        "request": {"$ref": "#/$defs/request"},
+        "env": {"$ref": "#/$defs/map"},
+        "response": {"$ref": "#/$defs/response"},
+        "direct": {"$ref": "#/$defs/direct"},
+        "conditions": {"type": "array", "items": {"$ref": "#/$defs/condition"}},
+        "webhooks": {"type": "array", "items": {"$ref": "#/$defs/webhook"}}
+    },
+    "$defs": {
+        "request": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "method": {"$ref": "#/$defs/methods"},
+                "path": {"type": "string", "pattern": "^/"}
+            }
+        },
+        "methods": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}, "minItems": 1}
+            ]
+        },
+        "response": {
+            "type": "object",
+            "properties": {
+                "type": {"enum": ["content", "proxy", "data"]}
+            },
+            "allOf": [
+                {
+                    "if": {"required": ["type"], "properties": {"type": {"const": "proxy"}}},
+                    "then": {"$ref": "#/$defs/proxyResponse"}
+                },
+                {
+                    "if": {"required": ["type"], "properties": {"type": {"const": "data"}}},
+                    "then": {"$ref": "#/$defs/dataResponse"}
+                },
+                {
+                    "if": {
+                        "anyOf": [
+                            {"not": {"required": ["type"]}},
+                            {"properties": {"type": {"const": "content"}}}
+                        ]
+                    },
+                    "then": {"$ref": "#/$defs/contentResponse"}
+                }
+            ]
+        },
+        "contentResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {"const": "content"},
+                "status": {"$ref": "#/$defs/status"},
+                "headers": {"$ref": "#/$defs/headers"},
+                "body": true,
+                "delay": {"$ref": "#/$defs/delay"}
+            }
+        },
+        "proxyResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url"],
+            "properties": {
+                "type": {"const": "proxy"},
+                "url": {"type": "string"},
+                "headers": {"$ref": "#/$defs/headers"},
+                "content": true,
+                "delay": {"$ref": "#/$defs/delay"}
+            }
+        },
+        "dataResponse": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {"const": "data"},
+                "status": {"$ref": "#/$defs/status"},
+                "headers": {"$ref": "#/$defs/headers"},
+                "items": {"type": "array"},
+                "file": {"type": "string"},
+                "pagination": {"$ref": "#/$defs/pagination"},
+                "result": true,
+                "delay": {"$ref": "#/$defs/delay"}
+            }
+        },
+        "pagination": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "pageParam": {"type": "string"},
+                        "pageSizeParam": {"type": "string"},
+                        "defaultPageSize": {"type": ["integer", "string"]}
+                    }
+                },
+                {"type": "array", "maxItems": 0}
+            ]
+        },
+        "direct": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url"],
+            "properties": {
+                "url": {"type": "string"},
+                "headers": {"$ref": "#/$defs/headers"}
+            }
+        },
+        "webhook": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url"],
+            "properties": {
+                "delay": {"$ref": "#/$defs/delay"},
+                "method": {"type": "string"},
+                "url": {"type": "string"},
+                "headers": {"$ref": "#/$defs/headers"},
+                "body": true
+            }
+        },
+        "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["match", "response"],
+            "properties": {
+                "match": {"$ref": "#/$defs/matchExpr"},
+                "response": {"$ref": "#/$defs/response"},
+                "webhooks": {"type": "array", "items": {"$ref": "#/$defs/webhook"}}
+            }
+        },
+        "matchExpr": {
+            "type": "array",
+            "oneOf": [
+                {"type": "array", "maxItems": 0},
+                {
+                    "minItems": 2,
+                    "prefixItems": [{"enum": ["and", "or"]}],
+                    "items": {"$ref": "#/$defs/matchExpr"}
+                },
+                {
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "prefixItems": [{"const": "not"}, {"$ref": "#/$defs/matchExpr"}],
+                    "items": false
+                },
+                {
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "prefixItems": [{"enum": ["exists", "empty"]}, {"$ref": "#/$defs/fieldRef"}],
+                    "items": false
+                },
+                {
+                    "minItems": 3,
+                    "maxItems": 3,
+                    "prefixItems": [
+                        {"enum": ["=", "!=", ">", ">=", "<", "<=", "contains", "~"]},
+                        {"$ref": "#/$defs/fieldRef"},
+                        true
+                    ],
+                    "items": false
+                },
+                {
+                    "minItems": 3,
+                    "maxItems": 3,
+                    "prefixItems": [{"const": "in"}, {"$ref": "#/$defs/fieldRef"}, {"type": "array"}],
+                    "items": false
+                }
+            ]
+        },
+        "fieldRef": {"type": "string", "pattern": "^\\{\\{.*\\}\\}$"},
+        "status": {"type": ["integer", "string"]},
+        "delay": {"type": ["number", "string"]},
+        "headers": {
+            "anyOf": [
+                {"type": "object", "additionalProperties": {"type": ["string", "number", "boolean"]}},
+                {"type": "array", "maxItems": 0}
+            ]
+        },
+        "map": {
+            "anyOf": [
+                {"type": "object"},
+                {"type": "array", "maxItems": 0}
+            ]
+        }
+    }
+}

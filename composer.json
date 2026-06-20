@@ -38,7 +38,8 @@
         "monolog/monolog": "3.9.*",
         "fakerphp/faker": "v1.24.*",
         "yiisoft/data": "1.0.*",
-        "psr/log": "3.0.*"
+        "psr/log": "3.0.*",
+        "opis/json-schema": "2.6.*"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "1.*",

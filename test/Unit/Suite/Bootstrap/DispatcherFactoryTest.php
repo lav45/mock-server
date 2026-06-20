@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
 use FastRoute\Dispatcher;
 use Lav45\MockServer\Bootstrap\DispatcherFactory;
+use Lav45\MockServer\Bootstrap\MockSchemaValidator;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -17,6 +18,7 @@ final class DispatcherFactoryTest extends TestCase
         $this->logger = new FakeLogger();
         $this->factory = new DispatcherFactory(
             migrate: static fn(array $data): array => $data,
+            validator: new MockSchemaValidator(),
             logger: $this->logger,
         );
     }
@@ -34,21 +36,21 @@ final class DispatcherFactoryTest extends TestCase
                     'method' => 'GET',
                     'path' => '/users',
                 ],
-                'response' => ['id' => 1],
+                'response' => ['body' => ['id' => 1]],
             ],
             [
                 'request' => [
                     'method' => ['POST', 'PUT'],
                     'path' => '/users',
                 ],
-                'response' => ['created' => true],
+                'response' => ['body' => ['created' => true]],
             ],
             [
                 'request' => [
                     'method' => 'DELETE',
                     'path' => '/users/1',
                 ],
-                'response' => ['deleted' => true],
+                'response' => ['body' => ['deleted' => true]],
             ],
         ];
 
@@ -69,7 +71,7 @@ final class DispatcherFactoryTest extends TestCase
                 'method' => 'GET',
                 'path' => '/users',
             ],
-            'response' => ['id' => 1],
+            'response' => ['body' => ['id' => 1]],
         ];
         $result = $dispatcher->dispatch('GET', '/users');
         $this->assertEquals(Dispatcher::FOUND, $result[0]);
@@ -80,7 +82,7 @@ final class DispatcherFactoryTest extends TestCase
                 'method' => ['POST', 'PUT'],
                 'path' => '/users',
             ],
-            'response' => ['created' => true],
+            'response' => ['body' => ['created' => true]],
         ];
         $result = $dispatcher->dispatch('POST', '/users');
         $this->assertEquals(Dispatcher::FOUND, $result[0]);
@@ -95,7 +97,7 @@ final class DispatcherFactoryTest extends TestCase
                 'method' => 'DELETE',
                 'path' => '/users/1',
             ],
-            'response' => ['deleted' => true],
+            'response' => ['body' => ['deleted' => true]],
         ];
         $result = $dispatcher->dispatch('DELETE', '/users/1');
         $this->assertEquals(Dispatcher::FOUND, $result[0]);
@@ -109,13 +111,13 @@ final class DispatcherFactoryTest extends TestCase
     {
         $migrate = static function (array $data): array {
             $data['request']['path'] = '/rewritten';
-            $data['response'] = 'migrated';
+            $data['response'] = ['body' => 'migrated'];
             return $data;
         };
 
-        $factory = new DispatcherFactory(migrate: $migrate, logger: $this->logger);
+        $factory = new DispatcherFactory($migrate, new MockSchemaValidator(), $this->logger);
         $dispatcher = $factory->create([
-            ['request' => ['method' => 'GET', 'path' => '/original'], 'response' => 'raw'],
+            ['request' => ['method' => 'GET', 'path' => '/original'], 'response' => ['body' => 'raw']],
         ]);
 
         // Маршрут зарегистрирован по пути, полученному из миграции, а не исходному
@@ -123,7 +125,7 @@ final class DispatcherFactoryTest extends TestCase
 
         $result = $dispatcher->dispatch('GET', '/rewritten');
         $this->assertEquals(Dispatcher::FOUND, $result[0]);
-        $this->assertSame('migrated', $result[1]['response']);
+        $this->assertSame(['body' => 'migrated'], $result[1]['response']);
     }
 
     public function testCreateWithInvalidUrl(): void
@@ -134,24 +136,24 @@ final class DispatcherFactoryTest extends TestCase
                     'method' => 'GET',
                     'path' => '/valid',
                 ],
-                'response' => 'ok',
+                'response' => ['body' => 'ok'],
             ],
             [
                 'request' => [
                     'method' => 'GET',
                     'path' => 'invalid',
                 ],
-                'response' => 'should not be added',
+                'response' => ['body' => 'should not be added'],
             ],
         ];
 
         $dispatcher = $this->factory->create($data);
 
-        // Проверяем, что ошибка залогирована
+        // Проверяем, что ошибка залогирована (путь "invalid" не проходит схему)
         $errorMessages = $this->logger->getMessages('error');
         $this->assertCount(1, $errorMessages);
         $this->assertInstanceOf(\InvalidArgumentException::class, $errorMessages[0]);
-        $this->assertStringContainsString('Invalid path: "invalid"', $errorMessages[0]->getMessage());
+        $this->assertStringContainsString('does not match schema', $errorMessages[0]->getMessage());
 
         // debug только для валидного маршрута
         $debugMessages = $this->logger->getMessages('debug');
@@ -185,6 +187,7 @@ final class DispatcherFactoryTest extends TestCase
         $options = ['cacheFile' => '/tmp/routes.cache'];
         $factory = new DispatcherFactory(
             migrate: static fn(array $data): array => $data,
+            validator: new MockSchemaValidator(),
             logger: $this->logger,
             options: $options,
         );
@@ -195,7 +198,7 @@ final class DispatcherFactoryTest extends TestCase
                     'method' => 'GET',
                     'path' => '/test',
                 ],
-                'response' => 'ok',
+                'response' => ['body' => 'ok'],
             ],
         ];
 
@@ -213,7 +216,7 @@ final class DispatcherFactoryTest extends TestCase
                 'method' => 'GET',
                 'path' => '/test',
             ],
-            'response' => 'ok',
+            'response' => ['body' => 'ok'],
         ];
         $this->assertEquals($expected, $result[1]);
     }
@@ -221,7 +224,8 @@ final class DispatcherFactoryTest extends TestCase
     public function testWarnsOnceWhenDataMigrated(): void
     {
         $factory = new DispatcherFactory(
-            migrate: static fn(array $data): array => $data + ['migrated' => true],
+            migrate: static fn(array $data): array => $data + ['version' => 2],
+            validator: new MockSchemaValidator(),
             logger: $this->logger,
         );
 
