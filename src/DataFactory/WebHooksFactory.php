@@ -31,12 +31,16 @@ final readonly class WebHooksFactory
     {
         $factory = $this->dataBuilder->withData($item);
 
+        $body = $factory->createBody();
+        $appendHeaders = $body->isJson() ? ['content-type' => 'application/json'] : [];
+        $headers = $factory->createHeaders($appendHeaders);
+
         return new WebHook(
             delay: $factory->createDelay(),
             url: $factory->createUrl(),
             method: $factory->createMethod(),
-            headers: $factory->createHeaders(),
-            body: $factory->createBody(),
+            headers: $headers,
+            body: $body,
         );
     }
 }

@@ -34,7 +34,7 @@ final class ContentFactoryTest extends TestCase
 
         $this->assertSame(200, $response->status->value);
         $this->assertSame([], $response->headers->toArray());
-        $this->assertSame('', $response->body->value);
+        $this->assertSame('', $response->body->toString());
     }
 
     public function testCreateWithJson(): void
@@ -46,7 +46,35 @@ final class ContentFactoryTest extends TestCase
 
         $this->assertSame(200, $response->status->value);
         $this->assertSame('application/json', $response->headers->toArray()['content-type']);
-        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($response->body->value));
+        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($response->body->toString()));
+    }
+
+    public function testCreateWithArrayBodyAutoSetsContentTypeHeader(): void
+    {
+        $response = new ContentFactory(new DataBuilder())->create([
+            'body' => ['id' => 1],
+        ]);
+
+        $this->assertSame('application/json', $response->headers->toArray()['content-type']);
+    }
+
+    public function testCreateWithJsonStringBodyAutoSetsContentTypeHeader(): void
+    {
+        $response = new ContentFactory(new DataBuilder())->create([
+            'body' => '{"id":1}',
+        ]);
+
+        $this->assertSame('application/json', $response->headers->toArray()['content-type']);
+    }
+
+    public function testCreateWithJsonBodyDoesNotOverrideExplicitContentTypeHeader(): void
+    {
+        $response = new ContentFactory(new DataBuilder())->create([
+            'headers' => ['content-type' => 'application/ld+json'],
+            'body' => ['id' => 1],
+        ]);
+
+        $this->assertSame('application/ld+json', $response->headers->toArray()['content-type']);
     }
 
     public function testCreateWithText(): void
@@ -57,7 +85,7 @@ final class ContentFactoryTest extends TestCase
 
         $this->assertSame(200, $response->status->value);
         $this->assertArrayNotHasKey('content-type', $response->headers->toArray());
-        $this->assertSame('hello world', $response->body->value);
+        $this->assertSame('hello world', $response->body->toString());
     }
 
     public function testCreateWithCustomStatus(): void
@@ -68,7 +96,7 @@ final class ContentFactoryTest extends TestCase
         ]);
 
         $this->assertSame(201, $response->status->value);
-        $this->assertSame(['created' => true], $this->decodeBody($response->body->value));
+        $this->assertSame(['created' => true], $this->decodeBody($response->body->toString()));
     }
 
     public function testCreateWithTextAndExplicitContentType(): void
@@ -80,7 +108,7 @@ final class ContentFactoryTest extends TestCase
 
         $this->assertSame(200, $response->status->value);
         $this->assertSame('text/plain; charset=utf-8', $response->headers->toArray()['content-type']);
-        $this->assertSame('OK', $response->body->value);
+        $this->assertSame('OK', $response->body->toString());
     }
 
     public function testCreateWithCustomHeaders(): void
@@ -109,6 +137,6 @@ final class ContentFactoryTest extends TestCase
         $headers = $response->headers->toArray();
         $this->assertSame('application/json', $headers['content-type']);
         $this->assertSame('abc123', $headers['X-Request-Id']);
-        $this->assertSame(['error' => 'invalid'], $this->decodeBody($response->body->value));
+        $this->assertSame(['error' => 'invalid'], $this->decodeBody($response->body->toString()));
     }
 }

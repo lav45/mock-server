@@ -18,4 +18,30 @@ final class BodyTest extends TestCase
         $result = Body::new($data)->toString();
         $this->assertEquals($text, $result);
     }
+
+    public function testToStringUnescapesSlashesAndUnicode(): void
+    {
+        $data = ['url' => 'https://example.com/path', 'name' => 'Привет'];
+        $text = '{"url":"https://example.com/path","name":"Привет"}';
+        $result = Body::new($data)->toString();
+        $this->assertEquals($text, $result);
+    }
+
+    public function testIsJsonWithArray(): void
+    {
+        $result = Body::new(['status' => true])->isJson();
+        $this->assertTrue($result);
+    }
+
+    public function testIsJsonWithValidJsonString(): void
+    {
+        $result = Body::new('{"status":true}')->isJson();
+        $this->assertTrue($result);
+    }
+
+    public function testIsJsonWithInvalidJsonString(): void
+    {
+        $result = Body::new('content')->isJson();
+        $this->assertFalse($result);
+    }
 }

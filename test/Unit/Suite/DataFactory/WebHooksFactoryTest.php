@@ -19,6 +19,18 @@ final class WebHooksFactoryTest extends TestCase
         return \json_decode($json, true, flags: JSON_THROW_ON_ERROR);
     }
 
+    // --- has() ---
+
+    public function testHasMatchesWhenWebhooksKeyPresent(): void
+    {
+        $this->assertTrue(new WebHooksFactory(new DataBuilder())->has(['webhooks' => []]));
+    }
+
+    public function testHasDoesNotMatchWhenWebhooksKeyMissing(): void
+    {
+        $this->assertFalse(new WebHooksFactory(new DataBuilder())->has([]));
+    }
+
     // --- Collection ---
 
     public function testCreateWithEmptyDataReturnsEmptyWebHooks(): void
@@ -107,7 +119,7 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($webHooks->items[0]->body->value));
+        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($webHooks->items[0]->body->toString()));
     }
 
     public function testCreateWithJsonBodySetsContentTypeHeader(): void
@@ -133,7 +145,19 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->value));
+        $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->toString()));
+    }
+
+    public function testCreateWithJsonStringBodySetsContentTypeHeader(): void
+    {
+        $webHooks = $this->create([
+            [
+                'url' => 'https://example.com',
+                'body' => '{"text": "Hello world"}',
+            ],
+        ]);
+
+        $this->assertSame('application/json', $webHooks->items[0]->headers->toArray()['content-type']);
     }
 
     // --- Text body ---
@@ -147,7 +171,7 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame('{"text": "Hello world"}', $webHooks->items[0]->body->value);
+        $this->assertSame('{"text": "Hello world"}', $webHooks->items[0]->body->toString());
     }
 
     public function testCreateWithNoBodyKeyDefaultsToEmptyBody(): void
@@ -156,13 +180,13 @@ final class WebHooksFactoryTest extends TestCase
             ['url' => 'https://example.com'],
         ]);
 
-        $this->assertSame('', $webHooks->items[0]->body->value);
+        $this->assertSame('', $webHooks->items[0]->body->toString());
     }
 
     public function testCreateWithTextBodyDoesNotSetContentTypeHeader(): void
     {
         $webHooks = $this->create([
-            ['url' => 'https://example.com', 'text' => 'hello'],
+            ['url' => 'https://example.com', 'body' => 'hello'],
         ]);
 
         $this->assertArrayNotHasKey('content-type', $webHooks->items[0]->headers->toArray());
@@ -211,6 +235,6 @@ final class WebHooksFactoryTest extends TestCase
         ]);
 
         $this->assertSame('application/x-www-form-urlencoded', $webHooks->items[0]->headers->toArray()['Content-Type']);
-        $this->assertSame('name=John&age=12', $webHooks->items[0]->body->value);
+        $this->assertSame('name=John&age=12', $webHooks->items[0]->body->toString());
     }
 }

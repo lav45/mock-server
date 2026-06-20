@@ -28,9 +28,13 @@ final readonly class ProxyFactory
         $url = $factory->createUrl($requestAdapter->getQuery());
         $method = new HttpMethod($request->getMethod());
 
-        $headers = $factory->createHeaders($requestAdapter->getHeaders());
-
         $body = $factory->createBodyContent() ?? Body::new($requestAdapter->getBody());
+
+        $appendHeaders = $requestAdapter->getHeaders();
+        if ($body->isJson()) {
+            $appendHeaders['content-type'] = 'application/json';
+        }
+        $headers = $factory->createHeaders($appendHeaders);
 
         return new ProxyResponse(
             url: $url,

@@ -4,18 +4,25 @@ namespace Lav45\MockServer\Domain\ValueObject;
 
 final readonly class Body
 {
-    private function __construct(public string $value) {}
+    private function __construct(
+        private string|array $value,
+    ) {}
 
     public function toString(): string
     {
+        if (\is_array($this->value)) {
+            return \json_encode($this->value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
         return $this->value;
     }
 
     public static function new(array|string $data): self
     {
-        if (\is_array($data)) {
-            $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        }
         return new self($data);
+    }
+
+    public function isJson(): bool
+    {
+        return \is_array($this->value) || \json_validate($this->value);
     }
 }

@@ -66,7 +66,26 @@ final class ProxyFactoryTest extends TestCase
         $request = $this->createRequest('POST', body: '{"key":"value"}');
         $proxy = new ProxyFactory(new DataBuilder())->create($request, ['url' => 'https://upstream.example.com']);
 
-        $this->assertSame('{"key":"value"}', $proxy->body->value);
+        $this->assertSame('{"key":"value"}', $proxy->body->toString());
+    }
+
+    public function testCreateSetsJsonContentTypeWhenForwardedBodyIsJson(): void
+    {
+        $request = $this->createRequest('POST', body: '{"key":"value"}');
+        $proxy = new ProxyFactory(new DataBuilder())->create($request, ['url' => 'https://upstream.example.com']);
+
+        $this->assertSame('application/json', $proxy->headers->toArray()['content-type']);
+    }
+
+    public function testCreateOverridesRequestContentTypeWhenContentIsJson(): void
+    {
+        $request = $this->createRequest('POST', headers: ['content-type' => ['text/plain']]);
+        $proxy = new ProxyFactory(new DataBuilder())->create($request, [
+            'url' => 'https://upstream.example.com',
+            'content' => ['id' => 1],
+        ]);
+
+        $this->assertSame('application/json', $proxy->headers->toArray()['content-type']);
     }
 
     public function testCreateUsesContentBodyWhenContentIsString(): void
@@ -77,7 +96,7 @@ final class ProxyFactoryTest extends TestCase
             'content' => 'overridden body',
         ]);
 
-        $this->assertSame('overridden body', $proxy->body->value);
+        $this->assertSame('overridden body', $proxy->body->toString());
     }
 
     public function testCreateUsesContentBodyWhenContentIsArray(): void
@@ -88,7 +107,7 @@ final class ProxyFactoryTest extends TestCase
             'content' => ['id' => 1, 'status' => 'ok'],
         ]);
 
-        $this->assertSame('{"id":1,"status":"ok"}', $proxy->body->value);
+        $this->assertSame('{"id":1,"status":"ok"}', $proxy->body->toString());
     }
 
     public function testCreateSetsJsonContentTypeWhenContentIsArray(): void

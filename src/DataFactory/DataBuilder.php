@@ -82,7 +82,9 @@ final class DataBuilder
         }
         if ($appendHeaders) {
             foreach ($appendHeaders as $name => $value) {
-                if (\in_array($name, $this->filterHeaders, true) === false) {
+                if (isset($headers[$name]) === false
+                    && \in_array($name, $this->filterHeaders, true) === false
+                ) {
                     $headers[$name] = $value;
                 }
             }
