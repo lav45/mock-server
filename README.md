@@ -59,13 +59,21 @@ Create mock file `./mocks/index.json` and put the content in it:
 ### Run the Mock Server (Docker)
 
 ```shell
-docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
+~$ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 lav45/mock-server:latest
 ```
 
 ### Checking
 
 ```shell
-curl http://127.0.0.1:8080
+~$ curl http://127.0.0.1:8080
+HTTP/1.1 200 OK
+content-type: application/json
+connection: keep-alive
+keep-alive: timeout=15
+date: Sat, 20 Jun 2026 19:47:09 GMT
+transfer-encoding: chunked
+
+{"text":"Hello world!"}
 ```
 
 ### Upgrade old mocks data from 4.x to 5.x
