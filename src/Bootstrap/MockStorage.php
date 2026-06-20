@@ -27,8 +27,10 @@ final readonly class MockStorage
      */
     public function getData(): iterable
     {
-        foreach ($this->getFiles() as $data) {
-            yield from $data;
+        foreach ($this->getFiles() as $file => $data) {
+            foreach ($data as $index => $mock) {
+                yield "{$file}[{$index}]" => $mock;
+            }
         }
     }
 

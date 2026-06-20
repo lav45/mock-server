@@ -152,8 +152,8 @@ final class DispatcherFactoryTest extends TestCase
         // Проверяем, что ошибка залогирована (путь "invalid" не проходит схему)
         $errorMessages = $this->logger->getMessages('error');
         $this->assertCount(1, $errorMessages);
-        $this->assertInstanceOf(\InvalidArgumentException::class, $errorMessages[0]);
-        $this->assertStringContainsString('does not match schema', $errorMessages[0]->getMessage());
+        $this->assertStringContainsString('1: ', $errorMessages[0]);
+        $this->assertStringContainsString('does not match schema', $errorMessages[0]);
 
         // debug только для валидного маршрута
         $debugMessages = $this->logger->getMessages('debug');

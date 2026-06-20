@@ -39,7 +39,8 @@ final readonly class MockSchemaValidator
 
         $errors = new ErrorFormatter()->formatKeyed($result->error());
         throw new \InvalidArgumentException(
-            'Mock does not match schema: ' . \json_encode($errors, JSON_THROW_ON_ERROR),
+            "Mock does not match schema:\n"
+            . \json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
         );
     }
 }

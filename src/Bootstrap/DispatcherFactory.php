@@ -23,7 +23,7 @@ final readonly class DispatcherFactory
     {
         $deprecated = false;
         $routeDefinitionCallback = function (RouteCollector $router) use ($mocks, &$deprecated): void {
-            foreach ($mocks as $mock) {
+            foreach ($mocks as $source => $mock) {
                 try {
                     $data = ($this->migrate)($mock);
                     $this->validator->validate($data);
@@ -33,7 +33,7 @@ final readonly class DispatcherFactory
                     }
                     $request = Request::fromArray($data['request'] ?? []);
                 } catch (\Throwable $exception) {
-                    $this->logger->error($exception);
+                    $this->logger->error(\sprintf('%s: %s', $source, $exception->getMessage()));
                     continue;
                 }
                 $router->addRoute(

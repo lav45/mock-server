@@ -55,7 +55,7 @@ final class MockStorageTest extends TestCase
                 \iterator_to_array($storage->getFiles()),
             );
             $this->assertSame(
-                [['request' => ['path' => '/']]],
+                ["{$filePath}[0]" => ['request' => ['path' => '/']]],
                 \iterator_to_array($storage->getData()),
             );
             $this->assertSame(["Parse: {$filePath}", "Parse: {$filePath}"], $logger->getMessages('debug'));
