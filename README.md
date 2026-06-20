@@ -48,7 +48,7 @@ Create mock file `./mocks/index.json` and put the content in it:
         },
         "response": {
             "type": "content",
-            "json": {
+            "body": {
                 "text": "Hello world!"
             }
         }
