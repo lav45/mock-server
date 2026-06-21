@@ -25,10 +25,14 @@ URL of the remote server that will provide the dynamic response configuration.
 ]
 ```
 
+> **Note:** Query parameters from the original request are automatically appended to `direct.url`.
+> If `direct.url` already contains query parameters, those defined in `direct.url` take precedence
+> when keys collide.
+
 ## `direct.headers`
 
-Additional headers to send to the direct server. These headers are merged with the original request headers (original
-headers take precedence unless overridden).
+Additional headers to send to the direct server. These headers are merged with the original request headers; when keys
+collide, `direct.headers` take precedence.
 
 | Types  | Default |
 |--------|---------|
@@ -50,6 +54,10 @@ headers take precedence unless overridden).
     }
 ]
 ```
+
+> **Note:** Headers from the original request are automatically forwarded to `direct.url`, except those listed in the
+> `FILTER_HEADERS` environment variable (`host`, `content-length`, `connection`, `keep-alive`, `transfer-encoding` by
+> default). Headers defined in `direct.headers` take precedence when keys collide.
 
 ## How it works
 

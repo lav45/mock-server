@@ -35,6 +35,10 @@ The request to the proxy endpoint will use the `request.method`.
 ]
 ```
 
+> **Note:** Query parameters from the original request are automatically appended to `response.url`.
+> If `response.url` already contains query parameters, those defined in `response.url` take precedence
+> when keys collide.
+
 ## `response.delay`
 
 Number of seconds to wait
@@ -56,7 +60,8 @@ Number of seconds to wait
 
 ## `response.headers`
 
-Response HTTP headers
+Additional headers to send to the proxy endpoint. These headers are merged with the original request headers; when keys
+collide, `response.headers` take precedence.
 
 | Types  | Default |
 |--------|---------|
@@ -78,6 +83,10 @@ Response HTTP headers
     }
 ]
 ```
+
+> **Note:** Headers from the original request are automatically forwarded to the proxy endpoint, except those listed in
+> the `FILTER_HEADERS` environment variable (`host`, `content-length`, `connection`, `keep-alive`, `transfer-encoding` by
+> default). When the proxied body is JSON, `content-type: application/json` is added automatically unless already set.
 
 ## `response.content`
 
