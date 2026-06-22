@@ -17,21 +17,20 @@ You can use [Faker](https://fakerphp.github.io) to generate random data
             "amount": 1000
         },
         "response": {
-            "content": {
-                "json": {
-                    "id": "{{env.id}}",
-                    "iban": "{{env.iban}}",
-                    "createdAt": "{{env.createdAt}}",
-                    "updatedAt": "{{env.now}}",
-                    "amountInText": "{env.amount} USD",
-                    "amountSourceDataType": "{{env.amount}}"
-                }
+            "type": "content",
+            "body": {
+                "id": "{{env.id}}",
+                "iban": "{{env.iban}}",
+                "createdAt": "{{env.createdAt}}",
+                "updatedAt": "{{env.now}}",
+                "amountInText": "{env.amount} USD",
+                "amountSourceDataType": "{{env.amount}}"
             }
         },
         "webhooks": [
             {
                 "url": "https://api.site.com/webhook",
-                "json": {
+                "body": {
                     "id": "{{env.id}}",
                     "iban": "{{env.iban}}",
                     "amount": "{{env.amount}}",
@@ -81,12 +80,11 @@ docker run --rm -it --init -v $(pwd)/mocks:/app/mocks -p 8080:8080 -e DOMAIN=api
 [
     {
         "response": {
-            "content": {
-                "json": {
-                    "domain": "{{env.DOMAIN}}",
-                    "url": "https://{env.DOMAIN}/v1",
-                    "undefined": "{{env.SSS}}"
-                }
+            "type": "content",
+            "body": {
+                "domain": "{{env.DOMAIN}}",
+                "url": "https://{env.DOMAIN}/v1",
+                "undefined": "{{env.SSS}}"
             }
         }
     }
