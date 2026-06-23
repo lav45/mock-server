@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 
 final readonly class MiddlewareChain implements MiddlewareHandler
 {
@@ -12,7 +12,7 @@ final readonly class MiddlewareChain implements MiddlewareHandler
         private MiddlewareHandler $next,
     ) {}
 
-    public function handle(Request $request): Response
+    public function handle(ServerRequest $request): ServerResponse
     {
         return $this->middleware->process($request, $this->next);
     }

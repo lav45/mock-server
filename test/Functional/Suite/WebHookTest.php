@@ -3,8 +3,8 @@
 namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Amp\Http\Server\FormParser;
-use Lav45\MockServer\Responder\HttpClient;
-use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Driver\HttpClientFactory;
+use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
@@ -128,7 +128,7 @@ class WebHookTest extends TestCase
         $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
         $response = $this->HttpClient->request($url);
         $this->assertEquals(200, $response->getStatus());
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $this->HttpClient->request($url, 'DELETE');
 
         $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);

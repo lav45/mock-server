@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
+namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
-use Lav45\MockServer\Bootstrap\Config;
+use Lav45\MockServer\Driver\Config;
 use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +48,7 @@ final class ConfigTest extends TestCase
     public function testListenWithInvalidPortThrowsException(mixed $invalidPort): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid mock port');
+        $this->expectExceptionMessageIsOrContains('Invalid mock port');
         $this->config->port(port: $invalidPort);
     }
 
@@ -90,7 +90,7 @@ final class ConfigTest extends TestCase
         }
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid mocks path');
+        $this->expectExceptionMessageIsOrContains('Invalid mocks path');
 
         try {
             $this->config->mocks($invalidPath);
@@ -121,7 +121,7 @@ final class ConfigTest extends TestCase
     public function testLocaleWithInvalidValueThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid locale');
+        $this->expectExceptionMessageIsOrContains('Invalid locale');
         $this->config->locale('invalid_locale_format');
     }
 
@@ -151,7 +151,7 @@ final class ConfigTest extends TestCase
     public function testLogWithInvalidLevelThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid log level');
+        $this->expectExceptionMessageIsOrContains('Invalid log level');
         $this->config->log('invalid_level');
     }
 

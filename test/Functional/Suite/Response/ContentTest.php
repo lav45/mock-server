@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite\Response;
 
-use Lav45\MockServer\Responder\HttpClient;
-use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Driver\HttpClientFactory;
+use Lav45\MockServer\Engine\HttpClient;
 use PHPUnit\Framework\TestCase;
 
 class ContentTest extends TestCase
@@ -24,7 +24,7 @@ class ContentTest extends TestCase
         $this->assertArrayHasKey('content-type', $headers);
         $this->assertEquals('application/json', $headers['content-type'][0]);
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('id', $content);
 
@@ -44,7 +44,7 @@ class ContentTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/json');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $ids2 = \explode('/', $content['id']);
@@ -63,7 +63,7 @@ class ContentTest extends TestCase
         $this->assertArrayHasKey('content-type', $headers);
         $this->assertEquals('text/plain; charset=utf-8', $headers['content-type'][0]);
 
-        $this->assertEquals('OK', $response->getBody()->buffer());
+        $this->assertEquals('OK', $response->getBody());
     }
 
     public function testHeaders(): void
@@ -84,6 +84,6 @@ class ContentTest extends TestCase
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/status');
         $this->assertEquals(401, $response->getStatus());
-        $this->assertEquals('Unauthorized', $response->getBody()->buffer());
+        $this->assertEquals('Unauthorized', $response->getBody());
     }
 }

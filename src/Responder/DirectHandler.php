@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Amp\Http\HttpStatus;
 use Lav45\MockServer\Domain\Direct;
+use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Helper\ArrayHelper;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,8 +23,8 @@ final readonly class DirectHandler
             headers: $direct->headers->toArray(),
             body: $direct->body->toString(),
         );
-        $body = $response->getBody()->buffer();
-        if (\json_validate($body) && HttpStatus::isSuccessful($response->getStatus())) {
+        $body = $response->getBody();
+        if (\json_validate($body) && $this->isSuccessful($response->getStatus())) {
             $directData = \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
             $directData = ArrayHelper::map($directData, static function (string $value): string {
                 return \str_replace(['\\{', '\\}'], ['{', '}'], $value);
@@ -32,5 +32,10 @@ final readonly class DirectHandler
             return new DirectDataInjector($directData, $this->logger);
         }
         throw new \RuntimeException(message: $body, code: $response->getStatus());
+    }
+
+    private function isSuccessful(int $status): bool
+    {
+        return $status >= 200 && $status < 300;
     }
 }

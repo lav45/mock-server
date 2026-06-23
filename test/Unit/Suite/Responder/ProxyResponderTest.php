@@ -2,18 +2,15 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Responder;
 
-use Amp\Http\Client\Request as HttpClientRequest;
-use Amp\Http\Client\Response as HttpClientResponse;
 use Lav45\MockServer\Domain\Response\ProxyResponse;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpHeaders;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
 use Lav45\MockServer\Domain\ValueObject\Url;
-use Lav45\MockServer\Responder\HttpClient;
+use Lav45\MockServer\Engine\Http\ClientResponse;
+use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Responder\ProxyResponder;
 use PHPUnit\Framework\TestCase;
-
-use function Amp\ByteStream\buffer;
 
 final class ProxyResponderTest extends TestCase
 {
@@ -37,6 +34,11 @@ final class ProxyResponderTest extends TestCase
         array  $headers = [],
     ): HttpClient {
         return new readonly class ($status, $body, $headers) implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public function __construct(
                 private int    $status,
                 private string $body,
@@ -48,15 +50,8 @@ final class ProxyResponderTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
-                return new HttpClientResponse(
-                    '1.1',
-                    $this->status,
-                    'OK',
-                    $this->headers,
-                    $this->body,
-                    new HttpClientRequest($uri),
-                );
+            ): ClientResponse {
+                return new ClientResponse($this->status, $this->headers, $this->body);
             }
         };
     }
@@ -64,6 +59,11 @@ final class ProxyResponderTest extends TestCase
     private function createCapturingHttpClient(): HttpClient
     {
         return new class implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public array $calls = [];
 
             public function request(
@@ -71,14 +71,14 @@ final class ProxyResponderTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
+            ): ClientResponse {
                 $this->calls[] = [
                     'uri' => $uri,
                     'method' => $method,
                     'headers' => $headers,
                     'body' => $body,
                 ];
-                return new HttpClientResponse('1.1', 200, 'OK', [], '', new HttpClientRequest($uri));
+                return new ClientResponse(200, [], '');
             }
         };
     }
@@ -142,7 +142,7 @@ final class ProxyResponderTest extends TestCase
 
         $response = $responder->execute($this->createProxyResponse());
 
-        $this->assertSame('upstream content', buffer($response->getBody()));
+        $this->assertSame('upstream content', $response->getBody());
     }
 
     public function testReturnsUpstreamHeaders(): void

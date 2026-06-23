@@ -19,6 +19,16 @@ deptrac:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Domain\\.*~
 
+    - name: Driver
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Driver\\.*~
+
+    - name: Engine
+      collectors:
+        - type: classNameRegex
+          value: ~^Lav45\\MockServer\\Engine\\.*~
+
     - name: Middleware
       collectors:
         - type: classNameRegex
@@ -41,21 +51,34 @@ deptrac:
 
   ruleset:
     Bootstrap:
+      - DataFactory
       - Domain
+      - Engine
       - Middleware
+      - Parser
+      - Responder
       - Vendor
     Middleware:
       - DataFactory
       - Responder
       - Parser
       - Domain
+      - Engine
       - Vendor
     DataFactory:
       - Domain
+      - Engine
       - Parser
       - Vendor
     Parser:
       - Vendor
     Responder:
       - Domain
+      - Engine
+      - Vendor
+    Engine:
+      - Domain
+    Driver:
+      - Domain
+      - Engine
       - Vendor

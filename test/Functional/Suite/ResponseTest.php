@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite;
 
-use Lav45\MockServer\Responder\HttpClient;
-use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Driver\HttpClientFactory;
+use Lav45\MockServer\Engine\HttpClient;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTest extends TestCase
@@ -19,7 +19,7 @@ class ResponseTest extends TestCase
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL);
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('', $response->getBody()->buffer());
+        $this->assertEquals('', $response->getBody());
     }
 
     public function testNotFound(): void

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Responder\HttpClient\Interceptor;
+namespace Lav45\MockServer\Driver\Interceptor;
 
 use Amp\Cancellation;
 use Amp\ForbidCloning;

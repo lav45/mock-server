@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
+namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
-use Lav45\MockServer\Bootstrap\LoggerFactory;
+use Lav45\MockServer\Driver\LoggerFactory;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractHandler;
 use Monolog\Level;
@@ -19,7 +19,7 @@ final class LoggerFactoryTest extends TestCase
         $logger = new LoggerFactory($loggerName, $logLevel)->create();
 
         $this->assertInstanceOf(Logger::class, $logger);
-        $this->assertSame($loggerName, $logger->getName());
+        $this->assertStringStartsWith($loggerName . '-', $logger->getName());
 
         $handlers = $logger->getHandlers();
         $this->assertCount(1, $handlers);
@@ -36,7 +36,7 @@ final class LoggerFactoryTest extends TestCase
         $logger = new LoggerFactory($loggerName, $logLevel)->create();
 
         $this->assertInstanceOf(Logger::class, $logger);
-        $this->assertSame($loggerName, $logger->getName());
+        $this->assertStringStartsWith($loggerName . '-', $logger->getName());
 
         $handlers = $logger->getHandlers();
         $this->assertCount(1, $handlers);

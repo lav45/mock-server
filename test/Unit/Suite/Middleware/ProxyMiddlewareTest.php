@@ -2,22 +2,18 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Client\Request as HttpClientRequest;
-use Amp\Http\Client\Response as HttpClientResponse;
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\ProxyFactory;
+use Lav45\MockServer\Engine\Http\ClientResponse;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\ProxyMiddleware;
-use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Responder\ProxyResponder;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
-
-use function Amp\ByteStream\buffer;
 
 final class ProxyMiddlewareTest extends TestCase
 {
@@ -30,15 +26,18 @@ final class ProxyMiddlewareTest extends TestCase
         string $method = 'GET',
         string $url = 'https://localhost/',
         string $body = '',
-    ): Request {
-        $request = new Request(new FakeHttpDriverClient(), $method, Http::new($url));
-        $request->setAttribute('body', $body);
-        return $request;
+    ): ServerRequest {
+        return new FakeServerRequest($method, $url, body: $body);
     }
 
     private function createHttpClientStub(int $status = 200, string $body = '', array $headers = []): HttpClient
     {
         return new readonly class ($status, $body, $headers) implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public function __construct(
                 private int    $status,
                 private string $body,
@@ -50,14 +49,11 @@ final class ProxyMiddlewareTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
-                return new HttpClientResponse(
-                    '1.1',
+            ): ClientResponse {
+                return new ClientResponse(
                     $this->status,
-                    'OK',
                     $this->headers,
                     $this->body,
-                    new HttpClientRequest($uri),
                 );
             }
         };
@@ -65,7 +61,7 @@ final class ProxyMiddlewareTest extends TestCase
 
     private function nextReturning(int $status): MiddlewareHandler
     {
-        return new CallableHandler(static fn(Request $r): Response => new Response($status));
+        return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
     }
 
     // --- Passthrough ---
@@ -113,7 +109,7 @@ final class ProxyMiddlewareTest extends TestCase
         $middleware = $this->createMiddleware($this->createHttpClientStub(body: 'upstream body'));
         $response = $middleware->process($request, $this->nextReturning(418));
 
-        $this->assertSame('upstream body', buffer($response->getBody()));
+        $this->assertSame('upstream body', $response->getBody());
     }
 
     // --- Attribute forwarding ---
@@ -148,12 +144,17 @@ final class ProxyMiddlewareTest extends TestCase
     public function testForwardsRequestBodyToUpstream(): void
     {
         $httpClient = new class implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public string|null $capturedBody = null;
 
-            public function request(string $uri, string $method = 'GET', array|null $headers = null, string|null $body = null): HttpClientResponse
+            public function request(string $uri, string $method = 'GET', array|null $headers = null, string|null $body = null): ClientResponse
             {
                 $this->capturedBody = $body;
-                return new HttpClientResponse('1.1', 200, 'OK', [], '', new HttpClientRequest($uri));
+                return new ClientResponse(200, [], '');
             }
         };
 

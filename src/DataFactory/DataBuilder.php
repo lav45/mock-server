@@ -10,8 +10,6 @@ use Lav45\MockServer\Domain\ValueObject\HttpStatus;
 use Lav45\MockServer\Domain\ValueObject\Url;
 use Lav45\MockServer\Parser\InlineParser;
 
-use function Amp\File\read;
-
 final class DataBuilder
 {
     private InlineParser|null $parser = null;
@@ -151,7 +149,7 @@ final class DataBuilder
     public function createItems(): array
     {
         if (isset($this->data['file'])) {
-            $content = read(
+            $content = \file_get_contents(
                 $this->resolve($this->data['file']),
             );
             $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);

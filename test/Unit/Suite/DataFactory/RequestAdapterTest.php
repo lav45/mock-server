@@ -2,11 +2,9 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\RequestBody;
 use Lav45\MockServer\DataFactory\RequestAdapter;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class RequestAdapterTest extends TestCase
@@ -15,10 +13,9 @@ final class RequestAdapterTest extends TestCase
         string $url = 'https://localhost/',
         array  $headers = [],
         string $body = '',
-    ): Request {
-        $request = new Request(new FakeHttpDriverClient(), 'GET', Http::new($url), $headers);
-        $request->setAttribute('body', $body);
-        return $request;
+        array  $parsedBody = [],
+    ): ServerRequest {
+        return new FakeServerRequest('GET', $url, $headers, $body, $parsedBody);
     }
 
     public function testGetQueryReturnsEmptyForNoParams(): void
@@ -63,13 +60,6 @@ final class RequestAdapterTest extends TestCase
         $this->assertSame('raw body content', $adapter->getBody());
     }
 
-    public function testGetBodyBuffersStreamWhenAttributeNotPreset(): void
-    {
-        $request = new Request(new FakeHttpDriverClient(), 'GET', Http::new('https://localhost/'), [], new RequestBody('buffered content'));
-        $adapter = new RequestAdapter($request);
-        $this->assertSame('buffered content', $adapter->getBody());
-    }
-
     public function testGetDataReturnsEmptyForEmptyBody(): void
     {
         $adapter = new RequestAdapter($this->createRequest());
@@ -96,14 +86,12 @@ final class RequestAdapterTest extends TestCase
         $this->assertSame('12', $data['age']);
     }
 
-    public function testGetDataParsesMultipartBody(): void
+    public function testGetDataUsesParsedBodyWhenBodyIsNotJson(): void
     {
-        $body = "--FB\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nJohn\r\n"
-            . "--FB\r\nContent-Disposition: form-data; name=\"age\"\r\n\r\n12\r\n--FB--\r\n";
-
         $adapter = new RequestAdapter($this->createRequest(
             headers: ['content-type' => ['multipart/form-data; boundary=FB']],
-            body: $body,
+            body: 'raw multipart payload',
+            parsedBody: ['name' => 'John', 'age' => '12'],
         ));
         $data = $adapter->getData();
         $this->assertSame('John', $data['name']);

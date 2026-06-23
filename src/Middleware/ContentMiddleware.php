@@ -2,9 +2,9 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\ContentFactory;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Responder\ContentResponder;
 
 final readonly class ContentMiddleware implements Middleware
@@ -14,7 +14,7 @@ final readonly class ContentMiddleware implements Middleware
         private ContentResponder $responder,
     ) {}
 
-    public function process(Request $request, MiddlewareHandler $next): Response
+    public function process(ServerRequest $request, MiddlewareHandler $next): ServerResponse
     {
         $response = $request->getAttribute('data')['response'] ?? [];
         if ($this->factory->has($response) === false) {

@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 
 final readonly class MiddlewarePipeline implements MiddlewareHandler
 {
@@ -15,7 +15,7 @@ final readonly class MiddlewarePipeline implements MiddlewareHandler
             \array_reverse($middleware),
             static fn(MiddlewareHandler $next, Middleware $middleware): MiddlewareHandler => new MiddlewareChain($middleware, $next),
             new class implements MiddlewareHandler {
-                public function handle(Request $request): Response
+                public function handle(ServerRequest $request): ServerResponse
                 {
                     throw new \RuntimeException('Invalid middleware chain!');
                 }
@@ -23,7 +23,7 @@ final readonly class MiddlewarePipeline implements MiddlewareHandler
         );
     }
 
-    public function handle(Request $request): Response
+    public function handle(ServerRequest $request): ServerResponse
     {
         return $this->handler->handle($request);
     }

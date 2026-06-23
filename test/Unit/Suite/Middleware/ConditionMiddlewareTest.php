@@ -2,17 +2,16 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\Condition\ConditionFactory;
 use Lav45\MockServer\DataFactory\Condition\ConditionHandler;
 use Lav45\MockServer\DataFactory\Condition\SpecificationFactory;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\ConditionMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class ConditionMiddlewareTest extends TestCase
@@ -21,7 +20,7 @@ final class ConditionMiddlewareTest extends TestCase
      * Resolves the request data (as PrepareMiddleware does at request time),
      * then runs the middleware against the already-resolved data.
      */
-    private function invoke(Request $request, \Closure $next): Response
+    private function invoke(ServerRequest $request, \Closure $next): ServerResponse
     {
         $middleware = new ConditionMiddleware(
             new ConditionFactory(new SpecificationFactory()),
@@ -40,12 +39,11 @@ final class ConditionMiddlewareTest extends TestCase
         array  $params = [],
         array  $headers = [],
         array  $env = [],
-    ): Request {
-        $uri = Http::new($url);
-        $request = new Request(new FakeHttpDriverClient(), $method, $uri);
+    ): ServerRequest {
+        $request = new FakeServerRequest($method, $url);
         $request->setAttribute('params', $params);
 
-        \parse_str($uri->getQuery() ?? '', $query);
+        \parse_str(\parse_url($url, PHP_URL_QUERY) ?? '', $query);
 
         $inner = new class implements InlineParser {
             public function replace(mixed $data): mixed
@@ -56,7 +54,7 @@ final class ConditionMiddlewareTest extends TestCase
         $parser = new ParamParser($inner)->withData([
             'request' => [
                 'method' => $method,
-                'path' => $uri->getPath(),
+                'path' => \parse_url($url, PHP_URL_PATH) ?? '/',
                 'query' => $query,
                 'headers' => $headers,
                 'params' => $params,
@@ -71,14 +69,14 @@ final class ConditionMiddlewareTest extends TestCase
 
     private function next(): \Closure
     {
-        return static fn(Request $r): Response => new Response(200);
+        return static fn(ServerRequest $r): ServerResponse => new ServerResponse(200);
     }
 
     private function nextCapturing(array &$captured): \Closure
     {
-        return static function (Request $r) use (&$captured): Response {
+        return static function (ServerRequest $r) use (&$captured): ServerResponse {
             $captured = $r->getAttribute('data');
-            return new Response(200);
+            return new ServerResponse(200);
         };
     }
 

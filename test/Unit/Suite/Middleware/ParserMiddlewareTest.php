@@ -2,17 +2,16 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\ParserFactory;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\PrepareMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class ParserMiddlewareTest extends TestCase
@@ -28,27 +27,26 @@ final class ParserMiddlewareTest extends TestCase
         return new PrepareMiddleware(new ParserFactory($baseParser));
     }
 
-    private function createRequest(string $url = 'https://localhost/', array $params = []): Request
+    private function createRequest(string $url = 'https://localhost/', array $params = []): ServerRequest
     {
-        $request = new Request(new FakeHttpDriverClient(), 'GET', Http::new($url));
-        $request->setAttribute('body', '');
+        $request = new FakeServerRequest('GET', $url);
         $request->setAttribute('params', $params);
         return $request;
     }
 
     private function nextCapturing(VariableParser|null &$capturedParser): MiddlewareHandler
     {
-        return new CallableHandler(static function (Request $request) use (&$capturedParser): Response {
+        return new CallableHandler(static function (ServerRequest $request) use (&$capturedParser): ServerResponse {
             $capturedParser = $request->getAttribute('parser');
-            return new Response(200);
+            return new ServerResponse(200);
         });
     }
 
     private function nextCapturingData(array|null &$capturedData): MiddlewareHandler
     {
-        return new CallableHandler(static function (Request $request) use (&$capturedData): Response {
+        return new CallableHandler(static function (ServerRequest $request) use (&$capturedData): ServerResponse {
             $capturedData = $request->getAttribute('data');
-            return new Response(200);
+            return new ServerResponse(200);
         });
     }
 
@@ -58,9 +56,9 @@ final class ParserMiddlewareTest extends TestCase
         $request->setAttribute('data', []);
 
         $called = false;
-        $next = static function () use (&$called): Response {
+        $next = static function () use (&$called): ServerResponse {
             $called = true;
-            return new Response(200);
+            return new ServerResponse(200);
         };
 
         $middleware = $this->createMiddleware();

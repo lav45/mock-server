@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite\Response;
 
-use Lav45\MockServer\Responder\HttpClient;
-use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Driver\HttpClientFactory;
+use Lav45\MockServer\Engine\HttpClient;
 use PHPUnit\Framework\TestCase;
 
 class DataTest extends TestCase
@@ -19,7 +19,7 @@ class DataTest extends TestCase
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data');
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('[]', $response->getBody()->buffer());
+        $this->assertEquals('[]', $response->getBody());
 
         $headers = $response->getHeaders();
         $this->assertArrayHasKey('content-type', $headers);
@@ -31,7 +31,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -72,7 +72,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json?_p=2');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -114,7 +114,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json?_p=0');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -152,7 +152,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json?_p=2&_s=3');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -193,7 +193,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json?_p=2&_s=10');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -222,7 +222,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/file?_p=2&_s=5');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);
@@ -263,7 +263,7 @@ class DataTest extends TestCase
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/status');
         $this->assertEquals(418, $response->getStatus());
-        $this->assertEquals('[]', $response->getBody()->buffer());
+        $this->assertEquals('[]', $response->getBody());
     }
 
     public function testJsonPage100(): void
@@ -271,7 +271,7 @@ class DataTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/data/json?_p=100');
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey('data', $content);

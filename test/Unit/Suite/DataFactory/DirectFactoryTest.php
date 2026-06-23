@@ -2,17 +2,16 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\DirectFactory;
 use Lav45\MockServer\Domain\Direct;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class DirectFactoryTest extends TestCase
 {
-    private function create(Request $request, array $direct, array $filterHeaders = []): Direct
+    private function create(ServerRequest $request, array $direct, array $filterHeaders = []): Direct
     {
         return new DirectFactory(new DataBuilder($filterHeaders))->create($request, ['direct' => $direct]);
     }
@@ -22,10 +21,8 @@ final class DirectFactoryTest extends TestCase
         string $url = 'https://localhost/',
         array  $headers = [],
         string $body = '',
-    ): Request {
-        $request = new Request(new FakeHttpDriverClient(), $method, Http::new($url), $headers);
-        $request->setAttribute('body', $body);
-        return $request;
+    ): ServerRequest {
+        return new FakeServerRequest($method, $url, $headers, $body);
     }
 
     public function testCreateUsesRequestMethod(): void

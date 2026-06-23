@@ -2,9 +2,9 @@
 
 namespace Lav45\MockServer\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Response\ContentResponse;
 use Lav45\MockServer\Domain\ValueObject\Body;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Parser\VariableParser;
 use Yiisoft\Data\Paginator\OffsetPaginator;
 use Yiisoft\Data\Paginator\PaginatorException;
@@ -23,7 +23,7 @@ final readonly class CollectionFactory
         return isset($data['type']) && $data['type'] === self::TYPE;
     }
 
-    public function create(Request $request, VariableParser $parser, array $data): ContentResponse
+    public function create(ServerRequest $request, VariableParser $parser, array $data): ContentResponse
     {
         $factory = $this->dataBuilder->withData($data)->withParser($parser);
 

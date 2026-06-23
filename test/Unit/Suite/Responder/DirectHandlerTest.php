@@ -2,15 +2,14 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Responder;
 
-use Amp\Http\Client\Request as HttpClientRequest;
-use Amp\Http\Client\Response as HttpClientResponse;
 use Lav45\MockServer\Domain\Direct;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpHeaders;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
 use Lav45\MockServer\Domain\ValueObject\Url;
+use Lav45\MockServer\Engine\Http\ClientResponse;
+use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Responder\DirectHandler;
-use Lav45\MockServer\Responder\HttpClient;
 use PHPUnit\Framework\TestCase;
 
 final class DirectHandlerTest extends TestCase
@@ -32,6 +31,11 @@ final class DirectHandlerTest extends TestCase
     private function createHttpClientStub(int $status, string $body): HttpClient
     {
         return new readonly class ($status, $body) implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public function __construct(
                 private int    $status,
                 private string $body,
@@ -42,15 +46,8 @@ final class DirectHandlerTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
-                return new HttpClientResponse(
-                    '1.1',
-                    $this->status,
-                    'OK',
-                    [],
-                    $this->body,
-                    new HttpClientRequest($uri),
-                );
+            ): ClientResponse {
+                return new ClientResponse($this->status, [], $this->body);
             }
         };
     }
@@ -58,6 +55,11 @@ final class DirectHandlerTest extends TestCase
     private function createCapturingHttpClient(): HttpClient
     {
         return new class implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public array $calls = [];
 
             public function request(
@@ -65,14 +67,14 @@ final class DirectHandlerTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
+            ): ClientResponse {
                 $this->calls[] = [
                     'uri' => $uri,
                     'method' => $method,
                     'headers' => $headers,
                     'body' => $body,
                 ];
-                return new HttpClientResponse('1.1', 200, 'OK', [], '{}', new HttpClientRequest($uri));
+                return new ClientResponse(200, [], '{}');
             }
         };
     }

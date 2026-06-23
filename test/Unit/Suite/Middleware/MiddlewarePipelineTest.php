@@ -2,20 +2,19 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\Middleware;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\MiddlewarePipeline;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class MiddlewarePipelineTest extends TestCase
 {
-    private function request(): Request
+    private function request(): ServerRequest
     {
-        return new Request(new FakeHttpDriverClient(), 'GET', Http::new('https://localhost/'));
+        return new FakeServerRequest('GET', 'https://localhost/');
     }
 
     private function recording(\ArrayObject $log, string $name): Middleware
@@ -26,7 +25,7 @@ final class MiddlewarePipelineTest extends TestCase
                 private string       $name,
             ) {}
 
-            public function process(Request $request, MiddlewareHandler $next): Response
+            public function process(ServerRequest $request, MiddlewareHandler $next): ServerResponse
             {
                 $this->log->append($this->name);
                 return $next->handle($request);
@@ -39,9 +38,9 @@ final class MiddlewarePipelineTest extends TestCase
         return new readonly class ($status) implements Middleware {
             public function __construct(private int $status) {}
 
-            public function process(Request $request, MiddlewareHandler $next): Response
+            public function process(ServerRequest $request, MiddlewareHandler $next): ServerResponse
             {
-                return new Response($this->status);
+                return new ServerResponse($this->status);
             }
         };
     }
@@ -84,7 +83,7 @@ final class MiddlewarePipelineTest extends TestCase
         );
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid middleware chain!');
+        $this->expectExceptionMessageIsOrContains('Invalid middleware chain!');
         $pipeline->handle($this->request());
     }
 }

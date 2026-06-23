@@ -2,19 +2,16 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\ContentFactory;
 use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\ContentMiddleware;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Responder\ContentResponder;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
-
-use function Amp\ByteStream\buffer;
 
 final class ContentMiddlewareTest extends TestCase
 {
@@ -23,19 +20,14 @@ final class ContentMiddlewareTest extends TestCase
         return new ContentMiddleware(new ContentFactory(new DataBuilder()), new ContentResponder());
     }
 
-    private function createRequest(): Request
+    private function createRequest(): ServerRequest
     {
-        return new Request(new FakeHttpDriverClient(), 'GET', Http::new('https://localhost/'));
+        return new FakeServerRequest('GET', 'https://localhost/');
     }
 
     private function nextReturning(int $status): MiddlewareHandler
     {
-        return new CallableHandler(static fn(Request $r): Response => new Response($status));
-    }
-
-    private function readBody(Response $response): string
-    {
-        return buffer($response->getBody());
+        return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
     }
 
     // --- Passthrough ---
@@ -70,7 +62,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('', $this->readBody($response));
+        $this->assertSame('', $response->getBody());
     }
 
     public function testReturnsJsonResponse(): void
@@ -88,7 +80,7 @@ final class ContentMiddlewareTest extends TestCase
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('application/json', $response->getHeader('content-type'));
-        $this->assertSame('{"id":1,"name":"test"}', $this->readBody($response));
+        $this->assertSame('{"id":1,"name":"test"}', $response->getBody());
     }
 
     public function testReturnsTextResponse(): void
@@ -101,7 +93,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('hello world', $this->readBody($response));
+        $this->assertSame('hello world', $response->getBody());
     }
 
     public function testReturnsCustomStatus(): void
@@ -128,7 +120,7 @@ final class ContentMiddlewareTest extends TestCase
 
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
-        $this->assertSame('from response key', $this->readBody($response));
+        $this->assertSame('from response key', $response->getBody());
     }
 
     public function testDefaultsToEmptyResponseWhenResponseKeyMissing(): void
@@ -139,7 +131,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('', $this->readBody($response));
+        $this->assertSame('', $response->getBody());
     }
 
 }

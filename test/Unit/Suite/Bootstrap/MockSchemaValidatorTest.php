@@ -26,8 +26,18 @@ final class MockSchemaValidatorTest extends TestCase
     public function testInvalidMock(array $mock): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('does not match schema');
+        $this->expectExceptionMessageIsOrContains('does not match schema');
         $this->validator->validate($mock);
+    }
+
+    public function testConstructThrowsWhenSchemaFileIsUnreadable(): void
+    {
+        $schemaFile = '/no/such/mock.schema.json';
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageIsOrContains('Unable to read mock schema: "' . $schemaFile . '"');
+
+        new MockSchemaValidator($schemaFile);
     }
 
     public static function validMockProvider(): array

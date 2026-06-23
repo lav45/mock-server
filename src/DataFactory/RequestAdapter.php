@@ -2,13 +2,12 @@
 
 namespace Lav45\MockServer\DataFactory;
 
-use Amp\Http\Server\FormParser;
-use Amp\Http\Server\Request;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 
 final readonly class RequestAdapter
 {
     public function __construct(
-        private Request $request,
+        private ServerRequest $request,
     ) {}
 
     public function getQuery(): array
@@ -27,10 +26,7 @@ final readonly class RequestAdapter
 
     public function getBody(): string
     {
-        if ($this->request->hasAttribute('body') === false) {
-            $this->request->setAttribute('body', $this->request->getBody()->buffer());
-        }
-        return $this->request->getAttribute('body');
+        return $this->request->getBody();
     }
 
     public function getData(): array
@@ -42,9 +38,12 @@ final readonly class RequestAdapter
         if (\json_validate($body)) {
             return \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
         }
-        return $this->normalizeValues(
-            $this->getFormValues($body, $this->parseContentBoundary()),
-        );
+        $parsed = $this->request->getParsedBody();
+        if ($parsed !== []) {
+            return $parsed;
+        }
+        \parse_str($body, $result);
+        return $result;
     }
 
     private function normalizeValues(array $values): array
@@ -58,19 +57,5 @@ final readonly class RequestAdapter
             }
         }
         return $result;
-    }
-
-    private function parseContentBoundary(): string|null
-    {
-        return FormParser\parseContentBoundary(
-            contentType: $this->request->getHeader('content-type') ?? '',
-        );
-    }
-
-    private function getFormValues(string $body, string|null $boundary): array
-    {
-        return new FormParser\FormParser()
-            ->parseBody($body, $boundary)
-            ->getValues();
     }
 }

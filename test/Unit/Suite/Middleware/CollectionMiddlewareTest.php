@@ -2,10 +2,10 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\CollectionFactory;
 use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\CollectionMiddleware;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Parser\InlineParser;
@@ -13,11 +13,8 @@ use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Responder\ContentResponder;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
-
-use function Amp\ByteStream\buffer;
 
 final class CollectionMiddlewareTest extends TestCase
 {
@@ -26,9 +23,9 @@ final class CollectionMiddlewareTest extends TestCase
         return new CollectionMiddleware(new CollectionFactory(new DataBuilder()), new ContentResponder());
     }
 
-    private function createRequest(string $url = 'https://localhost/'): Request
+    private function createRequest(string $url = 'https://localhost/'): ServerRequest
     {
-        return new Request(new FakeHttpDriverClient(), 'GET', Http::new($url));
+        return new FakeServerRequest('GET', $url);
     }
 
     private function createParser(array $data = []): VariableParser
@@ -44,12 +41,12 @@ final class CollectionMiddlewareTest extends TestCase
 
     private function nextReturning(int $status): MiddlewareHandler
     {
-        return new CallableHandler(static fn(Request $r): Response => new Response($status));
+        return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
     }
 
-    private function decodeBody(Response $response): mixed
+    private function decodeBody(ServerResponse $response): mixed
     {
-        return \json_decode(buffer($response->getBody()), true, flags: JSON_THROW_ON_ERROR);
+        return \json_decode($response->getBody(), true, flags: JSON_THROW_ON_ERROR);
     }
 
     // --- Passthrough ---

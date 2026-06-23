@@ -2,13 +2,12 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\DataFactory\ParserFactory;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class ParserFactoryTest extends TestCase
@@ -29,9 +28,9 @@ final class ParserFactoryTest extends TestCase
         array  $headers = [],
         string $body = '',
         array  $params = [],
-    ): Request {
-        $request = new Request(new FakeHttpDriverClient(), $method, Http::new($url), $headers);
-        $request->setAttribute('body', $body);
+        array  $parsedBody = [],
+    ): ServerRequest {
+        $request = new FakeServerRequest($method, $url, $headers, $body, $parsedBody);
         $request->setAttribute('params', $params);
         return $request;
     }

@@ -2,11 +2,9 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\DataBuilder;
-
-use function Amp\delay;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 
 final readonly class ThrottlingMiddleware implements Middleware
 {
@@ -14,7 +12,7 @@ final readonly class ThrottlingMiddleware implements Middleware
         private DataBuilder $dataBuilder,
     ) {}
 
-    public function process(Request $request, MiddlewareHandler $next): Response
+    public function process(ServerRequest $request, MiddlewareHandler $next): ServerResponse
     {
         $data = $request->getAttribute('data')['response'] ?? [];
         if (isset($data['delay']) === false) {
@@ -33,7 +31,7 @@ final readonly class ThrottlingMiddleware implements Middleware
 
         $timeout = $delay - ($end - $start);
         if ($timeout > 0.0) {
-            delay($timeout);
+            \usleep((int)($timeout * 1_000_000));
         }
         return $response;
     }

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Responder\HttpClient\Interceptor;
+namespace Lav45\MockServer\Test\Unit\Suite\Driver\Interceptor;
 
 use Amp\Cancellation;
 use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\NullCancellation;
-use Lav45\MockServer\Responder\HttpClient\Interceptor\Logger;
+use Lav45\MockServer\Driver\Interceptor\Logger;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -15,10 +15,10 @@ final class LoggerTest extends TestCase
 {
     private function createDelegateStub(int $status, string $body = ''): DelegateHttpClient
     {
-        return new class ($status, $body) implements DelegateHttpClient {
+        return new readonly class ($status, $body) implements DelegateHttpClient {
             public function __construct(
-                private readonly int    $status,
-                private readonly string $body,
+                private int    $status,
+                private string $body,
             ) {}
 
             public function request(Request $request, Cancellation $cancellation): Response

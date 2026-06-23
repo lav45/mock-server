@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Responder\HttpClient;
+namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
 use Amp\Cancellation;
 use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\NullCancellation;
-use Lav45\MockServer\Responder\HttpClient\HttpClient;
+use Lav45\MockServer\Driver\HttpClient;
 use PHPUnit\Framework\TestCase;
 
 use function Amp\ByteStream\buffer;

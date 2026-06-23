@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Bootstrap;
+namespace Lav45\MockServer\Driver;
 
 use Monolog\Level;
 

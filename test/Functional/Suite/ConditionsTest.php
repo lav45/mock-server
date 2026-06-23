@@ -2,8 +2,8 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite;
 
-use Lav45\MockServer\Responder\HttpClient;
-use Lav45\MockServer\Responder\HttpClient\Factory as HttpClientFactory;
+use Lav45\MockServer\Driver\HttpClientFactory;
+use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +31,7 @@ class ConditionsTest extends TestCase
         );
         return [
             'status' => $response->getStatus(),
-            'body' => \json_decode($response->getBody()->buffer(), true, flags: JSON_THROW_ON_ERROR),
+            'body' => \json_decode($response->getBody(), true, flags: JSON_THROW_ON_ERROR),
         ];
     }
 
@@ -227,7 +227,7 @@ class ConditionsTest extends TestCase
     {
         $url = $this->storageUrl();
         $response = $this->HttpClient->request($url);
-        $content = $response->getBody()->buffer();
+        $content = $response->getBody();
         $this->HttpClient->request($url, 'DELETE');
 
         $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);

@@ -2,19 +2,19 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\WebHooksFactory;
-use Lav45\MockServer\Responder\WebHookHandler;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Engine\WebHookQueue;
 
 final readonly class WebHookMiddleware implements Middleware
 {
     public function __construct(
         private WebHooksFactory $factory,
-        private WebHookHandler  $handler,
+        private WebHookQueue    $queue,
     ) {}
 
-    public function process(Request $request, MiddlewareHandler $next): Response
+    public function process(ServerRequest $request, MiddlewareHandler $next): ServerResponse
     {
         $response = $next->handle($request);
 
@@ -22,7 +22,7 @@ final readonly class WebHookMiddleware implements Middleware
         if ($this->factory->has($data) === false) {
             return $response;
         }
-        $this->handler->send(
+        $this->queue->push(
             $this->factory->create($data),
         );
         return $response;

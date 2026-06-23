@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Test\Unit\Suite\Responder\HttpClient\Interceptor;
+namespace Lav45\MockServer\Test\Unit\Suite\Driver\Interceptor;
 
 use Amp\Cancellation;
 use Amp\Http\Client\DelegateHttpClient;
+use Amp\Http\Client\Internal\EventInvoker;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Http\Client\SocketException;
 use Amp\NullCancellation;
-use Lav45\MockServer\Responder\HttpClient\Interceptor\RetryRequests;
+use Lav45\MockServer\Driver\Interceptor\RetryRequests;
 use PHPUnit\Framework\TestCase;
 
 final class RetryRequestsTest extends TestCase
@@ -122,5 +123,25 @@ final class RetryRequestsTest extends TestCase
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame(3, $delegate->callCount);
+    }
+
+    public function testThrowsImmediatelyForNonIdempotentProcessedRequest(): void
+    {
+        $delegate = $this->createAlwaysFailingDelegate();
+        $interceptor = new RetryRequests(retryLimit: 3);
+        $request = new Request('https://example.com', 'POST');
+        $cancellation = new NullCancellation();
+
+        $invoker = EventInvoker::get();
+        $invoker->requestStart($request);
+        $invoker->push($request);
+
+        $this->expectException(SocketException::class);
+
+        try {
+            $interceptor->request($request, $cancellation, $delegate);
+        } finally {
+            $this->assertSame(1, $delegate->callCount);
+        }
     }
 }

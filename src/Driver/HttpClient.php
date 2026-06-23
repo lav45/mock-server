@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Responder\HttpClient;
+namespace Lav45\MockServer\Driver;
 
 use Amp\Cancellation;
 use Amp\Http\Client\DelegateHttpClient as Client;
 use Amp\Http\Client\Request;
-use Amp\Http\Client\Response;
 use Amp\NullCancellation;
+use Lav45\MockServer\Engine\Http\ClientResponse;
+use Lav45\MockServer\Engine\HttpClient as HttpClientInterface;
 
-final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
+final class HttpClient implements HttpClientInterface
 {
     private string|null $logLabel = null;
 
@@ -29,7 +30,7 @@ final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
         string      $method = 'GET',
         array|null  $headers = null,
         string|null $body = null,
-    ): Response {
+    ): ClientResponse {
         $request = new Request($uri, $method);
 
         if ($body) {
@@ -41,6 +42,13 @@ final class HttpClient implements \Lav45\MockServer\Responder\HttpClient
         if ($this->logLabel) {
             $request->setAttribute('logLabel', $this->logLabel);
         }
-        return $this->client->request($request, $this->cancellation);
+
+        $response = $this->client->request($request, $this->cancellation);
+
+        return new ClientResponse(
+            status: $response->getStatus(),
+            headers: $response->getHeaders(),
+            body: $response->getBody()->buffer(),
+        );
     }
 }

@@ -2,15 +2,13 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
-use Amp\Http\HttpStatus;
-use Amp\Http\Server\ErrorHandler;
-use Amp\Http\Server\Request as HttpRequest;
-use Amp\Http\Server\RequestHandler as RequestHandlerInterface;
-use Amp\Http\Server\Response as HttpResponse;
 use FastRoute\Dispatcher;
+use Lav45\MockServer\Bootstrap\ErrorHandler;
 use Lav45\MockServer\Bootstrap\RouterRequestHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Test\Unit\Components\CallableHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class RouterRequestHandlerTest extends TestCase
@@ -19,21 +17,23 @@ final class RouterRequestHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->errorHandler = new FakeErrorHandler();
+        $this->errorHandler = new ErrorHandler();
     }
 
-    private function createRequest(string $method, string $url): HttpRequest
+    private function createRequest(string $method, string $url): ServerRequest
     {
-        $clientFake = new FakeHttpDriverClient();
-        $uriReal = Http::new($url);
+        return new FakeServerRequest($method, $url);
+    }
 
-        return new HttpRequest($clientFake, $method, $uriReal);
+    private function handlerReturning(ServerResponse $response): CallableHandler
+    {
+        return new CallableHandler(static fn(ServerRequest $request): ServerResponse => $response);
     }
 
     public function testHandleRequestFound(): void
     {
-        $expectedResponse = new HttpResponse(HttpStatus::OK);
-        $handler = new FakeRequestHandler($expectedResponse);
+        $expectedResponse = new ServerResponse(200);
+        $handler = $this->handlerReturning($expectedResponse);
 
         $data = [true];
         $params = ['id' => '123'];
@@ -53,8 +53,7 @@ final class RouterRequestHandlerTest extends TestCase
 
     public function testHandleRequestNotFound(): void
     {
-        $expectedResponse = new HttpResponse(HttpStatus::OK);
-        $handler = new FakeRequestHandler($expectedResponse);
+        $handler = $this->handlerReturning(new ServerResponse(200));
 
         $dispatcher = new FakeDispatcher([
             Dispatcher::NOT_FOUND,
@@ -65,13 +64,12 @@ final class RouterRequestHandlerTest extends TestCase
 
         $response = $reactor->handleRequest($request);
 
-        $this->assertSame(HttpStatus::NOT_FOUND, $response->getStatus());
+        $this->assertSame(404, $response->getStatus());
     }
 
     public function testHandleRequestMethodNotAllowed(): void
     {
-        $expectedResponse = new HttpResponse(HttpStatus::OK);
-        $handler = new FakeRequestHandler($expectedResponse);
+        $handler = $this->handlerReturning(new ServerResponse(200));
 
         $dispatcher = new FakeDispatcher([
             Dispatcher::METHOD_NOT_ALLOWED,
@@ -83,21 +81,8 @@ final class RouterRequestHandlerTest extends TestCase
 
         $response = $reactor->handleRequest($request);
 
-        $this->assertSame(HttpStatus::METHOD_NOT_ALLOWED, $response->getStatus());
-        $this->assertTrue($response->hasHeader('allow'));
+        $this->assertSame(405, $response->getStatus());
         $this->assertSame('GET, POST', $response->getHeader('allow'));
-    }
-}
-
-final class FakeErrorHandler implements ErrorHandler
-{
-    public function handleError(int $status, string|null $reason = null, HttpRequest|null $request = null): HttpResponse
-    {
-        return new HttpResponse(
-            status: $status,
-            headers: ['content-type' => 'text/plain'],
-            body: $reason ?? '',
-        );
     }
 }
 
@@ -108,15 +93,5 @@ final readonly class FakeDispatcher implements Dispatcher
     public function dispatch($httpMethod, $uri): array
     {
         return $this->dispatchResult;
-    }
-}
-
-final readonly class FakeRequestHandler implements RequestHandlerInterface
-{
-    public function __construct(private HttpResponse $response) {}
-
-    public function handleRequest(HttpRequest $request): HttpResponse
-    {
-        return $this->response;
     }
 }

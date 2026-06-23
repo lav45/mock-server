@@ -2,21 +2,20 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\DataFactory\CollectionFactory;
 use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class CollectionFactoryTest extends TestCase
 {
-    private function createRequest(string $url = 'https://localhost/'): Request
+    private function createRequest(string $url = 'https://localhost/'): ServerRequest
     {
-        return new Request(new FakeHttpDriverClient(), 'GET', Http::new($url));
+        return new FakeServerRequest('GET', $url);
     }
 
     private function createParser(): VariableParser

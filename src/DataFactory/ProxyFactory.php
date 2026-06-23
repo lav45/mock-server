@@ -2,10 +2,10 @@
 
 namespace Lav45\MockServer\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Response\ProxyResponse;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 
 final readonly class ProxyFactory
 {
@@ -20,7 +20,7 @@ final readonly class ProxyFactory
         return isset($data['type']) && $data['type'] === self::TYPE;
     }
 
-    public function create(Request $request, array $data): ProxyResponse
+    public function create(ServerRequest $request, array $data): ProxyResponse
     {
         $factory = $this->dataBuilder->withData($data);
         $requestAdapter = new RequestAdapter($request);

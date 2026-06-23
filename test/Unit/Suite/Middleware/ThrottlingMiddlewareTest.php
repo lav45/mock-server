@@ -2,16 +2,15 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\ThrottlingMiddleware;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;
 
@@ -19,7 +18,7 @@ use function Amp\async;
 
 final class ThrottlingMiddlewareTest extends TestCase
 {
-    private function createRequest(array $data = []): Request
+    private function createRequest(array $data = []): ServerRequest
     {
         $parser = new ParamParser(new class implements InlineParser {
             public function replace(mixed $data): mixed
@@ -27,7 +26,7 @@ final class ThrottlingMiddlewareTest extends TestCase
                 return $data;
             }
         });
-        $request = new Request(new FakeHttpDriverClient(), 'GET', Http::new('https://localhost/'));
+        $request = new FakeServerRequest('GET', 'https://localhost/');
         $request->setAttribute('data', $data);
         $request->setAttribute('parser', $parser);
         return $request;
@@ -35,7 +34,7 @@ final class ThrottlingMiddlewareTest extends TestCase
 
     private function nextReturning(int $status): MiddlewareHandler
     {
-        return new CallableHandler(static fn(Request $r): Response => new Response($status));
+        return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
     }
 
     // --- Passthrough (synchronous) ---
@@ -73,9 +72,9 @@ final class ThrottlingMiddlewareTest extends TestCase
     public function testAlwaysCallsNext(): void
     {
         $called = false;
-        $next = function () use (&$called): Response {
+        $next = function () use (&$called): ServerResponse {
             $called = true;
-            return new Response(200);
+            return new ServerResponse(200);
         };
 
         $request = $this->createRequest(['response' => ['text' => 'ok']]);
@@ -85,7 +84,7 @@ final class ThrottlingMiddlewareTest extends TestCase
         $this->assertTrue($called);
     }
 
-    // --- With delay (async, runs inside fiber) ---
+    // --- With delay (runs inside fiber) ---
 
     public function testReturnsResponseWhenDelayIsPositive(): void
     {
@@ -103,11 +102,11 @@ final class ThrottlingMiddlewareTest extends TestCase
 
     public function testElapsedTimeReducesActualDelay(): void
     {
-        // If $next takes longer than the delay, Amp\delay() must NOT be called
+        // If $next takes longer than the delay, the sleep must NOT be called
         // (timeout <= 0.0 branch). We verify no error is thrown and response is returned.
-        $slowNext = static function (): Response {
+        $slowNext = static function (): ServerResponse {
             \usleep(5_000); // 5 ms — longer than 0.001 s delay
-            return new Response(200);
+            return new ServerResponse(200);
         };
 
         $request = $this->createRequest(['response' => ['delay' => 0.001]]);

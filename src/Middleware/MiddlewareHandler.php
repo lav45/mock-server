@@ -2,10 +2,10 @@
 
 namespace Lav45\MockServer\Middleware;
 
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
 
 interface MiddlewareHandler
 {
-    public function handle(Request $request): Response;
+    public function handle(ServerRequest $request): ServerResponse;
 }

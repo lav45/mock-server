@@ -2,8 +2,9 @@
 
 namespace Lav45\MockServer\Responder;
 
-use Amp\Http\Server\Response;
 use Lav45\MockServer\Domain\Response\ProxyResponse;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Engine\HttpClient;
 
 final readonly class ProxyResponder
 {
@@ -11,7 +12,7 @@ final readonly class ProxyResponder
         private HttpClient $httpClient,
     ) {}
 
-    public function execute(ProxyResponse $data): Response
+    public function execute(ProxyResponse $data): ServerResponse
     {
         $response = $this->httpClient->request(
             uri: $data->url->value,
@@ -19,7 +20,7 @@ final readonly class ProxyResponder
             headers: $data->headers->toArray(),
             body: $data->body->toString(),
         );
-        return new Response(
+        return new ServerResponse(
             status: $response->getStatus(),
             headers: $response->getHeaders(),
             body: $response->getBody(),

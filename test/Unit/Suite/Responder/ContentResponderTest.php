@@ -9,8 +9,6 @@ use Lav45\MockServer\Domain\ValueObject\HttpStatus;
 use Lav45\MockServer\Responder\ContentResponder;
 use PHPUnit\Framework\TestCase;
 
-use function Amp\ByteStream\buffer;
-
 final class ContentResponderTest extends TestCase
 {
     public function testReturnsCorrectStatus(): void
@@ -36,7 +34,7 @@ final class ContentResponderTest extends TestCase
 
         $response = new ContentResponder()->execute($data);
 
-        $this->assertSame('hello world', buffer($response->getBody()));
+        $this->assertSame('hello world', $response->getBody());
     }
 
     public function testReturnsCorrectHeaders(): void

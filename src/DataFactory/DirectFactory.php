@@ -2,10 +2,10 @@
 
 namespace Lav45\MockServer\DataFactory;
 
-use Amp\Http\Server\Request;
 use Lav45\MockServer\Domain\Direct;
 use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
+use Lav45\MockServer\Engine\Http\ServerRequest;
 
 final readonly class DirectFactory
 {
@@ -20,7 +20,7 @@ final readonly class DirectFactory
         return isset($data[self::TYPE]);
     }
 
-    public function create(Request $request, array $data): Direct
+    public function create(ServerRequest $request, array $data): Direct
     {
         $factory = $this->dataBuilder->withData($data[self::TYPE]);
         $requestAdapter = new RequestAdapter($request);

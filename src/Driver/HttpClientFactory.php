@@ -1,23 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Lav45\MockServer\Responder\HttpClient;
+namespace Lav45\MockServer\Driver;
 
 use Amp\Http\Client\Connection\DefaultConnectionFactory;
 use Amp\Http\Client\Connection\UnlimitedConnectionPool;
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Socket\ClientTlsContext;
 use Amp\Socket\ConnectContext;
+use Lav45\MockServer\Engine\HttpClient as HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-final readonly class Factory
+final readonly class HttpClientFactory
 {
     public function __construct(
         private LoggerInterface $logger = new NullLogger(),
         private int             $retryLimit = 3,
     ) {}
 
-    public function create(): HttpClient
+    public function create(): HttpClientInterface
     {
         $tls = new ClientTlsContext('')
             ->withoutPeerVerification()

@@ -2,23 +2,21 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Middleware;
 
-use Amp\Http\Client\Request as HttpClientRequest;
-use Amp\Http\Client\Response as HttpClientResponse;
-use Amp\Http\Server\Request;
-use Amp\Http\Server\Response;
 use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\DataFactory\DirectFactory;
+use Lav45\MockServer\Engine\Http\ClientResponse;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Middleware\DirectMiddleware;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Responder\DirectHandler;
-use Lav45\MockServer\Responder\HttpClient;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
-use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
-use League\Uri\Http;
+use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class DirectMiddlewareTest extends TestCase
@@ -31,11 +29,9 @@ final class DirectMiddlewareTest extends TestCase
         );
     }
 
-    private function createRequest(string $method = 'GET'): Request
+    private function createRequest(string $method = 'GET'): ServerRequest
     {
-        $request = new Request(new FakeHttpDriverClient(), $method, Http::new('https://localhost/api/123'));
-        $request->setAttribute('body', '');
-        return $request;
+        return new FakeServerRequest($method, 'https://localhost/api/123');
     }
 
     private function createParser(): VariableParser
@@ -51,6 +47,11 @@ final class DirectMiddlewareTest extends TestCase
     private function createHttpClientStub(array $responseBody): HttpClient
     {
         return new readonly class ($responseBody, 200) implements HttpClient {
+            public function withLabel(string $label): self
+            {
+                return $this;
+            }
+
             public function __construct(
                 private array $responseBody,
                 private int   $status,
@@ -61,14 +62,11 @@ final class DirectMiddlewareTest extends TestCase
                 string      $method = 'GET',
                 array|null  $headers = null,
                 string|null $body = null,
-            ): HttpClientResponse {
-                return new HttpClientResponse(
-                    '1.1',
+            ): ClientResponse {
+                return new ClientResponse(
                     $this->status,
-                    'OK',
                     [],
                     \json_encode($this->responseBody, JSON_THROW_ON_ERROR),
-                    new HttpClientRequest($uri),
                 );
             }
         };
@@ -76,9 +74,9 @@ final class DirectMiddlewareTest extends TestCase
 
     private function nextCapturing(array &$capturedData): MiddlewareHandler
     {
-        return new CallableHandler(static function (Request $request) use (&$capturedData): Response {
+        return new CallableHandler(static function (ServerRequest $request) use (&$capturedData): ServerResponse {
             $capturedData = $request->getAttribute('data');
-            return new Response(200);
+            return new ServerResponse(200);
         });
     }
 
@@ -91,9 +89,9 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('data', ['response' => ['text' => 'original']]);
 
         $called = false;
-        $next = function (Request $r) use (&$called): Response {
+        $next = function (ServerRequest $r) use (&$called): ServerResponse {
             $called = true;
-            return new Response(418);
+            return new ServerResponse(418);
         };
 
         $middleware = $this->createMiddleware($this->createHttpClientStub([]));
@@ -112,9 +110,9 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('data', ['direct' => ['url' => 'https://remote.example.com']]);
 
         $called = false;
-        $next = function (Request $r) use (&$called): Response {
+        $next = function (ServerRequest $r) use (&$called): ServerResponse {
             $called = true;
-            return new Response(200);
+            return new ServerResponse(200);
         };
 
         $middleware = $this->createMiddleware($this->createHttpClientStub([]));
@@ -169,7 +167,7 @@ final class DirectMiddlewareTest extends TestCase
 
         $httpClient = $this->createHttpClientStub(['response' => ['text' => 'from remote']]);
         $middleware = $this->createMiddleware($httpClient, $logger);
-        $middleware->process($request, new CallableHandler(fn() => new Response(200)));
+        $middleware->process($request, new CallableHandler(fn() => new ServerResponse(200)));
 
         $warnings = $logger->getMessages('warning');
         $this->assertCount(1, $warnings);
@@ -185,7 +183,7 @@ final class DirectMiddlewareTest extends TestCase
 
         $httpClient = $this->createHttpClientStub(['response' => ['text' => 'from remote']]);
         $middleware = $this->createMiddleware($httpClient, $logger);
-        $middleware->process($request, new CallableHandler(fn() => new Response(200)));
+        $middleware->process($request, new CallableHandler(fn() => new ServerResponse(200)));
 
         $this->assertCount(0, $logger->getMessages('warning'));
     }
