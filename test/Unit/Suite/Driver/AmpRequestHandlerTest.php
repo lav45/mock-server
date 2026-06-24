@@ -4,8 +4,8 @@ namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
 use Amp\Http\Server\Request as AmpRequest;
 use Amp\Http\Server\RequestBody;
-use Lav45\MockServer\Driver\AmpRequestHandler;
-use Lav45\MockServer\Engine\Http\RequestHandler;
+use Lav45\MockServer\Driver\RequestHandler;
+use Lav45\MockServer\Engine\Http\RequestHandler as EngineRequestHandler;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
@@ -23,14 +23,14 @@ final class AmpRequestHandlerTest extends TestCase
 
     public function testHandleRequestConvertsEngineResponseToAmpResponse(): void
     {
-        $handler = new class implements RequestHandler {
+        $handler = new class implements EngineRequestHandler {
             public function handleRequest(ServerRequest $request): ServerResponse
             {
                 return new ServerResponse(201, ['x-token' => 'secret'], 'created');
             }
         };
 
-        $ampResponse = new AmpRequestHandler($handler)->handleRequest($this->createAmpRequest());
+        $ampResponse = new RequestHandler($handler)->handleRequest($this->createAmpRequest());
 
         $this->assertSame(201, $ampResponse->getStatus());
         $this->assertSame('Created', $ampResponse->getReason());
@@ -41,7 +41,7 @@ final class AmpRequestHandlerTest extends TestCase
     public function testHandleRequestPassesConvertedServerRequestToHandler(): void
     {
         $capturedRequest = null;
-        $handler = new class ($capturedRequest) implements RequestHandler {
+        $handler = new class ($capturedRequest) implements EngineRequestHandler {
             public function __construct(private mixed &$capturedRequest) {}
 
             public function handleRequest(ServerRequest $request): ServerResponse
@@ -51,7 +51,7 @@ final class AmpRequestHandlerTest extends TestCase
             }
         };
 
-        new AmpRequestHandler($handler)->handleRequest(
+        new RequestHandler($handler)->handleRequest(
             $this->createAmpRequest('POST', 'https://localhost/api/users'),
         );
 

@@ -6,6 +6,7 @@ use Amp\Cluster\Cluster;
 use Amp\Http\Server\Driver\SocketClientFactory;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
+use Lav45\MockServer\Driver\RequestHandler as AmpRequestHandler;
 use Lav45\MockServer\Engine\Http\RequestHandler;
 use Psr\Log\LoggerInterface;
 

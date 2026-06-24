@@ -3,14 +3,13 @@
 namespace Lav45\MockServer\Driver;
 
 use Amp\Http\Server\Request as AmpRequest;
-use Amp\Http\Server\RequestHandler as AmpRequestHandlerInterface;
 use Amp\Http\Server\Response as AmpResponse;
-use Lav45\MockServer\Engine\Http\RequestHandler;
+use Lav45\MockServer\Engine\Http\RequestHandler as EngineRequestHandler;
 
-final readonly class AmpRequestHandler implements AmpRequestHandlerInterface
+final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     public function __construct(
-        private RequestHandler $handler,
+        private EngineRequestHandler $handler,
     ) {}
 
     public function handleRequest(AmpRequest $request): AmpResponse

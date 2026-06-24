@@ -4,9 +4,8 @@ namespace Lav45\MockServer\Driver;
 
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request;
-use Lav45\MockServer\Engine\Http\ServerRequest as ServerRequestInterface;
 
-final class ServerRequest implements ServerRequestInterface
+final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
 {
     private string|null $body = null;
 
