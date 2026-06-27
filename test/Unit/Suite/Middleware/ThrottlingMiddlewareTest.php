@@ -11,6 +11,7 @@ use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;
 
@@ -34,14 +35,23 @@ final class ThrottlingMiddlewareTest extends TestCase
 
     private function nextReturning(int $status): MiddlewareHandler
     {
-        return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
+        return new CallableHandler(static fn(ServerRequest $_): ServerResponse => new ServerResponse($status));
     }
 
-    // --- Passthrough (synchronous) ---
-
-    public function testPassesThroughWhenDelayKeyMissing(): void
+    public static function noDelayDataProvider(): array
     {
-        $request = $this->createRequest(['response' => ['text' => 'ok']]);
+        return [
+            'response key missing' => [[]],
+            'delay key missing' => [['response' => ['text' => 'ok']]],
+            'delay is zero' => [['response' => ['delay' => 0.0]]],
+        ];
+    }
+
+    #[DataProvider('noDelayDataProvider')]
+    public function testPassesThroughSynchronouslyWhenNoDelay(array $data): void
+    {
+        // Amp\delay() outside a fiber throws FiberError — no exception here proves no delay was applied
+        $request = $this->createRequest($data);
 
         $middleware = new ThrottlingMiddleware(new DataBuilder());
         $response = $middleware->process($request, $this->nextReturning(200));
@@ -49,75 +59,22 @@ final class ThrottlingMiddlewareTest extends TestCase
         $this->assertSame(200, $response->getStatus());
     }
 
-    public function testPassesThroughWhenDelayIsZero(): void
+    public function testAppliesDelayBeforeReturningResponse(): void
     {
-        $request = $this->createRequest(['response' => ['delay' => 0.0]]);
+        $delay = 0.01;
+        $request = $this->createRequest(['response' => ['delay' => $delay]]);
 
-        $middleware = new ThrottlingMiddleware(new DataBuilder());
-        $response = $middleware->process($request, $this->nextReturning(200));
-
-        $this->assertSame(200, $response->getStatus());
-    }
-
-    public function testPassesThroughWhenResponseKeyMissing(): void
-    {
-        $request = $this->createRequest([]);
-
-        $middleware = new ThrottlingMiddleware(new DataBuilder());
-        $response = $middleware->process($request, $this->nextReturning(200));
-
-        $this->assertSame(200, $response->getStatus());
-    }
-
-    public function testAlwaysCallsNext(): void
-    {
-        $called = false;
-        $next = function () use (&$called): ServerResponse {
-            $called = true;
-            return new ServerResponse(200);
-        };
-
-        $request = $this->createRequest(['response' => ['text' => 'ok']]);
-        $middleware = new ThrottlingMiddleware(new DataBuilder());
-        $middleware->process($request, new CallableHandler($next));
-
-        $this->assertTrue($called);
-    }
-
-    // --- With delay (runs inside fiber) ---
-
-    public function testReturnsResponseWhenDelayIsPositive(): void
-    {
-        $request = $this->createRequest(['response' => ['delay' => 0.001]]);
-
+        $elapsed = null;
         $capturedResponse = null;
-        async(function () use ($request, &$capturedResponse): void {
+        async(function () use ($request, &$elapsed, &$capturedResponse): void {
             $middleware = new ThrottlingMiddleware(new DataBuilder());
-            $capturedResponse = $middleware->process($request, $this->nextReturning(201));
+            $start = \microtime(true);
+            $capturedResponse = $middleware->process($request, $this->nextReturning(200));
+            $elapsed = \microtime(true) - $start;
         });
         EventLoop::run();
 
-        $this->assertSame(201, $capturedResponse->getStatus());
-    }
-
-    public function testElapsedTimeReducesActualDelay(): void
-    {
-        // If $next takes longer than the delay, the sleep must NOT be called
-        // (timeout <= 0.0 branch). We verify no error is thrown and response is returned.
-        $slowNext = static function (): ServerResponse {
-            \usleep(5_000); // 5 ms — longer than 0.001 s delay
-            return new ServerResponse(200);
-        };
-
-        $request = $this->createRequest(['response' => ['delay' => 0.001]]);
-
-        $capturedResponse = null;
-        async(function () use ($request, $slowNext, &$capturedResponse): void {
-            $middleware = new ThrottlingMiddleware(new DataBuilder());
-            $capturedResponse = $middleware->process($request, new CallableHandler($slowNext));
-        });
-        EventLoop::run();
-
+        $this->assertGreaterThanOrEqual(0.01, $elapsed);
         $this->assertSame(200, $capturedResponse->getStatus());
     }
 }

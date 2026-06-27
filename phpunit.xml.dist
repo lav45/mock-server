@@ -10,9 +10,11 @@
          cacheDirectory=".cache/.phpunit.cache"
          colors="true">
     <testsuites>
-        <testsuite name="Mock Server - Functional testing">
-            <directory>test/Functional/Suite</directory>
+        <testsuite name="Unit">
             <directory>test/Unit/Suite</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory>test/Functional/Suite</directory>
         </testsuite>
     </testsuites>
     <source>

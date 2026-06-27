@@ -63,10 +63,11 @@
         "phpunit": "AMP_DEBUG=true php -d display_errors=on vendor/bin/phpunit",
         "coverage:html": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html coverage",
         "coverage:xml": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-clover=coverage.xml",
-        "check": "php vendor/bin/composer-require-checker check",
-        "unused": "php vendor/bin/composer-unused --excludePackage=ext-pcntl",
-        "deptrac": "php vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
-        "cs:fix": "php vendor/bin/php-cs-fixer fix"
+        "check": "vendor/bin/composer-require-checker check",
+        "unused": "vendor/bin/composer-unused --excludePackage=ext-pcntl",
+        "deptrac": "vendor/bin/deptrac --cache-file=.cache/.deptrac.cache analyse",
+        "cs:fix": "vendor/bin/php-cs-fixer fix",
+        "mutation": "vendor/bin/infection --initial-tests-php-options=\"-d pcov.enabled=1\" --threads=max"
     },
     "autoload": {
         "psr-4": {

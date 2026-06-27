@@ -48,4 +48,39 @@ final class HttpStatusTest extends TestCase
             [1000],
         ];
     }
+
+    public function testInformationalBoundary(): void
+    {
+        $status = new HttpStatus(100);
+        $this->assertTrue($status->isInformational(199));
+        $this->assertFalse($status->isInformational(200));
+    }
+
+    public function testSuccessfulBoundary(): void
+    {
+        $status = new HttpStatus(200);
+        $this->assertTrue($status->isSuccessful(299));
+        $this->assertFalse($status->isSuccessful(300));
+    }
+
+    public function testRedirectBoundary(): void
+    {
+        $status = new HttpStatus(300);
+        $this->assertTrue($status->isRedirect(399));
+        $this->assertFalse($status->isRedirect(400));
+    }
+
+    public function testClientErrorBoundary(): void
+    {
+        $status = new HttpStatus(400);
+        $this->assertTrue($status->isClientError(499));
+        $this->assertFalse($status->isClientError(500));
+    }
+
+    public function testServerErrorBoundary(): void
+    {
+        $status = new HttpStatus(500);
+        $this->assertTrue($status->isServerError(599));
+        $this->assertFalse($status->isServerError(600));
+    }
 }

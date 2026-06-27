@@ -54,4 +54,24 @@ final class FallbackMiddlewareTest extends TestCase
         $errors = $logger->getMessages('error');
         $this->assertCount(1, $errors);
     }
+
+    public function testLogsErrorWithUnescapedSlashes(): void
+    {
+        $logger = new FakeLogger();
+        $middleware = new FallbackMiddleware($logger);
+        $middleware->process($this->createRequest(['url' => 'https://example.com/path']), $this->next());
+
+        $errors = $logger->getMessages('error');
+        $this->assertStringContainsString('https://example.com/path', $errors[0]);
+    }
+
+    public function testLogsErrorIsPrettyPrinted(): void
+    {
+        $logger = new FakeLogger();
+        $middleware = new FallbackMiddleware($logger);
+        $middleware->process($this->createRequest(['key' => 'value']), $this->next());
+
+        $errors = $logger->getMessages('error');
+        $this->assertStringContainsString("\n", $errors[0]);
+    }
 }

@@ -24,6 +24,12 @@ final class ArrayHelperTest extends TestCase
         $this->assertNull(ArrayHelper::getValue($data, '2'));
     }
 
+    public function testGetValueTrimsTrailingDot(): void
+    {
+        $data = ['a' => ['b' => 42]];
+        $this->assertSame(42, ArrayHelper::getValue($data, 'a.b.'));
+    }
+
     public function testMapWithNonStringNonArrayValues(): void
     {
         $data = [

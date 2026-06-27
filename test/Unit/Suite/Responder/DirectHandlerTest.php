@@ -196,4 +196,22 @@ final class DirectHandlerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $handler->request($this->createDirect());
     }
+
+    public function testThrowsForStatus300(): void
+    {
+        $httpClient = $this->createHttpClientStub(300, '{}');
+        $handler = new DirectHandler($httpClient);
+
+        $this->expectException(\RuntimeException::class);
+        $handler->request($this->createDirect());
+    }
+
+    public function testThrowsForStatus1xx(): void
+    {
+        $httpClient = $this->createHttpClientStub(150, '{}');
+        $handler = new DirectHandler($httpClient);
+
+        $this->expectException(\RuntimeException::class);
+        $handler->request($this->createDirect());
+    }
 }

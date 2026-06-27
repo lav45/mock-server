@@ -336,6 +336,24 @@ final class ConditionMatcherTest extends TestCase
         ])));
     }
 
+    // --- case-insensitive operators ---
+
+    public function testUppercaseAndOperatorIsTreatedAsAnd(): void
+    {
+        $this->assertTrue($this->check(
+            ['AND', ['=', 'foo', 'foo'], ['=', 'bar', 'bar']],
+            $this->parser(),
+        ));
+    }
+
+    public function testUppercaseOrOperatorIsTreatedAsOr(): void
+    {
+        $this->assertTrue($this->check(
+            ['OR', ['=', 'foo', 'foo'], ['=', 'bar', 'WRONG']],
+            $this->parser(),
+        ));
+    }
+
     // --- malformed / incomplete expression ---
 
     public function testIncompleteExpressionNeverMatches(): void

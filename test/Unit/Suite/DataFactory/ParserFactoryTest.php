@@ -95,4 +95,11 @@ final class ParserFactoryTest extends TestCase
         $parser = new ParserFactory($this->createParser())->create($request, ['webhook' => ['url' => 'https://hook.example.com']]);
         $this->assertSame('https://hook.example.com', $parser->replace('{{env.webhook.url}}'));
     }
+
+    public function testCreateExposesRequestPath(): void
+    {
+        $request = $this->createRequest(url: 'https://localhost/api/users');
+        $parser = new ParserFactory($this->createParser())->create($request, []);
+        $this->assertSame('/api/users', $parser->replace('{{request.path}}'));
+    }
 }

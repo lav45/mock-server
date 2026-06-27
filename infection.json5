@@ -1,0 +1,22 @@
+{
+    "source": {
+        "directories": ["src"],
+        "excludes": [
+            "Bootstrap",
+            "Driver"
+        ]
+    },
+    "phpUnit": {
+        "configDir": "."
+    },
+    "testFrameworkOptions": "--testsuite=Unit",
+    "mutators": {
+        "@default": true,
+        "LogicalOrNegation": false,
+        "CastFloat": false
+    },
+    "logs": {
+        "text": ".cache/infection/infection.log",
+        "html": ".cache/infection/infection.html"
+    }
+}

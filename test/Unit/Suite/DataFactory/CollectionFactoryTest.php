@@ -177,6 +177,57 @@ final class CollectionFactoryTest extends TestCase
         ], $content['pagination']);
     }
 
+    public function testDefaultPageSizeIsTwenty(): void
+    {
+        $items = \array_map(static fn($i) => ['id' => $i], \range(1, 21));
+
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest(),
+            $this->createParser(),
+            [
+                'items' => $items,
+                'headers' => ['X-Per-Page' => '{response.pagination.pageSize}'],
+            ],
+        );
+
+        $this->assertSame(20, $this->decodeBody($response->body->toString())[19]['id']);
+        $this->assertCount(20, $this->decodeBody($response->body->toString()));
+        $this->assertEquals(20, $response->headers->toArray()['X-Per-Page']);
+    }
+
+    public function testDefaultPageSizeOverriddenByConfig(): void
+    {
+        $items = \array_map(static fn($i) => ['id' => $i], \range(1, 10));
+
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest(),
+            $this->createParser(),
+            [
+                'items' => $items,
+                'pagination' => ['defaultPageSize' => 5],
+                'headers' => ['X-Per-Page' => '{response.pagination.pageSize}'],
+            ],
+        );
+
+        $this->assertCount(5, $this->decodeBody($response->body->toString()));
+        $this->assertEquals(5, $response->headers->toArray()['X-Per-Page']);
+    }
+
+    public function testPageSizeIsZeroWhenPageOutOfRange(): void
+    {
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest('https://localhost/?page=99'),
+            $this->createParser(),
+            [
+                'items' => [['id' => 1], ['id' => 2]],
+                'headers' => ['X-Per-Page' => '{response.pagination.pageSize}'],
+            ],
+        );
+
+        $this->assertSame([], $this->decodeBody($response->body->toString()));
+        $this->assertEquals(0, $response->headers->toArray()['X-Per-Page']);
+    }
+
     public function testCreateWithInlineInterpolationInResult(): void
     {
         $items = [['id' => 1], ['id' => 2], ['id' => 3]];

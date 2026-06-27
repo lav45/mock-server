@@ -51,7 +51,7 @@ final class DirectDataInjectorTest extends TestCase
 
         $warnings = $logger->getMessages('warning');
         $this->assertCount(1, $warnings);
-        $this->assertStringContainsString('/direct/1', $warnings[0]);
+        $this->assertSame("Rewrite 'response' options for: /direct/1", $warnings[0]);
     }
 
     public function testDoesNotWarnWhenNoExistingResponse(): void

@@ -80,4 +80,13 @@ final class ParamParserTest extends TestCase
             ],
         ];
     }
+
+    public function testWithDataMergesRecursively(): void
+    {
+        $result = $this->parser
+            ->withData(['a' => 1])
+            ->withData(['b' => 2])
+            ->replace('{{a}}');
+        $this->assertSame(1, $result);
+    }
 }
