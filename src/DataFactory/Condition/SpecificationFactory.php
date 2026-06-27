@@ -27,21 +27,13 @@ final readonly class SpecificationFactory
         }
         $operator = \strtolower($expression[0]);
         if ($operator === 'and') {
-            return new AndSpecification(...\array_map(
-                fn(array $expression) => $this->create($expression),
-                \array_slice($expression, 1),
-            ));
+            return new AndSpecification(...$this->createAll($expression));
         }
         if ($operator === 'or') {
-            return new OrSpecification(...\array_map(
-                fn(array $expression) => $this->create($expression),
-                \array_slice($expression, 1),
-            ));
+            return new OrSpecification(...$this->createAll($expression));
         }
         if ($operator === 'not') {
-            return new NotSpecification(
-                $this->create($expression[1]),
-            );
+            return new NotSpecification($this->create($expression[1]));
         }
         if ($operator === 'exists') {
             return new FieldSpecification(
@@ -62,6 +54,15 @@ final readonly class SpecificationFactory
             );
         }
         return new NeverSpecification();
+    }
+
+    private function createAll(array $expressions): array
+    {
+        $result = [];
+        foreach (\array_slice($expressions, 1) as $expression) {
+            $result[] = $this->create($expression);
+        }
+        return $result;
     }
 
     public function build(string $operator, mixed $expected): Specification

@@ -13,6 +13,11 @@ final readonly class HttpMethods
         $this->items = $items;
     }
 
+    public function toString(): string
+    {
+        return \implode(',', $this->toArray());
+    }
+
     public function toArray(): array
     {
         $result = [];

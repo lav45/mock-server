@@ -6,6 +6,8 @@ use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
 
+use function Amp\delay;
+
 final readonly class ThrottlingMiddleware implements Middleware
 {
     public function __construct(
@@ -31,7 +33,7 @@ final readonly class ThrottlingMiddleware implements Middleware
 
         $timeout = $delay - ($end - $start);
         if ($timeout > 0.0) {
-            \usleep((int)($timeout * 1_000_000));
+            delay($timeout);
         }
         return $response;
     }

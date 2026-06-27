@@ -41,11 +41,7 @@ final readonly class DispatcherFactory
                     $request->path->value,
                     $data,
                 );
-                $this->logger->debug(\sprintf(
-                    'Added route: [%s] %s',
-                    \implode(',', $request->methods->toArray()),
-                    $request->path->value,
-                ));
+                $this->logger->debug(\sprintf('Added route: [%s] %s', $request->methods->toString(), $request->path->value));
             }
         };
         return simpleDispatcher($routeDefinitionCallback, $this->options);

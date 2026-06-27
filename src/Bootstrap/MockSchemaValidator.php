@@ -13,7 +13,7 @@ final readonly class MockSchemaValidator
     public function __construct(
         string $schemaFile = __DIR__ . '/../../schema/mock.schema.json',
     ) {
-        if (file_exists($schemaFile) === false || is_readable($schemaFile) === false) {
+        if (\file_exists($schemaFile) === false || \is_readable($schemaFile) === false) {
             throw new \RuntimeException('Unable to read mock schema: "' . $schemaFile . '"');
         }
         $content = \file_get_contents($schemaFile);

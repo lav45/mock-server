@@ -40,24 +40,15 @@ final class ServerResponse
         504 => 'Gateway Timeout',
     ];
 
-    private int $status;
-
     private string $reason;
 
-    /** @var array<string, string|list<string>> */
-    private array $headers;
-
-    private string $body;
-
-    /**
-     * @param array<string, string|list<string>> $headers
-     */
-    public function __construct(int $status = 200, array $headers = [], string $body = '')
-    {
-        $this->status = $status;
+    public function __construct(
+        private int    $status = 200,
+        /** @var array<string, string|list<string>> */
+        private array  $headers = [],
+        private string $body = '',
+    ) {
         $this->reason = self::REASON_PHRASES[$status] ?? '';
-        $this->headers = $headers;
-        $this->body = $body;
     }
 
     public function getStatus(): int
