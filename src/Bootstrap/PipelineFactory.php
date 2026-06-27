@@ -18,7 +18,6 @@ use Lav45\MockServer\Middleware\CollectionMiddleware;
 use Lav45\MockServer\Middleware\ConditionMiddleware;
 use Lav45\MockServer\Middleware\ContentMiddleware;
 use Lav45\MockServer\Middleware\DirectMiddleware;
-use Lav45\MockServer\Middleware\FallbackMiddleware;
 use Lav45\MockServer\Middleware\MiddlewareHandler;
 use Lav45\MockServer\Middleware\MiddlewarePipeline;
 use Lav45\MockServer\Middleware\PrepareMiddleware;
@@ -78,7 +77,6 @@ final readonly class PipelineFactory
                 factory: new CollectionFactory($this->dataBuilder),
                 responder: new ContentResponder(),
             ),
-            new FallbackMiddleware($this->logger),
         );
     }
 }
