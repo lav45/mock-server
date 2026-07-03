@@ -57,9 +57,8 @@ FROM tool AS build
 
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
-COPY migrates /app/migrates
 
-RUN composer install --optimize-autoloader --prefer-dist --no-progress --no-dev --ansi
+RUN composer install --prefer-dist --no-progress --no-dev --ansi
 
 FROM base AS base-server
 
@@ -78,7 +77,9 @@ CMD [ "sh", "-c", "vendor/bin/cluster --pid-file /tmp/cluster.pid --log ${LOG_LE
 FROM base-server AS server
 
 COPY bin /app/bin
+COPY etc /app/etc
 COPY src /app/src
 COPY schema /app/schema
+COPY Extension /app/Extension
 COPY migrates /app/migrates
 COPY --from=build --chown=root:root /app/vendor /app/vendor

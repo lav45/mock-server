@@ -16,7 +16,7 @@ fi
 docker run -d --rm \
   -v "$(pwd)":/app:ro \
   -v "$(pwd)"/test/benchmark:/app/mocks:ro \
-  -e PORT=80 \
+  -e CONFIG_PATH=/app/mocks/config.yaml \
   --name test_mock_server \
   "${1:-mock-server:server}" > /dev/null
 

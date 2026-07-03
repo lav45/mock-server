@@ -29,20 +29,15 @@ deptrac:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Engine\\.*~
 
-    - name: Middleware
+    - name: Extension
       collectors:
         - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Middleware\\.*~
+          value: ~^Lav45\\MockServer\\Extension\\.*~
 
     - name: Parser
       collectors:
         - type: classNameRegex
           value: ~^Lav45\\MockServer\\Parser\\.*~
-
-    - name: Responder
-      collectors:
-        - type: classNameRegex
-          value: ~^Lav45\\MockServer\\Responder\\.*~
 
     - name: Vendor
       collectors:
@@ -54,13 +49,11 @@ deptrac:
       - DataFactory
       - Domain
       - Engine
-      - Middleware
+      - Extension
       - Parser
-      - Responder
       - Vendor
-    Middleware:
+    Extension:
       - DataFactory
-      - Responder
       - Parser
       - Domain
       - Engine
@@ -72,13 +65,10 @@ deptrac:
       - Vendor
     Parser:
       - Vendor
-    Responder:
-      - Domain
-      - Engine
-      - Vendor
     Engine:
       - Domain
     Driver:
+      - Extension
       - Domain
       - Engine
       - Vendor

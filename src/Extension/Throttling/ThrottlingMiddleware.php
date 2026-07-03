@@ -1,0 +1,42 @@
+<?php declare(strict_types=1);
+
+namespace Lav45\MockServer\Extension\Throttling;
+
+use Lav45\MockServer\DataFactory\DataBuilder;
+use Lav45\MockServer\Engine\Http\RequestHandler;
+use Lav45\MockServer\Engine\Http\ServerRequest;
+use Lav45\MockServer\Engine\Http\ServerResponse;
+use Lav45\MockServer\Extension\Middleware;
+
+use function Amp\delay;
+
+final readonly class ThrottlingMiddleware implements Middleware
+{
+    public function __construct(
+        private DataBuilder $dataBuilder,
+    ) {}
+
+    public function process(ServerRequest $request, RequestHandler $next): ServerResponse
+    {
+        $data = $request->getAttribute('data')['response'] ?? [];
+        if (isset($data['delay']) === false) {
+            return $next->handleRequest($request);
+        }
+
+        $factory = $this->dataBuilder->withData($data);
+        $delay = $factory->createDelay()->value;
+        if ($delay === 0.0) {
+            return $next->handleRequest($request);
+        }
+
+        $start = \microtime(true);
+        $response = $next->handleRequest($request);
+        $end = \microtime(true);
+
+        $timeout = $delay - ($end - $start);
+        if ($timeout > 0.0) {
+            delay($timeout);
+        }
+        return $response;
+    }
+}

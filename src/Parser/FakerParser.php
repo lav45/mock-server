@@ -40,6 +40,6 @@ final readonly class FakerParser implements InlineParser
     {
         $args = '[' . \substr($str, 1, -1) . ']';
         $args = \str_replace(["'", '\\'], ['"', '\\\\'], $args);
-        return \json_decode($args, true, 512, JSON_THROW_ON_ERROR);
+        return \json_decode($args, true, flags: JSON_THROW_ON_ERROR);
     }
 }

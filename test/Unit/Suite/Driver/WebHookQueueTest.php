@@ -12,7 +12,7 @@ use Lav45\MockServer\Domain\WebHooks;
 use Lav45\MockServer\Driver\WebHookQueue;
 use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\HttpClient;
-use Lav45\MockServer\Responder\WebHookHandler;
+use Lav45\MockServer\Extension\WebHook\WebHookHandler;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;

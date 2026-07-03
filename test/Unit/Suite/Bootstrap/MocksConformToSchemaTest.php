@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
-use Lav45\MockServer\Bootstrap\MockSchemaValidator;
+use Lav45\MockServer\Bootstrap\SchemaValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +16,9 @@ final class MocksConformToSchemaTest extends TestCase
     public function testFunctionalMockConformsToSchema(array $mock): void
     {
         $this->expectNotToPerformAssertions();
-        new MockSchemaValidator()->validate($mock);
+        new SchemaValidator()
+            ->withSchema(\dirname(__DIR__, 4) . '/schema/mock.schema.json')
+            ->validate($mock);
     }
 
     public static function mockProvider(): array

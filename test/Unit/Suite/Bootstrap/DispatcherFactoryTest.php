@@ -4,7 +4,6 @@ namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
 use FastRoute\Dispatcher;
 use Lav45\MockServer\Bootstrap\DispatcherFactory;
-use Lav45\MockServer\Bootstrap\MockSchemaValidator;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -17,8 +16,7 @@ final class DispatcherFactoryTest extends TestCase
     {
         $this->logger = new FakeLogger();
         $this->factory = new DispatcherFactory(
-            migrate: static fn(array $data): array => $data,
-            validator: new MockSchemaValidator(),
+            handler: static fn(array $data): array => $data,
             logger: $this->logger,
         );
     }
@@ -56,14 +54,12 @@ final class DispatcherFactoryTest extends TestCase
 
         $dispatcher = $this->factory->create($data);
 
-        // Проверяем лог debug
         $debugMessages = $this->logger->getMessages('debug');
         $this->assertCount(3, $debugMessages);
         $this->assertContains('Added route: [GET] /users', $debugMessages);
         $this->assertContains('Added route: [POST,PUT] /users', $debugMessages);
         $this->assertContains('Added route: [DELETE] /users/1', $debugMessages);
 
-        // Проверяем, что ошибок не было
         $this->assertEmpty($this->logger->getMessages('error'));
 
         $expends = [
@@ -107,20 +103,19 @@ final class DispatcherFactoryTest extends TestCase
         $this->assertEquals(Dispatcher::NOT_FOUND, $result[0]);
     }
 
-    public function testAppliesMigrationBeforeRouting(): void
+    public function testAppliesHandlerBeforeRouting(): void
     {
-        $migrate = static function (array $data): array {
+        $handler = static function (array $data): array {
             $data['request']['path'] = '/rewritten';
             $data['response'] = ['body' => 'migrated'];
             return $data;
         };
 
-        $factory = new DispatcherFactory($migrate, new MockSchemaValidator(), $this->logger);
+        $factory = new DispatcherFactory($handler, $this->logger);
         $dispatcher = $factory->create([
             ['request' => ['method' => 'GET', 'path' => '/original'], 'response' => ['body' => 'raw']],
         ]);
 
-        // Маршрут зарегистрирован по пути, полученному из миграции, а не исходному
         $this->assertEquals(Dispatcher::NOT_FOUND, $dispatcher->dispatch('GET', '/original')[0]);
 
         $result = $dispatcher->dispatch('GET', '/rewritten');
@@ -128,52 +123,39 @@ final class DispatcherFactoryTest extends TestCase
         $this->assertSame(['body' => 'migrated'], $result[1]['response']);
     }
 
-    public function testCreateWithInvalidUrl(): void
+    public function testLogsErrorAndSkipsRouteWhenHandlerThrows(): void
     {
-        $data = [
-            [
-                'request' => [
-                    'method' => 'GET',
-                    'path' => '/valid',
-                ],
-                'response' => ['body' => 'ok'],
-            ],
-            [
-                'request' => [
-                    'method' => 'GET',
-                    'path' => 'invalid',
-                ],
-                'response' => ['body' => 'should not be added'],
-            ],
-        ];
+        $factory = new DispatcherFactory(
+            handler: static function (array $data): array {
+                if ($data['request']['path'] === '/broken') {
+                    throw new \RuntimeException('handler rejected mock');
+                }
+                return $data;
+            },
+            logger: $this->logger,
+        );
 
-        $dispatcher = $this->factory->create($data);
+        $dispatcher = $factory->create([
+            ['request' => ['method' => 'GET', 'path' => '/valid'], 'response' => ['body' => 'ok']],
+            ['request' => ['method' => 'GET', 'path' => '/broken'], 'response' => ['body' => 'nope']],
+        ]);
 
-        // Проверяем, что ошибка залогирована (путь "invalid" не проходит схему)
         $errorMessages = $this->logger->getMessages('error');
         $this->assertCount(1, $errorMessages);
         $this->assertStringContainsString('1: ', $errorMessages[0]);
-        $this->assertStringContainsString('does not match schema', $errorMessages[0]);
+        $this->assertStringContainsString('handler rejected mock', $errorMessages[0]);
 
-        // debug только для валидного маршрута
         $debugMessages = $this->logger->getMessages('debug');
         $this->assertCount(1, $debugMessages);
         $this->assertEquals('Added route: [GET] /valid', $debugMessages[0]);
 
-        // Валидный маршрут должен быть
-        $result = $dispatcher->dispatch('GET', '/valid');
-        $this->assertEquals(Dispatcher::FOUND, $result[0]);
-
-        // Невалидный маршрут не добавлен
-        $result = $dispatcher->dispatch('GET', 'invalid');
-        $this->assertEquals(Dispatcher::NOT_FOUND, $result[0]);
+        $this->assertEquals(Dispatcher::FOUND, $dispatcher->dispatch('GET', '/valid')[0]);
+        $this->assertEquals(Dispatcher::NOT_FOUND, $dispatcher->dispatch('GET', '/broken')[0]);
     }
 
     public function testCreateWithEmptyData(): void
     {
-        $data = [];
-
-        $dispatcher = $this->factory->create($data);
+        $dispatcher = $this->factory->create([]);
 
         $this->assertEmpty($this->logger->getMessages('debug'));
         $this->assertEmpty($this->logger->getMessages('error'));
@@ -186,8 +168,7 @@ final class DispatcherFactoryTest extends TestCase
     {
         $options = ['cacheFile' => '/tmp/routes.cache'];
         $factory = new DispatcherFactory(
-            migrate: static fn(array $data): array => $data,
-            validator: new MockSchemaValidator(),
+            handler: static fn(array $data): array => $data,
             logger: $this->logger,
             options: $options,
         );
@@ -219,32 +200,5 @@ final class DispatcherFactoryTest extends TestCase
             'response' => ['body' => 'ok'],
         ];
         $this->assertEquals($expected, $result[1]);
-    }
-
-    public function testWarnsOnceWhenDataMigrated(): void
-    {
-        $factory = new DispatcherFactory(
-            migrate: static fn(array $data): array => $data + ['version' => 2],
-            validator: new MockSchemaValidator(),
-            logger: $this->logger,
-        );
-
-        $factory->create([
-            ['request' => ['method' => 'GET', 'path' => '/a']],
-            ['request' => ['method' => 'GET', 'path' => '/b']],
-        ]);
-
-        $warnings = $this->logger->getMessages('warning');
-        $this->assertCount(1, $warnings);
-        $this->assertStringContainsString('bin/migrate', $warnings[0]);
-    }
-
-    public function testDoesNotWarnWhenDataUnchanged(): void
-    {
-        $this->factory->create([
-            ['request' => ['method' => 'GET', 'path' => '/a']],
-        ]);
-
-        $this->assertCount(0, $this->logger->getMessages('warning'));
     }
 }

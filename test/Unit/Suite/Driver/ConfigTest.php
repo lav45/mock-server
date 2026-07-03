@@ -3,6 +3,7 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
 use Lav45\MockServer\Driver\Config;
+use Lav45\MockServer\Extension\Content\ContentExtension;
 use Monolog\Level;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -178,6 +179,136 @@ final class ConfigTest extends TestCase
             'uppercase' => ['HOST,Content-Length', ['host', 'content-length']],
             'spaces around' => ['host, content-length , connection', ['host', 'content-length', 'connection']],
             'empty parts' => ['host,,content-length', ['host', 'content-length']],
+        ];
+    }
+
+    #[DataProvider('emptyPathProvider')]
+    public function testFromFileWithoutPathReturnsDefaults(string|false $path): void
+    {
+        $config = Config::fromFile($path);
+
+        $this->assertSame(8080, $config->getPort());
+        $this->assertSame('/app/mocks', $config->getMocksPath());
+        $this->assertSame([], $config->getExtensions());
+    }
+
+    public static function emptyPathProvider(): array
+    {
+        return [
+            'false' => [false],
+            'empty string' => [''],
+        ];
+    }
+
+    public function testFromFileParsesCustomFile(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "port: 9090\nlocale: fr_FR\nextensions:\n  - class: " . ContentExtension::class . "\n");
+
+        try {
+            $config = Config::fromFile($path);
+            $this->assertSame(9090, $config->getPort());
+            $this->assertSame('fr_FR', $config->getLocale());
+            $this->assertSame(ContentExtension::class, $config->getExtensions()[0]->class);
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testFromFileParsesCamelCaseKeys(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "logLevel: debug\nfilterHeaders: [host, x-test]\n");
+
+        try {
+            $config = Config::fromFile($path);
+            $this->assertSame(Level::Debug->value, $config->getLogLevel());
+            $this->assertSame(['host', 'x-test'], $config->getFilterHeaders());
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testFromFileParsesSchema(): void
+    {
+        $schemaFile = \sys_get_temp_dir() . '/schema_' . \uniqid('', true) . '.json';
+        touch($schemaFile);
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "schema: {$schemaFile}\n");
+
+        try {
+            $this->assertSame($schemaFile, Config::fromFile($path)->getSchema());
+        } finally {
+            \unlink($path);
+            deleteFile($schemaFile);
+        }
+    }
+
+    public function testFromFileThrowsForMissingPath(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid config path');
+        Config::fromFile('/non_existent_config_' . \uniqid('', true) . '.yaml');
+    }
+
+    public function testFromFileThrowsForNonArrayContent(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, 'just a scalar');
+
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessageIsOrContains('Invalid config file');
+            Config::fromFile($path);
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testExtensionsThrowsWhenClassMissing(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid extension: missing class');
+        $this->config->extensions([['config' => ['allow_origin' => '*']]]);
+    }
+
+    public function testSchemaDefaultsToNull(): void
+    {
+        $this->assertNull($this->config->getSchema());
+    }
+
+    public function testSchemaWithFalseKeepsNull(): void
+    {
+        $this->config->schema(false);
+        $this->assertNull($this->config->getSchema());
+    }
+
+    public function testSchemaWithValidPath(): void
+    {
+        $schemaFile = \sys_get_temp_dir() . '/schema_' . \uniqid('', true) . '.json';
+        touch($schemaFile);
+
+        try {
+            $this->config->schema($schemaFile);
+            $this->assertSame($schemaFile, $this->config->getSchema());
+        } finally {
+            deleteFile($schemaFile);
+        }
+    }
+
+    #[DataProvider('invalidSchemaPathProvider')]
+    public function testSchemaWithInvalidPathThrows(string $invalidPath): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid schema path');
+        $this->config->schema($invalidPath);
+    }
+
+    public static function invalidSchemaPathProvider(): array
+    {
+        return [
+            'missing file' => ['/non_existent_schema_' . \uniqid('', true) . '.json'],
+            'directory instead of file' => [\sys_get_temp_dir()],
         ];
     }
 }

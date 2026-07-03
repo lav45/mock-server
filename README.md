@@ -19,20 +19,23 @@ webhooks, and automatic reloading of mock files.
 
 - [Env](docs/env.md) - Storage of variables that can be used in the Response and WebHooks
     - [Server environment](docs/env.md#server-environment) - Server environment
-    - [Faker](docs/env.md#faker) - Generate random data
+- [Faker](docs/faker.md) - Generate random data with FakerPHP
+- [Date](docs/date.md) - Current date and time via templates
 - [Request](docs/request.md)
     - [Routing](docs/request.md#requestpath)
-- [Response](docs/response.md)
-    - [Content](docs/response/content.md)
-        - [Delay](docs/response/content.md#responsedelay)
-        - [Faker](docs/response/content.md#faker) - Generate random data
-        - [Request parameters](docs/response/content.md#request-parameters) - You can get data from your request and use it in the response
-    - [Proxy](docs/response/proxy.md)
-    - [Data provider](docs/response/data.md)
-- [Conditions](docs/conditions.md) - Conditional response overrides evaluated before the default response
-- [WebHooks](docs/webhooks.md)
-    - [Faker](docs/webhooks.md#faker) - Generate random data
-- [Direct](docs/direct.md) - Delegate response generation to a remote server
+- [Response](docs/extension/application/response.md)
+    - [Content](docs/extension/application/response/content.md)
+        - [Request parameters](docs/extension/application/response/content.md#request-parameters) - You can get data from your request and use it in the response
+    - [Proxy](docs/extension/application/response/proxy.md)
+    - [Data provider](docs/extension/application/response/data.md)
+- [Delay](docs/extension/application/delay.md) - Delay any response by `response.delay` seconds, regardless of its type
+- [Conditions](docs/extension/application/conditions.md) - Conditional response overrides evaluated before the default response
+- [WebHooks](docs/extension/application/webhooks.md)
+- [Direct](docs/extension/application/direct.md) - Delegate response generation to a remote server
+- [CORS](docs/extension/system/cors.md) - CORS headers on every response (disabled by default)
+- [Custom Extensions](docs/extension.md) - Add your own HTTP middleware to the request/response pipeline
+    - [System](docs/extension/system.md) - Cross-cutting logic applied to every response
+    - [Application](docs/extension/application.md) - Logic that consumes user data from the matched mock
 - **Auto reload mock file without restarting the server**
 
 ## Quick start

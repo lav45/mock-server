@@ -40,6 +40,7 @@ docker run --rm -d \
   -e PORT=80 \
   -e LOG_LEVEL="${LOG_LEVEL:-error}" \
   -e MOCKS_PATH=/app/mocks \
+  -e CONFIG_PATH=/app/test/Functional/config.yaml \
   -e DOMAIN=test.server.com \
   -e WEBHOOK_STORAGE_URL="$WEBHOOK_CATCHER_URL/$WEBHOOK_CATCHER_SESSION_ID" \
   --name test_mock_server \

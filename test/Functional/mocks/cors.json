@@ -1,0 +1,15 @@
+[
+    {
+        "version": 8,
+        "request": {
+            "path": "/cors"
+        },
+        "response": {
+            "type": "content",
+            "body": "OK",
+            "headers": {
+                "x-total": "42"
+            }
+        }
+    }
+]

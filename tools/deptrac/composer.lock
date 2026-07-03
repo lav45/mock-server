@@ -151,16 +151,16 @@
         },
         {
             "name": "deptrac/deptrac",
-            "version": "4.6.1",
+            "version": "4.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/deptrac/deptrac.git",
-                "reference": "6ff20dec210f119a4ddebdf8e28603689f34eb67"
+                "reference": "bc9c98102a3ed3acce5ad49f3da989dc9921c648"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deptrac/deptrac/zipball/6ff20dec210f119a4ddebdf8e28603689f34eb67",
-                "reference": "6ff20dec210f119a4ddebdf8e28603689f34eb67",
+                "url": "https://api.github.com/repos/deptrac/deptrac/zipball/bc9c98102a3ed3acce5ad49f3da989dc9921c648",
+                "reference": "bc9c98102a3ed3acce5ad49f3da989dc9921c648",
                 "shasum": ""
             },
             "require": {
@@ -230,9 +230,9 @@
             ],
             "support": {
                 "issues": "https://github.com/deptrac/deptrac/issues",
-                "source": "https://github.com/deptrac/deptrac/tree/4.6.1"
+                "source": "https://github.com/deptrac/deptrac/tree/4.6.2"
             },
-            "time": "2026-05-13T08:23:06+00:00"
+            "time": "2026-07-01T10:43:37+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -597,11 +597,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.2",
+            "version": "2.2.4",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
-                "reference": "e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f0fe3fb03bb53ce68cc2416785b260e62226ec27",
+                "reference": "f0fe3fb03bb53ce68cc2416785b260e62226ec27",
                 "shasum": ""
             },
             "require": {
@@ -657,7 +657,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-05T09:00:01+00:00"
+            "time": "2026-07-03T07:00:23+00:00"
         },
         {
             "name": "psr/container",

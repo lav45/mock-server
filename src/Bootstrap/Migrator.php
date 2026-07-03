@@ -2,7 +2,7 @@
 
 namespace Lav45\MockServer\Bootstrap;
 
-use Lav45\MockServer\Bootstrap\Migrator\Pipeline;
+use Lav45\MockServer\Helper\Pipeline;
 
 final readonly class Migrator
 {

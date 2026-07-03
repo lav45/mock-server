@@ -38,8 +38,10 @@
         "monolog/monolog": "3.9.*",
         "fakerphp/faker": "v1.24.*",
         "yiisoft/data": "1.0.*",
+        "psr/container": "2.0.*",
         "psr/log": "3.0.*",
-        "opis/json-schema": "2.6.*"
+        "opis/json-schema": "2.6.*",
+        "symfony/yaml": "v8.1.*"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "1.*",
@@ -71,7 +73,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Lav45\\MockServer\\": "src"
+            "Lav45\\MockServer\\": "src",
+            "MockServer\\Extension\\": "Extension"
         },
         "classmap": [
             "migrates/"

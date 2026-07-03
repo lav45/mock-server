@@ -13,7 +13,30 @@
     "mutators": {
         "@default": true,
         "LogicalOrNegation": false,
-        "CastFloat": false
+        "CastFloat": false,
+        "OneZeroFloat": {
+            "ignoreSourceCodeByRegex": [
+                ".*\\$delay === 0\\.0.*"
+            ]
+        },
+        "Minus": {
+            "ignoreSourceCodeByRegex": [
+                ".*\\$delay - \\(\\$end - \\$start\\).*"
+            ]
+        },
+        "GreaterThan": {
+            "ignoreSourceCodeByRegex": [
+                ".*\\$timeout > 0\\.0.*"
+            ]
+        },
+        "DecrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                ".*number_format\\(\\$now, 6,.*",
+                ".*isset\\(\\$matches\\[3\\]\\).*",
+                ".*return \\$matches\\[1\\].*",
+                ".*ArrayHelper::getValue\\(\\$this->data, \\$matches\\[2\\], \\$matches\\[1\\]\\).*"
+            ]
+        }
     },
     "logs": {
         "text": ".cache/infection/infection.log",

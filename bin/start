@@ -9,11 +9,12 @@ use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Driver\LoggerFactory;
 use Lav45\MockServer\Driver\Server;
 use Lav45\MockServer\Driver\WebHookQueue;
-use Lav45\MockServer\Responder\WebHookHandler;
+use Lav45\MockServer\Extension\WebHook\WebHookHandler;
 
 (static function (): void {
 
-    $config = new Config()
+    $configFile = getenv('CONFIG_PATH') ?: '/app/etc/config.yaml';
+    $config = Config::fromFile($configFile)
         ->port(getenv('PORT'))
         ->mocks(getenv('MOCKS_PATH'))
         ->locale(getenv('LOCALE'))
@@ -37,6 +38,8 @@ use Lav45\MockServer\Responder\WebHookHandler;
         httpClient: $httpClient,
         webHookQueue: $webHookQueue,
         logger: $logger,
+        extensions: $config->getExtensions(),
+        schema: $config->getSchema(),
     )->create();
 
     $server = new Server($logger);

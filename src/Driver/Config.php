@@ -2,10 +2,15 @@
 
 namespace Lav45\MockServer\Driver;
 
+use Lav45\MockServer\Extension\Extension;
 use Monolog\Level;
+use Symfony\Component\Yaml\Yaml;
 
 final class Config
 {
+    /** @var list<Extension> */
+    private array $extensions = [];
+
     private int $port = 8080;
 
     private string $mocksPath = '/app/mocks';
@@ -21,6 +26,34 @@ final class Config
         'keep-alive',
         'transfer-encoding',
     ];
+
+    private string|null $schema = null;
+
+    public static function fromFile(string|false $path): self
+    {
+        $config = new self();
+        if (empty($path)) {
+            return $config;
+        }
+
+        if (\is_file($path) === false || \is_readable($path) === false) {
+            throw new \InvalidArgumentException('Invalid config path');
+        }
+
+        $data = Yaml::parseFile($path) ?? [];
+        if (\is_array($data) === false) {
+            throw new \InvalidArgumentException('Invalid config file');
+        }
+
+        return $config
+            ->port($data['port'] ?? false)
+            ->mocks($data['mocksPath'] ?? false)
+            ->locale($data['locale'] ?? false)
+            ->log($data['logLevel'] ?? false)
+            ->filterHeaders($data['filterHeaders'] ?? false)
+            ->schema($data['schema'] ?? false)
+            ->extensions($data['extensions'] ?? []);
+    }
 
     public function port(string|int|false $port): self
     {
@@ -97,14 +130,16 @@ final class Config
         return $this->locale;
     }
 
-    public function filterHeaders(string|false $headers): self
+    public function filterHeaders(string|array|false $headers): self
     {
         if ($headers) {
+            if (\is_string($headers)) {
+                $headers = \explode(',', $headers);
+            }
             $this->filterHeaders = $headers
-                |> \strtolower(...)
-                |> (static fn(string $s) => \explode(',', $s))
-                |> (static fn(array $parts) => \array_map('trim', $parts))
-                |> \array_filter(...);
+                |> (static fn(array $parts) => \array_map(static fn(string $s) => \strtolower(\trim($s)), $parts))
+                |> \array_filter(...)
+                |> \array_values(...);
         }
         return $this;
     }
@@ -117,5 +152,41 @@ final class Config
     public function getFilterHeaders(): array
     {
         return $this->filterHeaders;
+    }
+
+    public function schema(string|false $path): self
+    {
+        if ($path) {
+            if (\is_file($path) && \is_readable($path)) {
+                $this->schema = $path;
+            } else {
+                throw new \InvalidArgumentException('Invalid schema path');
+            }
+        }
+        return $this;
+    }
+
+    public function getSchema(): string|null
+    {
+        return $this->schema;
+    }
+
+    public function extensions(array $extensions): self
+    {
+        foreach ($extensions as $extension) {
+            if (isset($extension['class']) === false) {
+                throw new \InvalidArgumentException('Invalid extension: missing class');
+            }
+            $this->extensions[] = Extension::fromArray($extension);
+        }
+        return $this;
+    }
+
+    /**
+     * @return list<Extension>
+     */
+    public function getExtensions(): array
+    {
+        return $this->extensions;
     }
 }

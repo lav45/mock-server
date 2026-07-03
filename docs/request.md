@@ -1,6 +1,6 @@
 # Request
 
-Parameters for finding the [response](response.md) to your request
+Parameters for finding the [response](extension/application/response.md) to your request
 
 ## `request.path`
 

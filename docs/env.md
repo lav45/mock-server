@@ -1,10 +1,12 @@
 # Environment
 
-The data stored in the environment can be used simultaneously in the [Response](response.md) and in the [webhook](webhooks.md)
+The data stored in the environment can be used simultaneously in the [Response](extension/application/response.md) and
+in the [webhook](extension/application/webhooks.md)
 
-## Faker
+## Example
 
-You can use [Faker](https://fakerphp.github.io) to generate random data
+Store values in `env` and reuse them across the response and webhooks. The values can be static or generated with a
+template such as [`{{faker.*}}`](faker.md):
 
 ```json
 [

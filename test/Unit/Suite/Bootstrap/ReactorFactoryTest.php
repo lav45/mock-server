@@ -8,12 +8,23 @@ use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\Http\RequestHandler;
 use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Engine\WebHookQueue;
+use Lav45\MockServer\Extension\Collection\CollectionExtension;
+use Lav45\MockServer\Extension\Condition\ConditionExtension;
+use Lav45\MockServer\Extension\Content\ContentExtension;
+use Lav45\MockServer\Extension\Cors\CorsExtension;
+use Lav45\MockServer\Extension\Direct\DirectExtension;
+use Lav45\MockServer\Extension\Extension;
+use Lav45\MockServer\Extension\Proxy\ProxyExtension;
+use Lav45\MockServer\Extension\Throttling\ThrottlingExtension;
+use Lav45\MockServer\Extension\WebHook\WebHookExtension;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class ReactorFactoryTest extends TestCase
 {
+    private const string SCHEMA_PATH = __DIR__ . '/../../../../schema/mock.schema.json';
+
     private string $mocksPath;
 
     protected function setUp(): void
@@ -38,8 +49,13 @@ final class ReactorFactoryTest extends TestCase
         \rmdir($this->mocksPath);
     }
 
-    private function createReactor(): RequestHandler
-    {
+    /**
+     * @param list<Extension> $extensions
+     */
+    private function createReactor(
+        array $extensions = [new Extension(ContentExtension::class)],
+        string|null $schema = null,
+    ): RequestHandler {
         $httpClient = new class implements HttpClient {
             public function withLabel(string $label): HttpClient
             {
@@ -67,6 +83,8 @@ final class ReactorFactoryTest extends TestCase
             httpClient: $httpClient,
             webHookQueue: $webHookQueue,
             logger: new FakeLogger(),
+            extensions: $extensions,
+            schema: $schema,
         )->create();
     }
 
@@ -87,5 +105,84 @@ final class ReactorFactoryTest extends TestCase
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/missing'));
 
         $this->assertSame(404, $response->getStatus());
+    }
+
+    public function testBuildsPipelineWithAllKnownExtensions(): void
+    {
+        $reactor = $this->createReactor([
+            new Extension(CorsExtension::class, ['allow_origin' => '*']),
+            new Extension(ConditionExtension::class),
+            new Extension(DirectExtension::class),
+            new Extension(WebHookExtension::class),
+            new Extension(ThrottlingExtension::class),
+            new Extension(ContentExtension::class),
+            new Extension(ProxyExtension::class),
+            new Extension(CollectionExtension::class),
+        ]);
+
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(201, $response->getStatus());
+        $this->assertStringContainsString('pong', $response->getBody());
+    }
+
+    public function testThrowsForUnknownExtensionClass(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid extension: bogus');
+
+        $this->createReactor([new Extension('bogus')]);
+    }
+
+    public function testThrowsForClassNotImplementingProvider(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid extension: ' . \stdClass::class);
+
+        $this->createReactor([new Extension(\stdClass::class)]);
+    }
+
+    public function testWithoutSchemaAllowsCustomMockKeys(): void
+    {
+        $this->writeMock(['audit' => ['actor' => 'system']]);
+
+        $reactor = $this->createReactor();
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(201, $response->getStatus());
+    }
+
+    public function testSchemaRejectsCustomMockKeys(): void
+    {
+        $this->writeMock(['audit' => ['actor' => 'system']]);
+
+        $reactor = $this->createReactor(schema: self::SCHEMA_PATH);
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(404, $response->getStatus());
+    }
+
+    public function testSchemaAcceptsValidMock(): void
+    {
+        $reactor = $this->createReactor(schema: self::SCHEMA_PATH);
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(201, $response->getStatus());
+        $this->assertStringContainsString('pong', $response->getBody());
+    }
+
+    private function writeMock(array $extra): void
+    {
+        \file_put_contents(
+            $this->mocksPath . '/mock.json',
+            \json_encode([
+                [
+                    'version' => 8,
+                    'request' => ['method' => 'GET', 'path' => '/ping'],
+                    ...$extra,
+                    'response' => ['type' => 'content', 'status' => 201, 'body' => ['message' => 'pong']],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        );
     }
 }

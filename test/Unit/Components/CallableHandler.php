@@ -2,11 +2,11 @@
 
 namespace Lav45\MockServer\Test\Unit\Components;
 
+use Lav45\MockServer\Engine\Http\RequestHandler;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
-use Lav45\MockServer\Middleware\MiddlewareHandler;
 
-final readonly class CallableHandler implements MiddlewareHandler
+final readonly class CallableHandler implements RequestHandler
 {
     private \Closure $handler;
 
@@ -15,7 +15,7 @@ final readonly class CallableHandler implements MiddlewareHandler
         $this->handler = $handler(...);
     }
 
-    public function handle(ServerRequest $request): ServerResponse
+    public function handleRequest(ServerRequest $request): ServerResponse
     {
         return ($this->handler)($request);
     }

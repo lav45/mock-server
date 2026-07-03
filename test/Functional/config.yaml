@@ -1,0 +1,18 @@
+schema: /app/schema/mock.schema.json
+
+extensions:
+  - class: Lav45\MockServer\Extension\Cors\CorsExtension
+    config:
+      allowOrigin: ['*']
+      allowMethods: ['*']
+      allowHeaders: ['*']
+      exposeHeaders: ['*']
+      allowCredentials: false
+      maxAge: 86400
+  - class: Lav45\MockServer\Extension\Condition\ConditionExtension
+  - class: Lav45\MockServer\Extension\Direct\DirectExtension
+  - class: Lav45\MockServer\Extension\WebHook\WebHookExtension
+  - class: Lav45\MockServer\Extension\Throttling\ThrottlingExtension
+  - class: Lav45\MockServer\Extension\Content\ContentExtension
+  - class: Lav45\MockServer\Extension\Proxy\ProxyExtension
+  - class: Lav45\MockServer\Extension\Collection\CollectionExtension
