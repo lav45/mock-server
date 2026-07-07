@@ -19,7 +19,7 @@ class ResponseTest extends TestCase
     {
         $response = $this->HttpClient->request(MOCK_SERVER_URL);
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('', $response->getBody());
+        $this->assertEquals('', $response->getBody()->stream->read());
     }
 
     public function testNotFound(): void

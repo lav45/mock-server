@@ -4,7 +4,6 @@ namespace Lav45\MockServer\Test\Unit\Suite\Extension\WebHook;
 
 use Lav45\MockServer\DataFactory\DataBuilder;
 use Lav45\MockServer\Driver\WebHookQueue;
-use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\Http\RequestHandler;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
@@ -13,6 +12,7 @@ use Lav45\MockServer\Extension\WebHook\WebHookHandler;
 use Lav45\MockServer\Extension\WebHook\WebHookMiddleware;
 use Lav45\MockServer\Extension\WebHook\WebHooksFactory;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;
@@ -32,29 +32,6 @@ final class WebHookMiddlewareTest extends TestCase
         return new FakeServerRequest('POST', 'https://localhost/');
     }
 
-    private function createCapturingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            /** @var array<array{uri: string, method: string, body: string|null}> */
-            public array $calls = [];
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                $this->calls[] = ['uri' => $uri, 'method' => $method, 'body' => $body];
-                return new ClientResponse(200, [], '');
-            }
-        };
-    }
-
     private function nextReturning(int $status): RequestHandler
     {
         return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
@@ -64,7 +41,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testAlwaysCallsNext(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', []);
@@ -83,7 +60,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testReturnsResponseFromNext(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', []);
@@ -96,7 +73,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testReturnsResponseFromNextEvenWhenWebhooksExist(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', [
@@ -113,7 +90,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testDoesNotSendWhenWebhooksKeyMissing(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['text' => 'ok']]);
@@ -126,7 +103,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testDoesNotSendWhenWebhooksArrayIsEmpty(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', ['webhooks' => []]);
@@ -139,7 +116,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testSendsWebhookWhenDataContainsWebhooks(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', [
@@ -156,7 +133,7 @@ final class WebHookMiddlewareTest extends TestCase
 
     public function testSendsMultipleWebhooks(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest();
         $request->setAttribute('data', [

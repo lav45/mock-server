@@ -5,24 +5,17 @@ namespace Lav45\MockServer\Domain\ValueObject;
 final readonly class Body
 {
     private function __construct(
-        private string|array $value,
+        public Stream $stream,
     ) {}
 
-    public function toString(): string
+    public static function new(string|array|Stream $data): self
     {
-        if (\is_array($this->value)) {
-            return \json_encode($this->value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if (\is_array($data)) {
+            $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
-        return $this->value;
-    }
-
-    public static function new(array|string $data): self
-    {
+        if (\is_string($data)) {
+            $data = new StringStream($data);
+        }
         return new self($data);
-    }
-
-    public function isJson(): bool
-    {
-        return \is_array($this->value) || \json_validate($this->value);
     }
 }

@@ -7,41 +7,26 @@ use PHPUnit\Framework\TestCase;
 
 final class BodyTest extends TestCase
 {
-    public function testToString(): void
+    public function testReadString(): void
     {
         $text = 'content';
-        $result = Body::new($text)->toString();
-        $this->assertEquals($text, $result);
-
-        $data = ['status' => true];
-        $text = '{"status":true}';
-        $result = Body::new($data)->toString();
+        $result = Body::new($text)->stream->read();
         $this->assertEquals($text, $result);
     }
 
-    public function testToStringUnescapesSlashesAndUnicode(): void
+    public function testReadEncodesArrayToJson(): void
+    {
+        $data = ['status' => true];
+        $text = '{"status":true}';
+        $result = Body::new($data)->stream->read();
+        $this->assertEquals($text, $result);
+    }
+
+    public function testReadUnescapesSlashesAndUnicode(): void
     {
         $data = ['url' => 'https://example.com/path', 'name' => 'Привет'];
         $text = '{"url":"https://example.com/path","name":"Привет"}';
-        $result = Body::new($data)->toString();
+        $result = Body::new($data)->stream->read();
         $this->assertEquals($text, $result);
-    }
-
-    public function testIsJsonWithArray(): void
-    {
-        $result = Body::new(['status' => true])->isJson();
-        $this->assertTrue($result);
-    }
-
-    public function testIsJsonWithValidJsonString(): void
-    {
-        $result = Body::new('{"status":true}')->isJson();
-        $this->assertTrue($result);
-    }
-
-    public function testIsJsonWithInvalidJsonString(): void
-    {
-        $result = Body::new('content')->isJson();
-        $this->assertFalse($result);
     }
 }

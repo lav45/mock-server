@@ -2,6 +2,8 @@
 
 namespace Lav45\MockServer\Engine\Http;
 
+use Lav45\MockServer\Domain\ValueObject\Body;
+
 final class ServerResponse
 {
     private const array REASON_PHRASES = [
@@ -42,13 +44,16 @@ final class ServerResponse
 
     private string $reason;
 
+    private Body $body;
+
     public function __construct(
-        private int    $status = 200,
+        private int   $status = 200,
         /** @var array<string, string|list<string>> */
-        private array  $headers = [],
-        private string $body = '',
+        private array $headers = [],
+        Body|null     $body = null,
     ) {
         $this->reason = self::REASON_PHRASES[$status] ?? '';
+        $this->body = $body ?? Body::new('');
     }
 
     public function getStatus(): int
@@ -89,12 +94,12 @@ final class ServerResponse
         $this->headers[$name] = $value;
     }
 
-    public function getBody(): string
+    public function getBody(): Body
     {
         return $this->body;
     }
 
-    public function setBody(string $body): void
+    public function setBody(Body $body): void
     {
         $this->body = $body;
     }

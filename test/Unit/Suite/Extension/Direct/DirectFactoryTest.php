@@ -54,7 +54,7 @@ final class DirectFactoryTest extends TestCase
         $request = $this->createRequest('POST', body: '{"key":"value"}');
         $direct = $this->create($request, ['url' => 'https://upstream.example.com']);
 
-        $this->assertSame('{"key":"value"}', $direct->body->toString());
+        $this->assertSame('{"key":"value"}', $direct->body->stream->read());
     }
 
     public function testCreateForwardsRequestHeaders(): void

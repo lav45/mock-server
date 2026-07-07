@@ -2,6 +2,8 @@
 
 namespace Lav45\MockServer\Engine\Http;
 
+use Lav45\MockServer\Domain\ValueObject\Body;
+
 final readonly class ClientResponse
 {
     /**
@@ -10,7 +12,7 @@ final readonly class ClientResponse
     public function __construct(
         private int    $status,
         private array  $headers,
-        private string $body,
+        private Body $body,
     ) {}
 
     public function getStatus(): int
@@ -26,7 +28,7 @@ final readonly class ClientResponse
         return $this->headers;
     }
 
-    public function getBody(): string
+    public function getBody(): Body
     {
         return $this->body;
     }

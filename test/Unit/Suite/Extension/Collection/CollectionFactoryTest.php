@@ -60,7 +60,7 @@ final class CollectionFactoryTest extends TestCase
 
         $this->assertSame(200, $response->status->value);
         $this->assertSame('application/json', $response->headers->toArray()['content-type']);
-        $this->assertSame($items, $this->decodeBody($response->body->toString()));
+        $this->assertSame($items, $this->decodeBody($response->body->stream->read()));
     }
 
     public function testCreateWithPagination(): void
@@ -73,7 +73,7 @@ final class CollectionFactoryTest extends TestCase
             ['items' => $items],
         );
 
-        $this->assertSame([['id' => 3], ['id' => 4]], $this->decodeBody($response->body->toString()));
+        $this->assertSame([['id' => 3], ['id' => 4]], $this->decodeBody($response->body->stream->read()));
     }
 
     public function testCreateWithOutOfRangePage(): void
@@ -84,7 +84,7 @@ final class CollectionFactoryTest extends TestCase
             ['items' => [['id' => 1], ['id' => 2]]],
         );
 
-        $this->assertSame([], $this->decodeBody($response->body->toString()));
+        $this->assertSame([], $this->decodeBody($response->body->stream->read()));
     }
 
     public function testCreateWithCustomPaginationParams(): void
@@ -103,7 +103,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $this->assertSame([['id' => 3]], $this->decodeBody($response->body->toString()));
+        $this->assertSame([['id' => 3]], $this->decodeBody($response->body->stream->read()));
     }
 
     public function testCreateWithCustomResult(): void
@@ -119,7 +119,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $this->assertSame($customResult, $this->decodeBody($response->body->toString()));
+        $this->assertSame($customResult, $this->decodeBody($response->body->stream->read()));
     }
 
     public function testCreateWithPaginationHeaders(): void
@@ -167,7 +167,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $content = $this->decodeBody($response->body->toString());
+        $content = $this->decodeBody($response->body->stream->read());
         $this->assertSame([['id' => 3], ['id' => 4]], $content['data']);
         $this->assertSame([
             'totalItems' => 5,
@@ -190,8 +190,8 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $this->assertSame(20, $this->decodeBody($response->body->toString())[19]['id']);
-        $this->assertCount(20, $this->decodeBody($response->body->toString()));
+        $this->assertSame(20, $this->decodeBody($response->body->stream->read())[19]['id']);
+        $this->assertCount(20, $this->decodeBody($response->body->stream->read()));
         $this->assertEquals(20, $response->headers->toArray()['X-Per-Page']);
     }
 
@@ -209,7 +209,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $this->assertCount(5, $this->decodeBody($response->body->toString()));
+        $this->assertCount(5, $this->decodeBody($response->body->stream->read()));
         $this->assertEquals(5, $response->headers->toArray()['X-Per-Page']);
     }
 
@@ -224,7 +224,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $this->assertSame([], $this->decodeBody($response->body->toString()));
+        $this->assertSame([], $this->decodeBody($response->body->stream->read()));
         $this->assertEquals(0, $response->headers->toArray()['X-Per-Page']);
     }
 
@@ -249,7 +249,7 @@ final class CollectionFactoryTest extends TestCase
             ],
         );
 
-        $content = $this->decodeBody($response->body->toString());
+        $content = $this->decodeBody($response->body->stream->read());
         $this->assertSame($items, $content['data']);
         $this->assertEquals(3, $content['info']['X-Pagination-Total-Count']);
         $this->assertEquals(1, $content['info']['X-Pagination-Current-Page']);

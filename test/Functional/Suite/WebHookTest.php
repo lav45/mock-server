@@ -3,6 +3,7 @@
 namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Amp\Http\Server\FormParser;
+use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
@@ -34,7 +35,7 @@ class WebHookTest extends TestCase
             uri: MOCK_SERVER_URL . '/webhook/200?id=500',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
-            body: \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            body: Body::new($data),
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -128,7 +129,7 @@ class WebHookTest extends TestCase
         $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
         $response = $this->HttpClient->request($url);
         $this->assertEquals(200, $response->getStatus());
-        $content = $response->getBody();
+        $content = $response->getBody()->stream->read();
         $this->HttpClient->request($url, 'DELETE');
 
         $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);

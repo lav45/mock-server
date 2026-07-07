@@ -63,26 +63,7 @@ final class ProxyFactoryTest extends TestCase
         $request = $this->createRequest('POST', body: '{"key":"value"}');
         $proxy = new ProxyFactory(new DataBuilder())->create($request, ['url' => 'https://upstream.example.com']);
 
-        $this->assertSame('{"key":"value"}', $proxy->body->toString());
-    }
-
-    public function testCreateSetsJsonContentTypeWhenForwardedBodyIsJson(): void
-    {
-        $request = $this->createRequest('POST', body: '{"key":"value"}');
-        $proxy = new ProxyFactory(new DataBuilder())->create($request, ['url' => 'https://upstream.example.com']);
-
-        $this->assertSame('application/json', $proxy->headers->toArray()['content-type']);
-    }
-
-    public function testCreateOverridesRequestContentTypeWhenContentIsJson(): void
-    {
-        $request = $this->createRequest('POST', headers: ['content-type' => ['text/plain']]);
-        $proxy = new ProxyFactory(new DataBuilder())->create($request, [
-            'url' => 'https://upstream.example.com',
-            'content' => ['id' => 1],
-        ]);
-
-        $this->assertSame('application/json', $proxy->headers->toArray()['content-type']);
+        $this->assertSame('{"key":"value"}', $proxy->body->stream->read());
     }
 
     public function testCreateUsesContentBodyWhenContentIsString(): void
@@ -93,7 +74,7 @@ final class ProxyFactoryTest extends TestCase
             'content' => 'overridden body',
         ]);
 
-        $this->assertSame('overridden body', $proxy->body->toString());
+        $this->assertSame('overridden body', $proxy->body->stream->read());
     }
 
     public function testCreateUsesContentBodyWhenContentIsArray(): void
@@ -104,7 +85,7 @@ final class ProxyFactoryTest extends TestCase
             'content' => ['id' => 1, 'status' => 'ok'],
         ]);
 
-        $this->assertSame('{"id":1,"status":"ok"}', $proxy->body->toString());
+        $this->assertSame('{"id":1,"status":"ok"}', $proxy->body->stream->read());
     }
 
     public function testCreateSetsJsonContentTypeWhenContentIsArray(): void

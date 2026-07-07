@@ -7,5 +7,5 @@ set -e
 ./unit-test.sh coverage:html
 ./e2e-test.sh
 ./composer deptrac
-#./composer unused
-#./benchmark.sh
+./composer unused
+./benchmark.sh

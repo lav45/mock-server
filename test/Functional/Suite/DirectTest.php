@@ -2,6 +2,7 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite;
 
+use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use PHPUnit\Framework\TestCase;
@@ -27,10 +28,10 @@ final class DirectTest extends TestCase
             uri: MOCK_SERVER_URL . '/direct/100?status=2',
             method: 'PUT',
             headers: ['Content-Type' => 'application/json'],
-            body: \json_encode($data, JSON_THROW_ON_ERROR),
+            body: Body::new(\json_encode($data, JSON_THROW_ON_ERROR)),
         );
 
-        $content = $response->getBody();
+        $content = $response->getBody()->stream->read();
         $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
 
         $this->assertEquals(['id' => '100'], $content['mainParams']);
@@ -66,7 +67,7 @@ final class DirectTest extends TestCase
         $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
         $response = $this->HttpClient->request($url);
         $this->assertEquals(200, $response->getStatus());
-        $content = $response->getBody();
+        $content = $response->getBody()->stream->read();
         $this->HttpClient->request($url, 'DELETE');
 
         $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);

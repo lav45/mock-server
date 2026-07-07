@@ -4,9 +4,7 @@ namespace Lav45\MockServer\Test\Unit\Suite\Bootstrap;
 
 use Lav45\MockServer\Bootstrap\ReactorFactory;
 use Lav45\MockServer\Domain\WebHooks;
-use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\Http\RequestHandler;
-use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Engine\WebHookQueue;
 use Lav45\MockServer\Extension\Collection\CollectionExtension;
 use Lav45\MockServer\Extension\Condition\ConditionExtension;
@@ -17,8 +15,10 @@ use Lav45\MockServer\Extension\Extension;
 use Lav45\MockServer\Extension\Proxy\ProxyExtension;
 use Lav45\MockServer\Extension\Throttling\ThrottlingExtension;
 use Lav45\MockServer\Extension\WebHook\WebHookExtension;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
+use Lav45\MockServer\Test\Unit\Components\ThrowingExtension;
 use PHPUnit\Framework\TestCase;
 
 final class ReactorFactoryTest extends TestCase
@@ -26,6 +26,9 @@ final class ReactorFactoryTest extends TestCase
     private const string SCHEMA_PATH = __DIR__ . '/../../../../schema/mock.schema.json';
 
     private string $mocksPath;
+
+    /** @var list<string> */
+    private array $schemaFiles = [];
 
     protected function setUp(): void
     {
@@ -47,6 +50,18 @@ final class ReactorFactoryTest extends TestCase
     {
         \unlink($this->mocksPath . '/mock.json');
         \rmdir($this->mocksPath);
+        foreach ($this->schemaFiles as $schemaFile) {
+            \unlink($schemaFile);
+        }
+    }
+
+    private function writeSchema(array $schema): string
+    {
+        $path = \sys_get_temp_dir() . '/reactor-schema-' . \uniqid('', true) . '.json';
+        \file_put_contents($path, \json_encode($schema, JSON_THROW_ON_ERROR));
+        $this->schemaFiles[] = $path;
+
+        return $path;
     }
 
     /**
@@ -56,21 +71,7 @@ final class ReactorFactoryTest extends TestCase
         array $extensions = [new Extension(ContentExtension::class)],
         string|null $schema = null,
     ): RequestHandler {
-        $httpClient = new class implements HttpClient {
-            public function withLabel(string $label): HttpClient
-            {
-                return $this;
-            }
-
-            public function request(
-                string $uri,
-                string $method = 'GET',
-                array|null $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                return new ClientResponse(200, [], '');
-            }
-        };
+        $httpClient = new FakeHttpClient();
 
         $webHookQueue = new class implements WebHookQueue {
             public function push(WebHooks $webHooks): void {}
@@ -95,7 +96,7 @@ final class ReactorFactoryTest extends TestCase
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
 
         $this->assertSame(201, $response->getStatus());
-        $this->assertStringContainsString('pong', $response->getBody());
+        $this->assertStringContainsString('pong', $response->getBody()->stream->read());
     }
 
     public function testReturnsNotFoundForUnknownRoute(): void
@@ -123,7 +124,7 @@ final class ReactorFactoryTest extends TestCase
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
 
         $this->assertSame(201, $response->getStatus());
-        $this->assertStringContainsString('pong', $response->getBody());
+        $this->assertStringContainsString('pong', $response->getBody()->stream->read());
     }
 
     public function testThrowsForUnknownExtensionClass(): void
@@ -140,6 +141,48 @@ final class ReactorFactoryTest extends TestCase
         $this->expectExceptionMessageIsOrContains('Invalid extension: ' . \stdClass::class);
 
         $this->createReactor([new Extension(\stdClass::class)]);
+    }
+
+    public function testExtensionConfigMatchingSchemaIsAccepted(): void
+    {
+        $schema = $this->writeSchema([
+            'type' => 'object',
+            'properties' => ['allowOrigin' => ['type' => 'string']],
+            'required' => ['allowOrigin'],
+        ]);
+
+        $reactor = $this->createReactor([
+            new Extension(CorsExtension::class, ['allowOrigin' => '*'], $schema),
+            new Extension(ContentExtension::class),
+        ]);
+
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(201, $response->getStatus());
+    }
+
+    public function testThrowsWhenExtensionConfigViolatesSchema(): void
+    {
+        $schema = $this->writeSchema([
+            'type' => 'object',
+            'properties' => ['allowOrigin' => ['type' => 'string']],
+            'required' => ['allowOrigin'],
+        ]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains(CorsExtension::class . ' config is invalid');
+
+        $this->createReactor([
+            new Extension(CorsExtension::class, ['allowOrigin' => 123], $schema),
+        ]);
+    }
+
+    public function testThrowsWhenExtensionFailsToInitialize(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains(ThrowingExtension::class . ' failed to initialize: boom');
+
+        $this->createReactor([new Extension(ThrowingExtension::class)]);
     }
 
     public function testWithoutSchemaAllowsCustomMockKeys(): void
@@ -168,7 +211,7 @@ final class ReactorFactoryTest extends TestCase
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
 
         $this->assertSame(201, $response->getStatus());
-        $this->assertStringContainsString('pong', $response->getBody());
+        $this->assertStringContainsString('pong', $response->getBody()->stream->read());
     }
 
     private function writeMock(array $extra): void

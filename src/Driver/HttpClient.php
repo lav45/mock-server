@@ -6,6 +6,7 @@ use Amp\Cancellation;
 use Amp\Http\Client\DelegateHttpClient as Client;
 use Amp\Http\Client\Request;
 use Amp\NullCancellation;
+use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\HttpClient as HttpClientInterface;
 
@@ -26,15 +27,20 @@ final class HttpClient implements HttpClientInterface
     }
 
     public function request(
-        string      $uri,
-        string      $method = 'GET',
-        array|null  $headers = null,
-        string|null $body = null,
+        string     $uri,
+        string     $method = 'GET',
+        array|null $headers = null,
+        Body|null  $body = null,
     ): ClientResponse {
         $request = new Request($uri, $method);
 
         if ($body) {
-            $request->setBody($body);
+            $bodyStream = $body->stream;
+            $rawBody = $bodyStream instanceof AmpStream
+                ? $bodyStream->getStream()
+                : $bodyStream->read();
+
+            $request->setBody($rawBody);
         }
         if ($headers) {
             $request->setHeaders($headers);
@@ -48,7 +54,9 @@ final class HttpClient implements HttpClientInterface
         return new ClientResponse(
             status: $response->getStatus(),
             headers: $response->getHeaders(),
-            body: $response->getBody()->buffer(),
+            body: Body::new(
+                new AmpStream($response->getBody()),
+            ),
         );
     }
 }

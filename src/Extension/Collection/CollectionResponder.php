@@ -12,7 +12,7 @@ final readonly class CollectionResponder
         return new ServerResponse(
             status: $data->status->value,
             headers: $data->headers->toArray(),
-            body: $data->body->toString(),
+            body: $data->body,
         );
     }
 }

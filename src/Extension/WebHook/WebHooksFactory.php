@@ -33,8 +33,7 @@ final readonly class WebHooksFactory
         $factory = $this->dataBuilder->withData($item);
 
         $body = $factory->createBody();
-        $appendHeaders = $body->isJson() ? ['content-type' => 'application/json'] : [];
-        $headers = $factory->createHeaders($appendHeaders);
+        $headers = $factory->createHeaders();
 
         return new WebHook(
             delay: $factory->createDelay(),

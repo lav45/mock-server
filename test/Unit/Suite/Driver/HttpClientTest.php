@@ -7,6 +7,7 @@ use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\NullCancellation;
+use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClient;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +15,10 @@ use function Amp\ByteStream\buffer;
 
 final class HttpClientTest extends TestCase
 {
-    private function createCapturingDelegate(Request|null &$capturedRequest = null): DelegateHttpClient
+    private function createCapturingDelegate(): DelegateHttpClient
     {
-        return new class ($capturedRequest) implements DelegateHttpClient {
-            public function __construct(private mixed &$capturedRequest) {}
+        return new class implements DelegateHttpClient {
+            public Request|null $capturedRequest = null;
 
             public function request(Request $request, Cancellation $cancellation = new NullCancellation()): Response
             {
@@ -38,55 +39,50 @@ final class HttpClientTest extends TestCase
 
     public function testOriginalUnchangedAfterWithLabel(): void
     {
-        $capturedRequest = null;
-        $delegate = $this->createCapturingDelegate($capturedRequest);
+        $delegate = $this->createCapturingDelegate();
         $original = new HttpClient($delegate);
         $original->request('https://example.com');
 
-        $this->assertFalse($capturedRequest->hasAttribute('logLabel'));
+        $this->assertFalse($delegate->capturedRequest->hasAttribute('logLabel'));
     }
 
     public function testWithLabelSetsLogLabelOnRequest(): void
     {
-        $capturedRequest = null;
-        $delegate = $this->createCapturingDelegate($capturedRequest);
+        $delegate = $this->createCapturingDelegate();
         $client = new HttpClient($delegate);
 
         $client->withLabel('upstream')->request('https://example.com');
 
-        $this->assertSame('upstream', $capturedRequest->getAttribute('logLabel'));
+        $this->assertSame('upstream', $delegate->capturedRequest->getAttribute('logLabel'));
     }
 
     public function testWithoutLabelNoLogLabelAttribute(): void
     {
-        $capturedRequest = null;
-        $delegate = $this->createCapturingDelegate($capturedRequest);
+        $delegate = $this->createCapturingDelegate();
         $client = new HttpClient($delegate);
 
         $client->request('https://example.com');
 
-        $this->assertFalse($capturedRequest->hasAttribute('logLabel'));
+        $this->assertFalse($delegate->capturedRequest->hasAttribute('logLabel'));
     }
 
     public function testBodyIsPassedToRequest(): void
     {
-        $capturedRequest = null;
-        $delegate = $this->createCapturingDelegate($capturedRequest);
+        $delegate = $this->createCapturingDelegate();
         $client = new HttpClient($delegate);
 
-        $client->request('https://example.com', body: 'hello');
+        $client->request('https://example.com', body: Body::new('hello'));
 
-        $this->assertSame('hello', buffer($capturedRequest->getBody()->getContent()));
+        $this->assertSame('hello', buffer($delegate->capturedRequest->getBody()->getContent()));
     }
 
     public function testHeadersArePassedToRequest(): void
     {
-        $capturedRequest = null;
-        $delegate = $this->createCapturingDelegate($capturedRequest);
+        $delegate = $this->createCapturingDelegate();
         $client = new HttpClient($delegate);
 
         $client->request('https://example.com', headers: ['X-Token' => 'secret']);
 
-        $this->assertSame('secret', $capturedRequest->getHeader('X-Token'));
+        $this->assertSame('secret', $delegate->capturedRequest->getHeader('X-Token'));
     }
 }

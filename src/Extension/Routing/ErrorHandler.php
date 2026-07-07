@@ -2,6 +2,7 @@
 
 namespace Lav45\MockServer\Extension\Routing;
 
+use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Engine\Http\ServerResponse;
 
 final readonly class ErrorHandler
@@ -20,7 +21,7 @@ final readonly class ErrorHandler
         ];
 
         $response->setBody(
-            \json_encode($body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            Body::new($body),
         );
 
         return $response;

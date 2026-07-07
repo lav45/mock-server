@@ -42,7 +42,7 @@ final class ErrorHandlerTest extends TestCase
     public function testResponseBody(int $status, string|null $reason, array $expected): void
     {
         $response = $this->handler->handleError($status, $reason);
-        $body = \json_decode($response->getBody(), true, flags: JSON_THROW_ON_ERROR);
+        $body = \json_decode($response->getBody()->stream->read(), true, flags: JSON_THROW_ON_ERROR);
         $this->assertSame($expected, $body);
     }
 
@@ -60,7 +60,7 @@ final class ErrorHandlerTest extends TestCase
     {
         $response = $this->handler->handleError(400, 'Ошибка запроса');
 
-        $this->assertStringContainsString('Ошибка запроса', $response->getBody());
-        $this->assertStringNotContainsString('\\u', $response->getBody());
+        $this->assertStringContainsString('Ошибка запроса', $response->getBody()->stream->read());
+        $this->assertStringNotContainsString('\\u', $response->getBody()->stream->read());
     }
 }

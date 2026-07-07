@@ -10,9 +10,8 @@ use Lav45\MockServer\Domain\ValueObject\Url;
 use Lav45\MockServer\Domain\WebHook;
 use Lav45\MockServer\Domain\WebHooks;
 use Lav45\MockServer\Driver\WebHookQueue;
-use Lav45\MockServer\Engine\Http\ClientResponse;
-use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Extension\WebHook\WebHookHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;
@@ -32,50 +31,9 @@ final class WebHookQueueTest extends TestCase
         );
     }
 
-    private function createCapturingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public array $calls = [];
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                $this->calls[] = $uri;
-                return new ClientResponse(200, [], '');
-            }
-        };
-    }
-
-    private function createThrowingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): never {
-                throw new \RuntimeException('connection refused');
-            }
-        };
-    }
-
     public function testPushSendsWebhooksInOrder(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $queue = new WebHookQueue(new WebHookHandler($httpClient));
 
         $queue->push(new WebHooks(
@@ -89,12 +47,12 @@ final class WebHookQueueTest extends TestCase
             'https://hook1.example.com',
             'https://hook2.example.com',
             'https://hook3.example.com',
-        ], $httpClient->calls);
+        ], $httpClient->uris());
     }
 
     public function testPushDoesNothingWhenWebHooksEmpty(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $queue = new WebHookQueue(new WebHookHandler($httpClient));
 
         $queue->push(new WebHooks());
@@ -105,7 +63,7 @@ final class WebHookQueueTest extends TestCase
 
     public function testPushSendsAfterDelay(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $queue = new WebHookQueue(new WebHookHandler($httpClient));
 
         $queue->push(new WebHooks($this->createWebHook(delay: 0.001)));
@@ -117,7 +75,8 @@ final class WebHookQueueTest extends TestCase
     public function testPushContinuesSendingAfterException(): void
     {
         $logger = new FakeLogger();
-        $queue = new WebHookQueue(new WebHookHandler($this->createThrowingHttpClient(), $logger));
+        $httpClient = new FakeHttpClient(exception: new \RuntimeException('connection refused'));
+        $queue = new WebHookQueue(new WebHookHandler($httpClient, $logger));
 
         $queue->push(new WebHooks(
             $this->createWebHook(url: 'https://hook1.example.com'),

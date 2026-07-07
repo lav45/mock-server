@@ -7,9 +7,8 @@ use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Domain\ValueObject\HttpHeaders;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
 use Lav45\MockServer\Domain\ValueObject\Url;
-use Lav45\MockServer\Engine\Http\ClientResponse;
-use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Extension\Direct\DirectHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use PHPUnit\Framework\TestCase;
 
 final class DirectHandlerTest extends TestCase
@@ -28,62 +27,11 @@ final class DirectHandlerTest extends TestCase
         );
     }
 
-    private function createHttpClientStub(int $status, string $body): HttpClient
-    {
-        return new readonly class ($status, $body) implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public function __construct(
-                private int    $status,
-                private string $body,
-            ) {}
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                return new ClientResponse($this->status, [], $this->body);
-            }
-        };
-    }
-
-    private function createCapturingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public array $calls = [];
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                $this->calls[] = [
-                    'uri' => $uri,
-                    'method' => $method,
-                    'headers' => $headers,
-                    'body' => $body,
-                ];
-                return new ClientResponse(200, [], '{}');
-            }
-        };
-    }
-
     // --- Request forwarding ---
 
     public function testForwardsUrlToHttpClient(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient(body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $handler->request($this->createDirect(url: 'https://remote.example.com/api'));
@@ -93,7 +41,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testForwardsMethodToHttpClient(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient(body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $handler->request($this->createDirect(method: 'PUT'));
@@ -103,17 +51,17 @@ final class DirectHandlerTest extends TestCase
 
     public function testForwardsBodyToHttpClient(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient(body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $handler->request($this->createDirect(body: '{"key":"value"}'));
 
-        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']);
+        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']->stream->read());
     }
 
     public function testForwardsHeadersToHttpClient(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient(body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $handler->request($this->createDirect(headers: ['X-Token' => 'secret']));
@@ -125,7 +73,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testInjectsRemoteResponse(): void
     {
-        $httpClient = $this->createHttpClientStub(200, '{"response":{"status":201}}');
+        $httpClient = new FakeHttpClient(status: 200, body: '{"response":{"status":201}}');
         $handler = new DirectHandler($httpClient);
 
         $result = $handler->request($this->createDirect())->replace([]);
@@ -136,7 +84,7 @@ final class DirectHandlerTest extends TestCase
     public function testUnescapesBracesInRemoteData(): void
     {
         $body = \json_encode(['response' => ['body' => '\{\{x\}\}']], JSON_THROW_ON_ERROR);
-        $handler = new DirectHandler($this->createHttpClientStub(200, $body));
+        $handler = new DirectHandler(new FakeHttpClient(status: 200, body: $body));
 
         $result = $handler->request($this->createDirect())->replace([]);
 
@@ -145,7 +93,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testEmptyJsonObjectInjectsNothing(): void
     {
-        $httpClient = $this->createHttpClientStub(200, '{}');
+        $httpClient = new FakeHttpClient(status: 200, body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $result = $handler->request($this->createDirect())->replace(['response' => ['status' => 200]]);
@@ -155,7 +103,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testThrowsRuntimeExceptionOnNonSuccessfulStatus(): void
     {
-        $httpClient = $this->createHttpClientStub(404, 'not found');
+        $httpClient = new FakeHttpClient(status: 404, body: 'not found');
         $handler = new DirectHandler($httpClient);
 
         $this->expectException(\RuntimeException::class);
@@ -164,7 +112,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testExceptionCodeMatchesUpstreamStatus(): void
     {
-        $httpClient = $this->createHttpClientStub(503, 'service unavailable');
+        $httpClient = new FakeHttpClient(status: 503, body: 'service unavailable');
         $handler = new DirectHandler($httpClient);
 
         try {
@@ -177,7 +125,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testExceptionMessageContainsResponseBody(): void
     {
-        $httpClient = $this->createHttpClientStub(422, 'validation error');
+        $httpClient = new FakeHttpClient(status: 422, body: 'validation error');
         $handler = new DirectHandler($httpClient);
 
         try {
@@ -190,7 +138,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testThrowsWhenSuccessfulStatusButBodyIsNotJson(): void
     {
-        $httpClient = $this->createHttpClientStub(200, 'plain text response');
+        $httpClient = new FakeHttpClient(status: 200, body: 'plain text response');
         $handler = new DirectHandler($httpClient);
 
         $this->expectException(\RuntimeException::class);
@@ -199,7 +147,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testThrowsForStatus300(): void
     {
-        $httpClient = $this->createHttpClientStub(300, '{}');
+        $httpClient = new FakeHttpClient(status: 300, body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $this->expectException(\RuntimeException::class);
@@ -208,7 +156,7 @@ final class DirectHandlerTest extends TestCase
 
     public function testThrowsForStatus1xx(): void
     {
-        $httpClient = $this->createHttpClientStub(150, '{}');
+        $httpClient = new FakeHttpClient(status: 150, body: '{}');
         $handler = new DirectHandler($httpClient);
 
         $this->expectException(\RuntimeException::class);

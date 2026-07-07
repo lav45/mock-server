@@ -3,7 +3,6 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Extension\Proxy;
 
 use Lav45\MockServer\DataFactory\DataBuilder;
-use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\Http\RequestHandler;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
@@ -12,6 +11,7 @@ use Lav45\MockServer\Extension\Proxy\ProxyFactory;
 use Lav45\MockServer\Extension\Proxy\ProxyMiddleware;
 use Lav45\MockServer\Extension\Proxy\ProxyResponder;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -30,35 +30,6 @@ final class ProxyMiddlewareTest extends TestCase
         return new FakeServerRequest($method, $url, body: $body);
     }
 
-    private function createHttpClientStub(int $status = 200, string $body = '', array $headers = []): HttpClient
-    {
-        return new readonly class ($status, $body, $headers) implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public function __construct(
-                private int    $status,
-                private string $body,
-                private array  $headers,
-            ) {}
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                return new ClientResponse(
-                    $this->status,
-                    $this->headers,
-                    $this->body,
-                );
-            }
-        };
-    }
-
     private function nextReturning(int $status): RequestHandler
     {
         return new CallableHandler(static fn(ServerRequest $r): ServerResponse => new ServerResponse($status));
@@ -71,7 +42,7 @@ final class ProxyMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['type' => 'content']]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub());
+        $middleware = $this->createMiddleware(new FakeHttpClient());
         $response = $middleware->process($request, $this->nextReturning(418));
 
         $this->assertSame(418, $response->getStatus());
@@ -82,7 +53,7 @@ final class ProxyMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['type' => 'proxy', 'url' => 'https://upstream.example.com']]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub());
+        $middleware = $this->createMiddleware(new FakeHttpClient());
         $response = $middleware->process($request, $this->nextReturning(418));
 
         $this->assertNotSame(418, $response->getStatus());
@@ -95,7 +66,7 @@ final class ProxyMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['type' => 'proxy', 'url' => 'https://upstream.example.com']]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub(status: 201));
+        $middleware = $this->createMiddleware(new FakeHttpClient(status: 201));
         $response = $middleware->process($request, $this->nextReturning(418));
 
         $this->assertSame(201, $response->getStatus());
@@ -106,10 +77,10 @@ final class ProxyMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['type' => 'proxy', 'url' => 'https://upstream.example.com']]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub(body: 'upstream body'));
+        $middleware = $this->createMiddleware(new FakeHttpClient(body: 'upstream body'));
         $response = $middleware->process($request, $this->nextReturning(418));
 
-        $this->assertSame('upstream body', $response->getBody());
+        $this->assertSame('upstream body', $response->getBody()->stream->read());
     }
 
     // --- Attribute forwarding ---
@@ -122,7 +93,7 @@ final class ProxyMiddlewareTest extends TestCase
             'response' => ['type' => 'proxy', 'url' => 'https://upstream.example.com'],
         ]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub(status: 200));
+        $middleware = $this->createMiddleware(new FakeHttpClient(status: 200));
         $response = $middleware->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
@@ -133,7 +104,7 @@ final class ProxyMiddlewareTest extends TestCase
         $request = $this->createRequest();
         $request->setAttribute('data', ['response' => ['type' => 'content']]);
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub());
+        $middleware = $this->createMiddleware(new FakeHttpClient());
 
         $response = $middleware->process($request, $this->nextReturning(418));
         $this->assertSame(418, $response->getStatus());
@@ -143,20 +114,7 @@ final class ProxyMiddlewareTest extends TestCase
 
     public function testForwardsRequestBodyToUpstream(): void
     {
-        $httpClient = new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public string|null $capturedBody = null;
-
-            public function request(string $uri, string $method = 'GET', array|null $headers = null, string|null $body = null): ClientResponse
-            {
-                $this->capturedBody = $body;
-                return new ClientResponse(200, [], '');
-            }
-        };
+        $httpClient = new FakeHttpClient();
 
         $request = $this->createRequest(body: '{"key":"value"}');
         $request->setAttribute('data', ['response' => ['type' => 'proxy', 'url' => 'https://upstream.example.com']]);
@@ -164,6 +122,6 @@ final class ProxyMiddlewareTest extends TestCase
         $middleware = $this->createMiddleware($httpClient);
         $middleware->process($request, $this->nextReturning(418));
 
-        $this->assertSame('{"key":"value"}', $httpClient->capturedBody);
+        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']->stream->read());
     }
 }

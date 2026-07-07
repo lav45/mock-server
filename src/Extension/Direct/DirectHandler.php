@@ -21,9 +21,9 @@ final readonly class DirectHandler
             uri: $direct->url->value,
             method: $direct->method->value,
             headers: $direct->headers->toArray(),
-            body: $direct->body->toString(),
+            body: $direct->body,
         );
-        $body = $response->getBody();
+        $body = $response->getBody()->stream->read();
         if (\json_validate($body) && $this->isSuccessful($response->getStatus())) {
             $directData = \json_decode($body, true, flags: JSON_THROW_ON_ERROR);
             $directData = ArrayHelper::map($directData, static function (string $value): string {

@@ -23,7 +23,7 @@ class CorsTest extends TestCase
         );
 
         $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('OK', $response->getBody());
+        $this->assertEquals('OK', $response->getBody()->stream->read());
 
         $headers = $response->getHeaders();
         $this->assertEquals('*', $headers['access-control-allow-origin'][0]);

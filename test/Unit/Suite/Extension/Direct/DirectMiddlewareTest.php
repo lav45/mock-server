@@ -3,7 +3,6 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Extension\Direct;
 
 use Lav45\MockServer\DataFactory\DataBuilder;
-use Lav45\MockServer\Engine\Http\ClientResponse;
 use Lav45\MockServer\Engine\Http\RequestHandler;
 use Lav45\MockServer\Engine\Http\ServerRequest;
 use Lav45\MockServer\Engine\Http\ServerResponse;
@@ -15,6 +14,7 @@ use Lav45\MockServer\Parser\InlineParser;
 use Lav45\MockServer\Parser\ParamParser;
 use Lav45\MockServer\Parser\VariableParser;
 use Lav45\MockServer\Test\Unit\Components\CallableHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use Lav45\MockServer\Test\Unit\Components\FakeServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -44,34 +44,6 @@ final class DirectMiddlewareTest extends TestCase
         });
     }
 
-    private function createHttpClientStub(array $responseBody): HttpClient
-    {
-        return new readonly class ($responseBody, 200) implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public function __construct(
-                private array $responseBody,
-                private int   $status,
-            ) {}
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                return new ClientResponse(
-                    $this->status,
-                    [],
-                    \json_encode($this->responseBody, JSON_THROW_ON_ERROR),
-                );
-            }
-        };
-    }
-
     private function nextCapturing(array &$capturedData): RequestHandler
     {
         return new CallableHandler(static function (ServerRequest $request) use (&$capturedData): ServerResponse {
@@ -94,7 +66,7 @@ final class DirectMiddlewareTest extends TestCase
             return new ServerResponse(418);
         };
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub([]));
+        $middleware = $this->createMiddleware(new FakeHttpClient(body: []));
         $response = $middleware->process($request, new CallableHandler($next));
 
         $this->assertTrue($called);
@@ -115,7 +87,7 @@ final class DirectMiddlewareTest extends TestCase
             return new ServerResponse(200);
         };
 
-        $middleware = $this->createMiddleware($this->createHttpClientStub([]));
+        $middleware = $this->createMiddleware(new FakeHttpClient(body: []));
         $middleware->process($request, new CallableHandler($next));
 
         $this->assertTrue($called);
@@ -130,7 +102,7 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('data', ['direct' => ['url' => 'https://remote.example.com']]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub(['response' => ['status' => 201, 'json' => ['id' => 42]]]);
+        $httpClient = new FakeHttpClient(body: ['response' => ['status' => 201, 'json' => ['id' => 42]]]);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 
@@ -147,7 +119,7 @@ final class DirectMiddlewareTest extends TestCase
         ]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub(['response' => ['text' => 'from remote']]);
+        $httpClient = new FakeHttpClient(body: ['response' => ['text' => 'from remote']]);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 
@@ -165,7 +137,7 @@ final class DirectMiddlewareTest extends TestCase
             'response' => ['text' => 'original'],
         ]);
 
-        $httpClient = $this->createHttpClientStub(['response' => ['text' => 'from remote']]);
+        $httpClient = new FakeHttpClient(body: ['response' => ['text' => 'from remote']]);
         $middleware = $this->createMiddleware($httpClient, $logger);
         $middleware->process($request, new CallableHandler(fn() => new ServerResponse(200)));
 
@@ -181,7 +153,7 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('parser', $this->createParser());
         $request->setAttribute('data', ['direct' => ['url' => 'https://remote.example.com']]);
 
-        $httpClient = $this->createHttpClientStub(['response' => ['text' => 'from remote']]);
+        $httpClient = new FakeHttpClient(body: ['response' => ['text' => 'from remote']]);
         $middleware = $this->createMiddleware($httpClient, $logger);
         $middleware->process($request, new CallableHandler(fn() => new ServerResponse(200)));
 
@@ -198,7 +170,7 @@ final class DirectMiddlewareTest extends TestCase
         ]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub([]);
+        $httpClient = new FakeHttpClient(body: []);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 
@@ -217,7 +189,7 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('data', ['direct' => ['url' => 'https://remote.example.com']]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub(['webhooks' => $remoteHooks]);
+        $httpClient = new FakeHttpClient(body: ['webhooks' => $remoteHooks]);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 
@@ -237,7 +209,7 @@ final class DirectMiddlewareTest extends TestCase
         ]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub(['webhooks' => [$remoteHook]]);
+        $httpClient = new FakeHttpClient(body: ['webhooks' => [$remoteHook]]);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 
@@ -253,7 +225,7 @@ final class DirectMiddlewareTest extends TestCase
         $request->setAttribute('data', ['direct' => ['url' => 'https://remote.example.com']]);
 
         $capturedData = [];
-        $httpClient = $this->createHttpClientStub(['response' => ['text' => '\\{env.KEY\\}']]);
+        $httpClient = new FakeHttpClient(body: ['response' => ['text' => '\\{env.KEY\\}']]);
         $next = $this->nextCapturing($capturedData);
         $this->createMiddleware($httpClient)->process($request, $next);
 

@@ -95,28 +95,28 @@ final class DataBuilderTest extends TestCase
     public function testCreateBodyContentWithString(): void
     {
         $body = new DataBuilder()->withData(['content' => 'hello'])->createBodyContent();
-        $this->assertSame('hello', $body->toString());
+        $this->assertSame('hello', $body->stream->read());
     }
 
     public function testCreateBodyContentWithArray(): void
     {
         $body = new DataBuilder()->withData(['content' => ['key' => 'val']])->createBodyContent();
-        $this->assertSame(['key' => 'val'], \json_decode($body->toString(), true, flags: JSON_THROW_ON_ERROR));
+        $this->assertSame(['key' => 'val'], \json_decode($body->stream->read(), true, flags: JSON_THROW_ON_ERROR));
     }
 
     public function testCreateBodyDefaultsToEmpty(): void
     {
         $body = new DataBuilder()->createBody();
-        $this->assertSame('', $body->toString());
+        $this->assertSame('', $body->stream->read());
     }
 
     public function testCreateBodyWithBody(): void
     {
         $body = new DataBuilder()->withData(['body' => 'hello world'])->createBody();
-        $this->assertSame('hello world', $body->toString());
+        $this->assertSame('hello world', $body->stream->read());
 
         $body = new DataBuilder()->withData(['body' => ['id' => 1]])->createBody();
-        $this->assertSame(['id' => 1], \json_decode($body->toString(), true, flags: JSON_THROW_ON_ERROR));
+        $this->assertSame(['id' => 1], \json_decode($body->stream->read(), true, flags: JSON_THROW_ON_ERROR));
     }
 
     public function testCreateUrlThrowsWhenNoUrlKey(): void

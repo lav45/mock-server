@@ -119,7 +119,7 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($webHooks->items[0]->body->toString()));
+        $this->assertSame(['id' => 1, 'name' => 'test'], $this->decodeBody($webHooks->items[0]->body->stream->read()));
     }
 
     public function testCreateWithJsonBodySetsContentTypeHeader(): void
@@ -145,19 +145,7 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->toString()));
-    }
-
-    public function testCreateWithJsonStringBodySetsContentTypeHeader(): void
-    {
-        $webHooks = $this->create([
-            [
-                'url' => 'https://example.com',
-                'body' => '{"text": "Hello world"}',
-            ],
-        ]);
-
-        $this->assertSame('application/json', $webHooks->items[0]->headers->toArray()['content-type']);
+        $this->assertSame($items, $this->decodeBody($webHooks->items[0]->body->stream->read()));
     }
 
     // --- Text body ---
@@ -171,7 +159,7 @@ final class WebHooksFactoryTest extends TestCase
             ],
         ]);
 
-        $this->assertSame('{"text": "Hello world"}', $webHooks->items[0]->body->toString());
+        $this->assertSame('{"text": "Hello world"}', $webHooks->items[0]->body->stream->read());
     }
 
     public function testCreateWithNoBodyKeyDefaultsToEmptyBody(): void
@@ -180,7 +168,7 @@ final class WebHooksFactoryTest extends TestCase
             ['url' => 'https://example.com'],
         ]);
 
-        $this->assertSame('', $webHooks->items[0]->body->toString());
+        $this->assertSame('', $webHooks->items[0]->body->stream->read());
     }
 
     public function testCreateWithTextBodyDoesNotSetContentTypeHeader(): void
@@ -235,6 +223,6 @@ final class WebHooksFactoryTest extends TestCase
         ]);
 
         $this->assertSame('application/x-www-form-urlencoded', $webHooks->items[0]->headers->toArray()['Content-Type']);
-        $this->assertSame('name=John&age=12', $webHooks->items[0]->body->toString());
+        $this->assertSame('name=John&age=12', $webHooks->items[0]->body->stream->read());
     }
 }

@@ -26,8 +26,7 @@ final readonly class ContentFactory
         $factory = $this->dataBuilder->withData($data);
 
         $body = $factory->createBody();
-        $appendHeaders = $body->isJson() ? ['content-type' => 'application/json'] : [];
-        $headers = $factory->createHeaders($appendHeaders);
+        $headers = $factory->createHeaders();
 
         return new ContentResponse(
             status: $factory->createStatus(),

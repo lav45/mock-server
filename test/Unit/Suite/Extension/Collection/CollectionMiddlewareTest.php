@@ -46,7 +46,7 @@ final class CollectionMiddlewareTest extends TestCase
 
     private function decodeBody(ServerResponse $response): mixed
     {
-        return \json_decode($response->getBody(), true, flags: JSON_THROW_ON_ERROR);
+        return \json_decode($response->getBody()->stream->read(), true, flags: JSON_THROW_ON_ERROR);
     }
 
     // --- Passthrough ---

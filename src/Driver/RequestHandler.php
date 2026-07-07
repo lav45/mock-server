@@ -16,9 +16,14 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
     {
         $response = $this->handler->handleRequest(new ServerRequest($request));
 
+        $bodyStream = $response->getBody()->stream;
+        $body = $bodyStream instanceof AmpStream
+            ? $bodyStream->getStream()
+            : $bodyStream->read();
+
         $ampResponse = new AmpResponse(
             headers: $response->getHeaders(),
-            body: $response->getBody(),
+            body: $body,
         );
         $ampResponse->setStatus($response->getStatus(), $response->getReason());
 

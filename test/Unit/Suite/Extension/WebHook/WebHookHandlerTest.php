@@ -8,9 +8,8 @@ use Lav45\MockServer\Domain\ValueObject\HttpHeaders;
 use Lav45\MockServer\Domain\ValueObject\HttpMethod;
 use Lav45\MockServer\Domain\ValueObject\Url;
 use Lav45\MockServer\Domain\WebHook;
-use Lav45\MockServer\Engine\Http\ClientResponse;
-use Lav45\MockServer\Engine\HttpClient;
 use Lav45\MockServer\Extension\WebHook\WebHookHandler;
+use Lav45\MockServer\Test\Unit\Components\FakeHttpClient;
 use Lav45\MockServer\Test\Unit\Components\FakeLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -32,55 +31,9 @@ final class WebHookHandlerTest extends TestCase
         );
     }
 
-    private function createThrowingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): never {
-                throw new \RuntimeException('connection refused');
-            }
-        };
-    }
-
-    private function createCapturingHttpClient(): HttpClient
-    {
-        return new class implements HttpClient {
-            public function withLabel(string $label): self
-            {
-                return $this;
-            }
-
-            public array $calls = [];
-
-            public function request(
-                string      $uri,
-                string      $method = 'GET',
-                array|null  $headers = null,
-                string|null $body = null,
-            ): ClientResponse {
-                $this->calls[] = [
-                    'uri' => $uri,
-                    'method' => $method,
-                    'headers' => $headers,
-                    'body' => $body,
-                ];
-                return new ClientResponse(200, [], '');
-            }
-        };
-    }
-
     public function testSendsWebhookWithCorrectUrl(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $handler = new WebHookHandler($httpClient);
 
         $handler->send($this->createWebHook(url: 'https://hook.example.com/notify'));
@@ -91,7 +44,7 @@ final class WebHookHandlerTest extends TestCase
 
     public function testSendsWebhookWithCorrectMethod(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $handler = new WebHookHandler($httpClient);
 
         $handler->send($this->createWebHook(method: 'PUT'));
@@ -101,17 +54,17 @@ final class WebHookHandlerTest extends TestCase
 
     public function testSendsWebhookWithCorrectBody(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $handler = new WebHookHandler($httpClient);
 
         $handler->send($this->createWebHook(body: '{"id":1}'));
 
-        $this->assertSame('{"id":1}', $httpClient->calls[0]['body']);
+        $this->assertSame('{"id":1}', $httpClient->calls[0]['body']->stream->read());
     }
 
     public function testSendsWebhookWithCorrectHeaders(): void
     {
-        $httpClient = $this->createCapturingHttpClient();
+        $httpClient = new FakeHttpClient();
         $handler = new WebHookHandler($httpClient);
 
         $handler->send($this->createWebHook(headers: ['X-Token' => 'secret']));
@@ -122,7 +75,8 @@ final class WebHookHandlerTest extends TestCase
     public function testLogsErrorWhenHttpClientThrows(): void
     {
         $logger = new FakeLogger();
-        $handler = new WebHookHandler($this->createThrowingHttpClient(), $logger);
+        $httpClient = new FakeHttpClient(exception: new \RuntimeException('connection refused'));
+        $handler = new WebHookHandler($httpClient, $logger);
 
         $handler->send($this->createWebHook());
 

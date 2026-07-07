@@ -32,11 +32,9 @@ final readonly class ProxyFactory
 
         $body = $factory->createBodyContent() ?? Body::new($requestAdapter->getBody());
 
-        $appendHeaders = $requestAdapter->getHeaders();
-        if ($body->isJson()) {
-            $appendHeaders['content-type'] = 'application/json';
-        }
-        $headers = $factory->createHeaders($appendHeaders);
+        $headers = $factory->createHeaders(
+            $requestAdapter->getHeaders(),
+        );
 
         return new ProxyResponse(
             url: $url,

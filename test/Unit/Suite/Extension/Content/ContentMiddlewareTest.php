@@ -62,7 +62,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('', $response->getBody());
+        $this->assertSame('', $response->getBody()->stream->read());
     }
 
     public function testReturnsJsonResponse(): void
@@ -80,7 +80,7 @@ final class ContentMiddlewareTest extends TestCase
 
         $this->assertSame(200, $response->getStatus());
         $this->assertSame('application/json', $response->getHeader('content-type'));
-        $this->assertSame('{"id":1,"name":"test"}', $response->getBody());
+        $this->assertSame('{"id":1,"name":"test"}', $response->getBody()->stream->read());
     }
 
     public function testReturnsTextResponse(): void
@@ -93,7 +93,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('hello world', $response->getBody());
+        $this->assertSame('hello world', $response->getBody()->stream->read());
     }
 
     public function testReturnsCustomStatus(): void
@@ -120,7 +120,7 @@ final class ContentMiddlewareTest extends TestCase
 
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
-        $this->assertSame('from response key', $response->getBody());
+        $this->assertSame('from response key', $response->getBody()->stream->read());
     }
 
     public function testDefaultsToEmptyResponseWhenResponseKeyMissing(): void
@@ -131,7 +131,7 @@ final class ContentMiddlewareTest extends TestCase
         $response = ($this->createMiddleware())->process($request, $this->nextReturning(418));
 
         $this->assertSame(200, $response->getStatus());
-        $this->assertSame('', $response->getBody());
+        $this->assertSame('', $response->getBody()->stream->read());
     }
 
 }

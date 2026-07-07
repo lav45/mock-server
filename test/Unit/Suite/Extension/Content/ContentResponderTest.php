@@ -34,7 +34,7 @@ final class ContentResponderTest extends TestCase
 
         $response = new ContentResponder()->execute($data);
 
-        $this->assertSame('hello world', $response->getBody());
+        $this->assertSame('hello world', $response->getBody()->stream->read());
     }
 
     public function testReturnsCorrectHeaders(): void
