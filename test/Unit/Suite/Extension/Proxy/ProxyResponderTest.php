@@ -56,7 +56,7 @@ final class ProxyResponderTest extends TestCase
 
         $responder->execute($this->createProxyResponse(body: '{"key":"value"}'));
 
-        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']->stream->read());
+        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']);
     }
 
     public function testForwardsHeadersToHttpClient(): void

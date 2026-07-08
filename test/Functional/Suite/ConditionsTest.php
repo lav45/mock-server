@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite;
 
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
@@ -28,7 +27,7 @@ class ConditionsTest extends TestCase
             uri: $uri,
             method: 'POST',
             headers: ['content-type' => 'application/json'] + $headers,
-            body: Body::new($body),
+            body: \json_encode($body, JSON_THROW_ON_ERROR),
         );
         return [
             'status' => $response->getStatus(),

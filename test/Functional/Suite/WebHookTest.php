@@ -3,7 +3,6 @@
 namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Amp\Http\Server\FormParser;
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
@@ -35,7 +34,7 @@ class WebHookTest extends TestCase
             uri: MOCK_SERVER_URL . '/webhook/200?id=500',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
-            body: Body::new($data),
+            body: \json_encode($data, JSON_THROW_ON_ERROR),
         );
         $this->assertEquals(200, $response->getStatus());
 

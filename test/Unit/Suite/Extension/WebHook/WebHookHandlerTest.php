@@ -59,7 +59,7 @@ final class WebHookHandlerTest extends TestCase
 
         $handler->send($this->createWebHook(body: '{"id":1}'));
 
-        $this->assertSame('{"id":1}', $httpClient->calls[0]['body']->stream->read());
+        $this->assertSame('{"id":1}', $httpClient->calls[0]['body']);
     }
 
     public function testSendsWebhookWithCorrectHeaders(): void

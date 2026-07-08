@@ -8,7 +8,7 @@ use Lav45\MockServer\Engine\HttpClient;
 
 final class FakeHttpClient implements HttpClient
 {
-    /** @var list<array{uri: string, method: string, headers: array|null, body: Body|null}> */
+    /** @var list<array{uri: string, method: string, headers: array|null, body: string|null}> */
     public array $calls = [];
 
     public function __construct(
@@ -24,10 +24,10 @@ final class FakeHttpClient implements HttpClient
     }
 
     public function request(
-        string     $uri,
-        string     $method = 'GET',
-        array|null $headers = null,
-        Body|null  $body = null,
+        string      $uri,
+        string      $method = 'GET',
+        array|null  $headers = null,
+        string|null $body = null,
     ): ClientResponse {
         $this->calls[] = ['uri' => $uri, 'method' => $method, 'headers' => $headers, 'body' => $body];
 

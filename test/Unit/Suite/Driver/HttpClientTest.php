@@ -7,7 +7,6 @@ use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\NullCancellation;
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClient;
 use PHPUnit\Framework\TestCase;
 
@@ -71,7 +70,7 @@ final class HttpClientTest extends TestCase
         $delegate = $this->createCapturingDelegate();
         $client = new HttpClient($delegate);
 
-        $client->request('https://example.com', body: Body::new('hello'));
+        $client->request('https://example.com', body: 'hello');
 
         $this->assertSame('hello', buffer($delegate->capturedRequest->getBody()->getContent()));
     }

@@ -28,20 +28,15 @@ final class HttpClient implements HttpClientInterface
     }
 
     public function request(
-        string     $uri,
-        string     $method = 'GET',
-        array|null $headers = null,
-        Body|null  $body = null,
+        string      $uri,
+        string      $method = 'GET',
+        array|null  $headers = null,
+        string|null $body = null,
     ): ClientResponse {
         $request = new Request($uri, $method);
 
-        if ($body) {
-            $bodyStream = $body->stream;
-            $rawBody = $bodyStream instanceof AmpStream
-                ? $bodyStream->getStream()
-                : $bodyStream->read();
-
-            $request->setBody($rawBody);
+        if ($body !== null) {
+            $request->setBody($body);
         }
         if ($headers) {
             $request->setHeaders($headers);

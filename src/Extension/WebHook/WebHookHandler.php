@@ -21,7 +21,7 @@ final readonly class WebHookHandler implements \Lav45\MockServer\Engine\WebHookH
                 uri: $webHook->url->value,
                 method: $webHook->method->value,
                 headers: $webHook->headers->toArray(),
-                body: $webHook->body,
+                body: $webHook->body->stream->read(),
             );
         } catch (\RuntimeException $exception) {
             $this->logger->error($exception->getMessage());

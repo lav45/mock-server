@@ -18,7 +18,7 @@ final readonly class ProxyResponder
             uri: $data->url->value,
             method: $data->method->value,
             headers: $data->headers->toArray(),
-            body: $data->body,
+            body: $data->body->stream->read(),
         );
         return new ServerResponse(
             status: $response->getStatus(),

@@ -3,7 +3,6 @@
 namespace Lav45\MockServer\Test\Functional\Suite\Response;
 
 use Amp\Http\Client\Form;
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use League\Uri\Uri;
@@ -26,7 +25,7 @@ class ProxyTest extends TestCase
             uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
-            body: Body::new($data),
+            body: \json_encode($data, JSON_THROW_ON_ERROR),
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -113,7 +112,7 @@ class ProxyTest extends TestCase
             uri: MOCK_SERVER_URL . '/response/proxy/string-content',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
-            body: Body::new('{"name": "Company"}'),
+            body: '{"name": "Company"}',
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -136,7 +135,7 @@ class ProxyTest extends TestCase
             uri: MOCK_SERVER_URL . '/response/proxy/faker-content',
             method: 'POST',
             headers: ['content-type' => 'application/json'],
-            body: Body::new('{"name": "Company"}'),
+            body: '{"name": "Company"}',
         );
         $this->assertEquals(200, $response->getStatus());
 
@@ -179,7 +178,7 @@ class ProxyTest extends TestCase
             uri: MOCK_SERVER_URL . '/response/proxy/storage',
             method: 'POST',
             headers: ['content-type' => $form->getContentType()],
-            body: Body::new($form->getContent()->read()),
+            body: $form->getContent()->read(),
         );
         $this->assertEquals(200, $response->getStatus());
 

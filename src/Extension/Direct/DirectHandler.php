@@ -21,7 +21,7 @@ final readonly class DirectHandler
             uri: $direct->url->value,
             method: $direct->method->value,
             headers: $direct->headers->toArray(),
-            body: $direct->body,
+            body: $direct->body->stream->read(),
         );
         $body = $response->getBody()->stream->read();
         if (\json_validate($body) && $this->isSuccessful($response->getStatus())) {

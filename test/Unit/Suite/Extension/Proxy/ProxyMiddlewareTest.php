@@ -122,6 +122,6 @@ final class ProxyMiddlewareTest extends TestCase
         $middleware = $this->createMiddleware($httpClient);
         $middleware->process($request, $this->nextReturning(418));
 
-        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']->stream->read());
+        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']);
     }
 }

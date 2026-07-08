@@ -2,7 +2,6 @@
 
 namespace Lav45\MockServer\Test\Functional\Suite;
 
-use Lav45\MockServer\Domain\ValueObject\Body;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +27,7 @@ final class DirectTest extends TestCase
             uri: MOCK_SERVER_URL . '/direct/100?status=2',
             method: 'PUT',
             headers: ['Content-Type' => 'application/json'],
-            body: Body::new(\json_encode($data, JSON_THROW_ON_ERROR)),
+            body: \json_encode($data, JSON_THROW_ON_ERROR),
         );
 
         $content = $response->getBody()->stream->read();

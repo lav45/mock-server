@@ -56,7 +56,7 @@ final class DirectHandlerTest extends TestCase
 
         $handler->request($this->createDirect(body: '{"key":"value"}'));
 
-        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']->stream->read());
+        $this->assertSame('{"key":"value"}', $httpClient->calls[0]['body']);
     }
 
     public function testForwardsHeadersToHttpClient(): void
