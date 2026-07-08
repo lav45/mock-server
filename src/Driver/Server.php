@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 
 final class Server
 {
-    /** @var list<Socket\InternetAddress> */
+    /** @var list<array{Socket\InternetAddress, Socket\BindContext|null}> */
     private array $addresses = [];
 
     public function __construct(
@@ -22,7 +22,15 @@ final class Server
 
     public function expose(string $host, int $port): void
     {
-        $this->addresses[] = new Socket\InternetAddress($host, $port);
+        $this->addresses[] = [new Socket\InternetAddress($host, $port), null];
+    }
+
+    public function exposeTls(string $host, Tls $tls): void
+    {
+        $certificate = new Socket\Certificate($tls->cert, $tls->key, $tls->passphrase);
+        $tlsContext = new Socket\ServerTlsContext()->withDefaultCertificate($certificate);
+        $bindContext = new Socket\BindContext()->withTlsContext($tlsContext);
+        $this->addresses[] = [new Socket\InternetAddress($host, $tls->port), $bindContext];
     }
 
     /** @codeCoverageIgnore */
@@ -32,8 +40,8 @@ final class Server
         $serverSocketFactory = Cluster::getServerSocketFactory();
         $clientFactory = new SocketClientFactory($this->logger);
         $server = new SocketHttpServer($this->logger, $serverSocketFactory, $clientFactory);
-        foreach ($this->addresses as $address) {
-            $server->expose($address);
+        foreach ($this->addresses as [$address, $bindContext]) {
+            $server->expose($address, $bindContext);
         }
         $server->start($requestHandler, $this->errorHandler);
 

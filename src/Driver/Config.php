@@ -31,6 +31,8 @@ final class Config
 
     private int $maxBufferSize = 33_554_432;
 
+    private Tls|null $tls = null;
+
     public static function fromFile(string|false $path): self
     {
         $config = new self();
@@ -55,6 +57,7 @@ final class Config
             ->filterHeaders($data['filterHeaders'] ?? false)
             ->schema($data['schema'] ?? false)
             ->maxBufferSize($data['maxBufferSize'] ?? false)
+            ->tls($data['tls'] ?? false)
             ->extensions($data['extensions'] ?? []);
     }
 
@@ -185,6 +188,34 @@ final class Config
     public function getMaxBufferSize(): int
     {
         return $this->maxBufferSize;
+    }
+
+    public function tls(array|false $tls): self
+    {
+        if ($tls) {
+            $port = $tls['port'] ?? 8443;
+            if ($this->isValidPort($port) === false) {
+                throw new \InvalidArgumentException('Invalid tls port');
+            }
+
+            $cert = $tls['cert'] ?? null;
+            if (\is_string($cert) === false || \is_file($cert) === false || \is_readable($cert) === false) {
+                throw new \InvalidArgumentException('Invalid tls cert');
+            }
+
+            $key = $tls['key'] ?? $cert;
+            if (\is_file($key) === false || \is_readable($key) === false) {
+                throw new \InvalidArgumentException('Invalid tls key');
+            }
+
+            $this->tls = new Tls((int)$port, $cert, $key, $tls['passphrase'] ?? null);
+        }
+        return $this;
+    }
+
+    public function getTls(): Tls|null
+    {
+        return $this->tls;
     }
 
     public function extensions(array $extensions): self

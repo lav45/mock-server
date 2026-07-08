@@ -12,6 +12,13 @@ maxBufferSize: 32
 # Comment out to disable validation, or point to your own schema to allow custom keys.
 schema: /app/schema/mock.schema.json
 
+# TLS/SSL. Uncomment to additionally serve HTTPS on the given port alongside the plain HTTP port.
+#tls:
+#  port: 8443
+#  cert: /app/etc/ssl/cert.pem   # certificate + intermediaries
+#  key: /app/etc/ssl/key.pem     # private key (optional, defaults to cert)
+#  passphrase: null              # optional private key passphrase
+
 extensions:
 # CORS is disabled by default. Uncomment the block below to enable it
 # (tune allowOrigin / allowMethods / allowHeaders / exposeHeaders / allowCredentials / maxAge as needed).

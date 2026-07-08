@@ -49,6 +49,7 @@ docker run --rm -d \
 docker logs -f test_mock_server &
 
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
+MOCK_SERVER_TLS_URL=https://$(getIp "test_mock_server")
 
 while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do sleep 1; done
 
@@ -60,6 +61,7 @@ fi
 docker run --rm --init $DOCKER_ARG \
   -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
+  -e MOCK_SERVER_TLS_URL="$MOCK_SERVER_TLS_URL" \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \
   -e WEBHOOK_CATCHER_SESSION_ID="$WEBHOOK_CATCHER_SESSION_ID" \
   --entrypoint composer \

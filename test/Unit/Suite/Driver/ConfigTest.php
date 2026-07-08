@@ -355,4 +355,121 @@ final class ConfigTest extends TestCase
             \unlink($path);
         }
     }
+
+    public function testTlsDefaultsToNull(): void
+    {
+        $this->assertNull($this->config->getTls());
+    }
+
+    public function testTlsWithFalseKeepsNull(): void
+    {
+        $this->config->tls(false);
+        $this->assertNull($this->config->getTls());
+    }
+
+    public function testTlsWithValidConfig(): void
+    {
+        $cert = \sys_get_temp_dir() . '/cert_' . \uniqid('', true) . '.pem';
+        $key = \sys_get_temp_dir() . '/key_' . \uniqid('', true) . '.pem';
+        touch($cert);
+        touch($key);
+
+        try {
+            $this->config->tls(['port' => 9443, 'cert' => $cert, 'key' => $key, 'passphrase' => 'secret']);
+            $tls = $this->config->getTls();
+            $this->assertNotNull($tls);
+            $this->assertSame(9443, $tls->port);
+            $this->assertSame($cert, $tls->cert);
+            $this->assertSame($key, $tls->key);
+            $this->assertSame('secret', $tls->passphrase);
+        } finally {
+            deleteFile($cert);
+            deleteFile($key);
+        }
+    }
+
+    public function testTlsDefaultsPortAndKeyToCert(): void
+    {
+        $cert = \sys_get_temp_dir() . '/cert_' . \uniqid('', true) . '.pem';
+        touch($cert);
+
+        try {
+            $this->config->tls(['cert' => $cert]);
+            $tls = $this->config->getTls();
+            $this->assertNotNull($tls);
+            $this->assertSame(8443, $tls->port);
+            $this->assertSame($cert, $tls->cert);
+            $this->assertSame($cert, $tls->key);
+            $this->assertNull($tls->passphrase);
+        } finally {
+            deleteFile($cert);
+        }
+    }
+
+    public function testTlsWithInvalidPortThrows(): void
+    {
+        $cert = \sys_get_temp_dir() . '/cert_' . \uniqid('', true) . '.pem';
+        touch($cert);
+
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessageIsOrContains('Invalid tls port');
+            $this->config->tls(['port' => 70000, 'cert' => $cert]);
+        } finally {
+            deleteFile($cert);
+        }
+    }
+
+    #[DataProvider('invalidTlsCertProvider')]
+    public function testTlsWithInvalidCertThrows(array $tls): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Invalid tls cert');
+        $this->config->tls($tls);
+    }
+
+    public static function invalidTlsCertProvider(): array
+    {
+        return [
+            'missing cert' => [['port' => 8443]],
+            'cert not a file' => [['cert' => '/non_existent_cert_' . \uniqid('', true) . '.pem']],
+            'cert is a directory' => [['cert' => \sys_get_temp_dir()]],
+        ];
+    }
+
+    public function testTlsWithInvalidKeyThrows(): void
+    {
+        $cert = \sys_get_temp_dir() . '/cert_' . \uniqid('', true) . '.pem';
+        touch($cert);
+
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessageIsOrContains('Invalid tls key');
+            $this->config->tls(['cert' => $cert, 'key' => '/non_existent_key_' . \uniqid('', true) . '.pem']);
+        } finally {
+            deleteFile($cert);
+        }
+    }
+
+    public function testFromFileParsesTls(): void
+    {
+        $cert = \sys_get_temp_dir() . '/cert_' . \uniqid('', true) . '.pem';
+        $key = \sys_get_temp_dir() . '/key_' . \uniqid('', true) . '.pem';
+        touch($cert);
+        touch($key);
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "tls:\n  port: 8443\n  cert: {$cert}\n  key: {$key}\n");
+
+        try {
+            $tls = Config::fromFile($path)->getTls();
+            $this->assertNotNull($tls);
+            $this->assertSame(8443, $tls->port);
+            $this->assertSame($cert, $tls->cert);
+            $this->assertSame($key, $tls->key);
+        } finally {
+            \unlink($path);
+            deleteFile($cert);
+            deleteFile($key);
+        }
+    }
 }

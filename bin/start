@@ -45,6 +45,11 @@ use Lav45\MockServer\Extension\WebHook\WebHookHandler;
 
     $server = new Server($logger);
     $server->expose('0.0.0.0', $config->getPort());
+
+    if ($tls = $config->getTls()) {
+        $server->exposeTls('0.0.0.0', $tls);
+    }
+
     $server->run($reactor);
 
 })();

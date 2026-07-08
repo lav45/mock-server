@@ -1,5 +1,10 @@
 schema: /app/schema/mock.schema.json
 
+tls:
+  port: 443
+  cert: /app/test/Functional/ssl/cert.pem
+  key: /app/test/Functional/ssl/key.pem
+
 extensions:
   - class: Lav45\MockServer\Extension\Cors\CorsExtension
     config:
