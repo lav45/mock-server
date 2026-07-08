@@ -4,6 +4,10 @@ locale: en_US
 logLevel: info
 filterHeaders: [host, content-length, connection, keep-alive, transfer-encoding]
 
+# Maximum size (in MB) of a proxied/direct response body buffered into memory.
+# A larger body aborts the request with a BufferException.
+maxBufferSize: 32
+
 # Path to the JSON Schema used to validate mock files.
 # Comment out to disable validation, or point to your own schema to allow custom keys.
 schema: /app/schema/mock.schema.json

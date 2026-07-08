@@ -34,6 +34,7 @@ final class ConfigTest extends TestCase
             ['host', 'content-length', 'connection', 'keep-alive', 'transfer-encoding'],
             $this->config->getFilterHeaders(),
         );
+        $this->assertSame(33_554_432, $this->config->getMaxBufferSize());
     }
 
     public function testListenWithValidValues(): void
@@ -310,5 +311,48 @@ final class ConfigTest extends TestCase
             'missing file' => ['/non_existent_schema_' . \uniqid('', true) . '.json'],
             'directory instead of file' => [\sys_get_temp_dir()],
         ];
+    }
+
+    #[DataProvider('maxBufferSizeProvider')]
+    public function testMaxBufferSizeConvertsMegabytesToBytes(string|int $megabytes, int $expectedBytes): void
+    {
+        $this->config->maxBufferSize($megabytes);
+        $this->assertSame($expectedBytes, $this->config->getMaxBufferSize());
+    }
+
+    public static function maxBufferSizeProvider(): array
+    {
+        return [
+            'int megabytes' => [64, 64 * 1024 * 1024],
+            'string megabytes' => ['16', 16 * 1024 * 1024],
+        ];
+    }
+
+    #[DataProvider('nonNumericMaxBufferSizeProvider')]
+    public function testMaxBufferSizeWithNonNumericKeepsDefault(string|false $value): void
+    {
+        $this->config->maxBufferSize($value);
+        $this->assertSame(33_554_432, $this->config->getMaxBufferSize());
+    }
+
+    public static function nonNumericMaxBufferSizeProvider(): array
+    {
+        return [
+            'false' => [false],
+            'empty string' => [''],
+            'not a number' => ['not_a_number'],
+        ];
+    }
+
+    public function testFromFileParsesMaxBufferSize(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "maxBufferSize: 8\n");
+
+        try {
+            $this->assertSame(8 * 1024 * 1024, Config::fromFile($path)->getMaxBufferSize());
+        } finally {
+            \unlink($path);
+        }
     }
 }

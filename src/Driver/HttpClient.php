@@ -17,6 +17,7 @@ final class HttpClient implements HttpClientInterface
     public function __construct(
         private readonly Client       $client,
         private readonly Cancellation $cancellation = new NullCancellation(),
+        private readonly int          $maxBufferSize = 33_554_432,
     ) {}
 
     public function withLabel(string $label): self
@@ -55,7 +56,7 @@ final class HttpClient implements HttpClientInterface
             status: $response->getStatus(),
             headers: $response->getHeaders(),
             body: Body::new(
-                new AmpStream($response->getBody()),
+                new AmpStream($response->getBody(), $this->maxBufferSize),
             ),
         );
     }

@@ -11,11 +11,12 @@ final readonly class AmpStream implements Stream
 {
     public function __construct(
         private ReadableStream $stream,
+        private int            $maxBufferSize = 33_554_432,
     ) {}
 
     public function read(): string
     {
-        return buffer($this->stream);
+        return buffer($this->stream, limit: $this->maxBufferSize);
     }
 
     public function getStream(): ReadableStream

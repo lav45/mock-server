@@ -19,10 +19,11 @@ use Lav45\MockServer\Extension\WebHook\WebHookHandler;
         ->mocks(getenv('MOCKS_PATH'))
         ->locale(getenv('LOCALE'))
         ->log(getenv('LOG_LEVEL'))
-        ->filterHeaders(getenv('FILTER_HEADERS'));
+        ->filterHeaders(getenv('FILTER_HEADERS'))
+        ->maxBufferSize(getenv('MAX_BUFFER_SIZE'));
 
     $logger = new LoggerFactory('mock-server', $config->getLogLevel())->create();
-    $httpClient = new HttpClientFactory($logger)->create();
+    $httpClient = new HttpClientFactory($logger, maxBufferSize: $config->getMaxBufferSize())->create();
 
     $webHookQueue = new WebHookQueue(
         new WebHookHandler(

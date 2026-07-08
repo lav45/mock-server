@@ -29,6 +29,8 @@ final class Config
 
     private string|null $schema = null;
 
+    private int $maxBufferSize = 33_554_432;
+
     public static function fromFile(string|false $path): self
     {
         $config = new self();
@@ -52,6 +54,7 @@ final class Config
             ->log($data['logLevel'] ?? false)
             ->filterHeaders($data['filterHeaders'] ?? false)
             ->schema($data['schema'] ?? false)
+            ->maxBufferSize($data['maxBufferSize'] ?? false)
             ->extensions($data['extensions'] ?? []);
     }
 
@@ -137,9 +140,9 @@ final class Config
                 $headers = \explode(',', $headers);
             }
             $this->filterHeaders = $headers
-                |> (static fn(array $parts) => \array_map(static fn(string $s) => \strtolower(\trim($s)), $parts))
-                |> \array_filter(...)
-                |> \array_values(...);
+                    |> (static fn(array $parts) => \array_map(static fn(string $s) => \strtolower(\trim($s)), $parts))
+                    |> \array_filter(...)
+                    |> \array_values(...);
         }
         return $this;
     }
@@ -169,6 +172,19 @@ final class Config
     public function getSchema(): string|null
     {
         return $this->schema;
+    }
+
+    public function maxBufferSize(string|int|false $maxBufferSize): self
+    {
+        if (\is_numeric($maxBufferSize)) {
+            $this->maxBufferSize = (int)$maxBufferSize * 1024 * 1024;
+        }
+        return $this;
+    }
+
+    public function getMaxBufferSize(): int
+    {
+        return $this->maxBufferSize;
     }
 
     public function extensions(array $extensions): self

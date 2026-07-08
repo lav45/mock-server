@@ -25,11 +25,13 @@ webhooks, and automatic reloading of mock files.
     - [Routing](docs/request.md#requestpath)
 - [Response](docs/extension/application/response.md)
     - [Content](docs/extension/application/response/content.md)
-        - [Request parameters](docs/extension/application/response/content.md#request-parameters) - You can get data from your request and use it in the response
+        - [Request parameters](docs/extension/application/response/content.md#request-parameters) - You can get data
+          from your request and use it in the response
     - [Proxy](docs/extension/application/response/proxy.md)
     - [Data provider](docs/extension/application/response/data.md)
 - [Delay](docs/extension/application/delay.md) - Delay any response by `response.delay` seconds, regardless of its type
-- [Conditions](docs/extension/application/conditions.md) - Conditional response overrides evaluated before the default response
+- [Conditions](docs/extension/application/conditions.md) - Conditional response overrides evaluated before the default
+  response
 - [WebHooks](docs/extension/application/webhooks.md)
 - [Direct](docs/extension/application/direct.md) - Delegate response generation to a remote server
 - [CORS](docs/extension/system/cors.md) - CORS headers on every response (disabled by default)
@@ -89,13 +91,14 @@ docker run --rm -it -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock
 
 ## Environment Variables
 
-| Variable         | Default                                                       | Description                                                                                      |
-|------------------|---------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| `PORT`           | `8080`                                                        | Port the server will listen on.                                                                  |
-| `MOCKS_PATH`     | `/app/mocks`                                                  | Path to the directory containing mock JSON files.                                                |
-| `LOCALE`         | `en_US`                                                       | Locale used for Faker data generation.                                                           |
-| `LOG_LEVEL`      | `info`                                                        | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`]. |
-| `FILTER_HEADERS` | `host,content-length,connection,keep-alive,transfer-encoding` | Comma-separated list of request headers to strip when forwarding the request to a remote server. |
+| Variable          | Default                                                       | Description                                                                                                               |
+|-------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `PORT`            | `8080`                                                        | Port the server will listen on.                                                                                           |
+| `MOCKS_PATH`      | `/app/mocks`                                                  | Path to the directory containing mock JSON files.                                                                         |
+| `LOCALE`          | `en_US`                                                       | Locale used for Faker data generation.                                                                                    |
+| `LOG_LEVEL`       | `info`                                                        | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`].                          |
+| `FILTER_HEADERS`  | `host,content-length,connection,keep-alive,transfer-encoding` | Comma-separated list of request headers to strip when forwarding the request to a remote server.                          |
+| `MAX_BUFFER_SIZE` | `32`                                                          | Maximum size (in MB) of a proxied/direct response body buffered into memory; a larger body aborts with a BufferException. |
 
 ## Development
 

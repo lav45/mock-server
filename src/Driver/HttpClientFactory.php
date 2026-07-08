@@ -16,6 +16,7 @@ final readonly class HttpClientFactory
     public function __construct(
         private LoggerInterface $logger = new NullLogger(),
         private int             $retryLimit = 3,
+        private int             $maxBufferSize = 33_554_432,
     ) {}
 
     public function create(): HttpClientInterface
@@ -37,6 +38,6 @@ final readonly class HttpClientFactory
             ->usingPool($pool)
             ->build();
 
-        return new HttpClient($client);
+        return new HttpClient($client, maxBufferSize: $this->maxBufferSize);
     }
 }
