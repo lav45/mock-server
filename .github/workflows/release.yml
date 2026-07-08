@@ -30,9 +30,9 @@ jobs:
       - run: |
           VERSION_PATCH=${GITHUB_REF#refs/tags/}
           echo "VERSION_PATCH=$VERSION_PATCH" >> $GITHUB_ENV
-          VERSION_MINOR=$(echo $VERSION | awk -F. '{print $1"."$2}')
+          VERSION_MINOR=$(echo $VERSION_PATCH | awk -F. '{print $1"."$2}')
           echo "VERSION_MINOR=$VERSION_MINOR" >> $GITHUB_ENV
-          VERSION_MAJOR=$(echo $VERSION | awk -F. '{print $1}')
+          VERSION_MAJOR=$(echo $VERSION_PATCH | awk -F. '{print $1}')
           echo "VERSION_MAJOR=$VERSION_MAJOR" >> $GITHUB_ENV
 
       - name: Build and Push
