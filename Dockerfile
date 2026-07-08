@@ -57,6 +57,7 @@ FROM tool AS build
 
 COPY composer.json /app/composer.json
 COPY composer.lock /app/composer.lock
+COPY migrates /app/migrates
 
 RUN composer install --prefer-dist --no-progress --no-dev --ansi
 
