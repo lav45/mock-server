@@ -37,12 +37,14 @@ final readonly class ReactorFactory
         /** @var list<Extension> */
         private array           $extensions = [],
         private string|null     $schema = null,
+        private array           $env = [],
         private string          $migratePath = __DIR__ . '/../../migrates',
     ) {}
 
     public function create(): RequestHandler
     {
-        $parser = new ParserFactory($this->locale)->create();
+        $parser = new ParserFactory($this->locale)->create()
+            ->withData(['env' => $this->env]);
         $dataBuilder = new DataBuilder($this->filterHeaders);
 
         $mocks = new MockStorage($this->mocksPath, $this->logger)->getData();

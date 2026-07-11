@@ -13,10 +13,17 @@
         "filterHeaders": {"$ref": "#/$defs/stringOrList"},
         "maxBufferSize": {"type": "integer", "minimum": 1},
         "schema": {"type": "string"},
+        "env": {"$ref": "#/$defs/map"},
         "tls": {"$ref": "#/$defs/tls"},
         "extensions": {"type": "array", "items": {"$ref": "#/$defs/extension"}}
     },
     "$defs": {
+        "map": {
+            "anyOf": [
+                {"type": "object"},
+                {"type": "array", "maxItems": 0}
+            ]
+        },
         "stringOrList": {
             "oneOf": [
                 {"type": "string"},

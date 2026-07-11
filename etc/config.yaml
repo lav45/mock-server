@@ -4,6 +4,12 @@ locale: en_US
 logLevel: info
 filterHeaders: [host, content-length, connection, keep-alive, transfer-encoding]
 
+# Global variables available in every mock as {{env.KEY}}.
+# Per-mock `env` is merged on top of these.
+#env:
+#  DOMAIN: api.server.com
+#  version: 1
+
 # Maximum size (in MB) of a proxied/direct response body buffered into memory.
 # A larger body aborts the request with a BufferException.
 maxBufferSize: 32

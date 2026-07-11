@@ -70,6 +70,7 @@ final class ReactorFactoryTest extends TestCase
     private function createReactor(
         array $extensions = [new Extension(ContentExtension::class)],
         string|null $schema = null,
+        array $env = [],
     ): RequestHandler {
         $httpClient = new FakeHttpClient();
 
@@ -86,6 +87,7 @@ final class ReactorFactoryTest extends TestCase
             logger: new FakeLogger(),
             extensions: $extensions,
             schema: $schema,
+            env: $env,
         )->create();
     }
 
@@ -212,6 +214,77 @@ final class ReactorFactoryTest extends TestCase
 
         $this->assertSame(201, $response->getStatus());
         $this->assertStringContainsString('pong', $response->getBody()->stream->read());
+    }
+
+    public function testGlobalEnvIsAvailableInMocks(): void
+    {
+        \file_put_contents(
+            $this->mocksPath . '/mock.json',
+            \json_encode([
+                [
+                    'version' => 8,
+                    'request' => ['method' => 'GET', 'path' => '/ping'],
+                    'response' => ['type' => 'content', 'status' => 200, 'body' => ['domain' => '{{env.DOMAIN}}']],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        $reactor = $this->createReactor(env: ['DOMAIN' => 'api.server.com']);
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(200, $response->getStatus());
+        $this->assertStringContainsString('api.server.com', $response->getBody()->stream->read());
+    }
+
+    public function testGlobalEnvIsMergedWithMockEnv(): void
+    {
+        \file_put_contents(
+            $this->mocksPath . '/mock.json',
+            \json_encode([
+                [
+                    'version' => 8,
+                    'request' => ['method' => 'GET', 'path' => '/ping'],
+                    'env' => ['token' => 'secret'],
+                    'response' => [
+                        'type' => 'content',
+                        'status' => 200,
+                        'body' => [
+                            'domain' => '{{env.DOMAIN}}',
+                            'token' => '{{env.token}}',
+                        ],
+                    ],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        $reactor = $this->createReactor(env: ['DOMAIN' => 'api.server.com']);
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(200, $response->getStatus());
+        $body = $response->getBody()->stream->read();
+        $this->assertStringContainsString('api.server.com', $body);
+        $this->assertStringContainsString('secret', $body);
+    }
+
+    public function testMockEnvOverridesGlobalEnv(): void
+    {
+        \file_put_contents(
+            $this->mocksPath . '/mock.json',
+            \json_encode([
+                [
+                    'version' => 8,
+                    'request' => ['method' => 'GET', 'path' => '/ping'],
+                    'env' => ['DOMAIN' => 'mock.local'],
+                    'response' => ['type' => 'content', 'status' => 200, 'body' => ['domain' => '{{env.DOMAIN}}']],
+                ],
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        $reactor = $this->createReactor(env: ['DOMAIN' => 'api.server.com']);
+        $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
+
+        $this->assertSame(200, $response->getStatus());
+        $this->assertSame('{"domain":"mock.local"}', $response->getBody()->stream->read());
     }
 
     private function writeMock(array $extra): void

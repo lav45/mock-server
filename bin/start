@@ -41,6 +41,7 @@ use Lav45\MockServer\Extension\WebHook\WebHookHandler;
         logger: $logger,
         extensions: $config->getExtensions(),
         schema: $config->getSchema(),
+        env: $config->getEnv(),
     )->create();
 
     $server = new Server($logger);

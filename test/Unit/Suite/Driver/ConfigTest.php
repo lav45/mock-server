@@ -35,6 +35,7 @@ final class ConfigTest extends TestCase
             $this->config->getFilterHeaders(),
         );
         $this->assertSame(33_554_432, $this->config->getMaxBufferSize());
+        $this->assertSame([], $this->config->getEnv());
     }
 
     public function testListenWithValidValues(): void
@@ -393,6 +394,39 @@ final class ConfigTest extends TestCase
 
         try {
             $this->assertSame(8 * 1024 * 1024, Config::fromFile($path)->getMaxBufferSize());
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testEnvDefaultsToEmptyArray(): void
+    {
+        $this->assertSame([], $this->config->getEnv());
+    }
+
+    public function testEnvWithFalseKeepsDefault(): void
+    {
+        $this->config->env(false);
+        $this->assertSame([], $this->config->getEnv());
+    }
+
+    public function testEnvWithValues(): void
+    {
+        $env = ['DOMAIN' => 'api.server.com', 'version' => 1];
+        $this->config->env($env);
+        $this->assertSame($env, $this->config->getEnv());
+    }
+
+    public function testFromFileParsesEnv(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "env:\n  DOMAIN: api.server.com\n  version: 1\n");
+
+        try {
+            $this->assertSame(
+                ['DOMAIN' => 'api.server.com', 'version' => 1],
+                Config::fromFile($path)->getEnv(),
+            );
         } finally {
             \unlink($path);
         }

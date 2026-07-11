@@ -70,6 +70,41 @@ Webhook will send the data:
 }
 ```
 
+## Global environment via config
+
+Values defined under the `env` block of the server config (`etc/config.yaml`, or the file pointed to by `CONFIG_PATH`)
+are available in **every** mock as `{{env.KEY}}` — no need to repeat them in each file:
+
+```yaml
+env:
+  DOMAIN: api.server.com
+  version: 1
+```
+
+```json
+[
+    {
+        "response": {
+            "type": "content",
+            "body": {
+                "url": "https://{env.DOMAIN}/v{env.version}"
+            }
+        }
+    }
+]
+```
+
+Response:
+
+```json
+{
+    "url": "https://api.server.com/v1"
+}
+```
+
+A mock's own `env` block is merged with the global one, so both sets of keys are visible. If the same key exists in
+both, the mock's value **overrides** the global one.
+
 ## Server environment
 
 You can pass the environment parameters when starting the container

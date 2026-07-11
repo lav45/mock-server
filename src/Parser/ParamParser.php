@@ -19,7 +19,7 @@ final class ParamParser implements VariableParser
     public function withData(array $data): self
     {
         return clone($this, [
-            'data' => \array_merge_recursive($this->data, $data),
+            'data' => \array_replace_recursive($this->data, $data),
         ]);
     }
 

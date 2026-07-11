@@ -33,6 +33,8 @@ final class Config
 
     private int $maxBufferSize = 33_554_432;
 
+    private array $env = [];
+
     private Tls|null $tls = null;
 
     public static function fromFile(string|false $path): self
@@ -61,6 +63,7 @@ final class Config
             ->filterHeaders($data['filterHeaders'] ?? false)
             ->schema($data['schema'] ?? false)
             ->maxBufferSize($data['maxBufferSize'] ?? false)
+            ->env($data['env'] ?? false)
             ->tls($data['tls'] ?? false)
             ->extensions($data['extensions'] ?? []);
     }
@@ -220,6 +223,19 @@ final class Config
     public function getMaxBufferSize(): int
     {
         return $this->maxBufferSize;
+    }
+
+    public function env(array|false $env): self
+    {
+        if ($env) {
+            $this->env = $env;
+        }
+        return $this;
+    }
+
+    public function getEnv(): array
+    {
+        return $this->env;
     }
 
     public function tls(array|false $tls): self
