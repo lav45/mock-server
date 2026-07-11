@@ -7,6 +7,7 @@ tls:
 
 extensions:
   - class: Lav45\MockServer\Extension\Cors\CorsExtension
+    schema: /app/src/Extension/Cors/schema.json
     config:
       allowOrigin: ['*']
       allowMethods: ['*']

@@ -23,6 +23,7 @@ extensions:
 # CORS is disabled by default. Uncomment the block below to enable it
 # (tune allowOrigin / allowMethods / allowHeaders / exposeHeaders / allowCredentials / maxAge as needed).
 #  - class: Lav45\MockServer\Extension\Cors\CorsExtension
+#    schema: /app/src/Extension/Cors/schema.json
 #    config:
 #      allowOrigin: ['*']
 #      allowMethods: ['*']

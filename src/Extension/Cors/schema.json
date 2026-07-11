@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/lav45/mock-server/src/Extension/Cors/schema.json",
+    "title": "CORS extension config",
+    "description": "Schema for the Lav45\\MockServer\\Extension\\Cors\\CorsExtension config block.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "allowOrigin": {"$ref": "#/$defs/stringOrList"},
+        "allowMethods": {"$ref": "#/$defs/stringOrList"},
+        "allowHeaders": {"$ref": "#/$defs/stringOrList"},
+        "exposeHeaders": {
+            "oneOf": [
+                {"$ref": "#/$defs/stringOrList"},
+                {"type": "null"}
+            ]
+        },
+        "allowCredentials": {"type": "boolean"},
+        "maxAge": {"type": "integer", "minimum": 0}
+    },
+    "$defs": {
+        "stringOrList": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+            ]
+        }
+    }
+}
