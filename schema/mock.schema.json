@@ -100,8 +100,34 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                        "type": {"const": "offset"},
                         "pageParam": {"type": "string"},
                         "pageSizeParam": {"type": "string"},
+                        "defaultPageSize": {"type": ["integer", "string"]}
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["type"],
+                    "properties": {
+                        "type": {"const": "keyset"},
+                        "primaryKey": {"type": "string"},
+                        "afterParam": {"type": "string"},
+                        "beforeParam": {"type": "string"},
+                        "limitParam": {"type": "string"},
+                        "defaultPageSize": {"type": ["integer", "string"]}
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["type"],
+                    "properties": {
+                        "type": {"const": "iterator"},
+                        "primaryKey": {"type": "string"},
+                        "iteratorParam": {"type": "string"},
+                        "limitParam": {"type": "string"},
                         "defaultPageSize": {"type": ["integer", "string"]}
                     }
                 },

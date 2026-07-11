@@ -256,4 +256,115 @@ final class CollectionFactoryTest extends TestCase
         $this->assertEquals(1, $content['info']['X-Pagination-Page-Count']);
         $this->assertEquals(3, $content['info']['X-Pagination-Per-Page']);
     }
+
+    public function testCreateWithKeysetPagination(): void
+    {
+        $items = [['id' => 'e'], ['id' => 'f'], ['id' => 'd'], ['id' => 'b'], ['id' => 'c'], ['id' => 'a']];
+
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest('https://localhost/?after=f&limit=2'),
+            $this->createParser(),
+            [
+                'items' => $items,
+                'pagination' => [
+                    'type' => 'keyset',
+                    'primaryKey' => 'id',
+                ],
+                'result' => [
+                    'data' => '{{response.items}}',
+                    'pagination' => '{{response.pagination}}',
+                ],
+            ],
+        );
+
+        $content = $this->decodeBody($response->body->stream->read());
+        $this->assertSame(['d', 'b'], \array_column($content['data'], 'id'));
+        $this->assertSame([
+            'next' => 'b',
+            'prev' => 'd',
+            'hasNext' => true,
+            'hasPrev' => true,
+            'pageSize' => 2,
+        ], $content['pagination']);
+    }
+
+    public function testCreateWithIteratorPagination(): void
+    {
+        $items = [['id' => 60], ['id' => 50], ['id' => 40], ['id' => 30], ['id' => 20], ['id' => 10]];
+
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest('https://localhost/?iterator=50&limit=2'),
+            $this->createParser(),
+            [
+                'items' => $items,
+                'pagination' => [
+                    'type' => 'iterator',
+                    'primaryKey' => 'id',
+                ],
+                'result' => [
+                    'data' => '{{response.items}}',
+                    'pagination' => '{{response.pagination}}',
+                ],
+            ],
+        );
+
+        $content = $this->decodeBody($response->body->stream->read());
+        $this->assertSame([40, 30], \array_column($content['data'], 'id'));
+        $this->assertSame([
+            'next' => '30',
+            'prev' => '-40',
+            'hasNext' => true,
+            'hasPrev' => true,
+            'pageSize' => 2,
+        ], $content['pagination']);
+    }
+
+    public function testCreateWithIteratorPaginationBackward(): void
+    {
+        $items = [['id' => 60], ['id' => 50], ['id' => 40], ['id' => 30], ['id' => 20], ['id' => 10]];
+
+        $response = new CollectionFactory(new DataBuilder())->create(
+            $this->createRequest('https://localhost/?iterator=-40&limit=2'),
+            $this->createParser(),
+            [
+                'items' => $items,
+                'pagination' => [
+                    'type' => 'iterator',
+                    'primaryKey' => 'id',
+                ],
+                'result' => [
+                    'data' => '{{response.items}}',
+                    'pagination' => '{{response.pagination}}',
+                ],
+            ],
+        );
+
+        $content = $this->decodeBody($response->body->stream->read());
+        $this->assertSame([60, 50], \array_column($content['data'], 'id'));
+        $this->assertSame([
+            'next' => '50',
+            'prev' => null,
+            'hasNext' => true,
+            'hasPrev' => false,
+            'pageSize' => 2,
+        ], $content['pagination']);
+    }
+
+    public function testCreateWithFileSource(): void
+    {
+        $file = \tempnam(\sys_get_temp_dir(), 'data');
+        \file_put_contents($file, \json_encode([['id' => 1], ['id' => 2], ['id' => 3]], JSON_THROW_ON_ERROR));
+
+        try {
+            $response = new CollectionFactory(new DataBuilder())->create(
+                $this->createRequest('https://localhost/?per-page=2'),
+                $this->createParser(),
+                ['file' => $file],
+            );
+
+            $this->assertSame([['id' => 1], ['id' => 2]], $this->decodeBody($response->body->stream->read()));
+        } finally {
+            \unlink($file);
+        }
+    }
 }

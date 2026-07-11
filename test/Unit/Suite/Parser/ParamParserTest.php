@@ -81,6 +81,22 @@ final class ParamParserTest extends TestCase
         ];
     }
 
+    public function testInlineBoolIsExportedToString(): void
+    {
+        $parser = $this->parser->withData(['flag' => true, 'off' => false]);
+
+        $this->assertSame('true', $parser->replace('{flag}'));
+        $this->assertSame('false', $parser->replace('{off}'));
+        $this->assertSame('has next: true', $parser->replace('has next: {flag}'));
+    }
+
+    public function testDoubleBraceBoolKeepsType(): void
+    {
+        $parser = $this->parser->withData(['flag' => true]);
+
+        $this->assertTrue($parser->replace('{{flag}}'));
+    }
+
     public function testWithDataMergesRecursively(): void
     {
         $result = $this->parser

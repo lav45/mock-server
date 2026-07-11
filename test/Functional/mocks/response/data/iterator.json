@@ -1,0 +1,55 @@
+[
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/data/iterator"
+        },
+        "response": {
+            "type": "data",
+            "pagination": {
+                "type": "iterator",
+                "primaryKey": "id",
+                "defaultPageSize": 2
+            },
+            "items": [
+                {"id": 60},
+                {"id": 50},
+                {"id": 40},
+                {"id": 30},
+                {"id": 20},
+                {"id": 10}
+            ],
+            "result": {
+                "data": "{{response.items}}",
+                "pagination": "{{response.pagination}}"
+            }
+        }
+    },
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/data/iterator-config"
+        },
+        "response": {
+            "type": "data",
+            "pagination": {
+                "type": "iterator",
+                "primaryKey": "id",
+                "iteratorParam": "cursor",
+                "limitParam": "size"
+            },
+            "items": [
+                {"id": 10},
+                {"id": 20},
+                {"id": 30},
+                {"id": 40},
+                {"id": 50},
+                {"id": 60}
+            ],
+            "result": {
+                "data": "{{response.items}}",
+                "pagination": "{{response.pagination}}"
+            }
+        }
+    }
+]

@@ -37,7 +37,7 @@
         "nikic/fast-route": "v1.3.*",
         "monolog/monolog": "3.9.*",
         "fakerphp/faker": "v1.24.*",
-        "yiisoft/data": "1.0.*",
+        "yiisoft/data": "2.0.*",
         "psr/container": "2.0.*",
         "psr/log": "3.0.*",
         "opis/json-schema": "2.6.*",

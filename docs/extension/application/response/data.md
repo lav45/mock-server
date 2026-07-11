@@ -43,33 +43,38 @@ Response HTTP headers
 ]
 ```
 
-## `response.pagination.pageParam`
+## `response.pagination.type`
 
-HTTP GET request name of the parameter storing the current page index.
+Pagination strategy. Each strategy has its own parameters, information fields and examples:
 
-| Types  | Default  |
-|--------|----------|
-| string | `"page"` |
+- [`"offset"`](data/offset.md) — classic page-based pagination driven by the `page`/`per-page` query parameters. Knows
+  the total number of items and pages. **Default.**
+- [`"keyset"`](data/keyset.md) — cursor-based navigation driven by the `after`/`before` query parameters. Scales to large
+  datasets and keeps a stable window while items are inserted or deleted, but does not know the total number of items or
+  pages.
+- [`"iterator"`](data/iterator.md) — keyset navigation driven by a single signed `iterator` parameter (sign is the
+  direction, magnitude is the cursor).
 
-## `response.pagination.pageSizeParam`
+| Types  | Default    |
+|--------|------------|
+| string | `"offset"` |
 
-HTTP GET request name of the parameter storing the page size.
-
-| Types  | Default      |
-|--------|--------------|
-| string | `"per-page"` |
-
-## `response.pagination.defaultPageSize`
-
-HTTP GET request the default page size.
-
-| Types   | Default |
-|---------|---------|
-| integer | `20`    |
+```json
+[
+    {
+        "response": {
+            "type": "data",
+            "pagination": {
+                "type": "keyset"
+            }
+        }
+    }
+]
+```
 
 ## `response.items`
 
-An array of data in json format
+An array of data in JSON format
 
 | Types | Default |
 |-------|---------|
@@ -97,7 +102,7 @@ An array of data in json format
 
 ## `response.file`
 
-The path to a file with an array of data in json format
+The path to a file with an array of data in JSON format
 
 The file contains a data set as from the example `response.items`
 
@@ -116,103 +121,11 @@ The file contains a data set as from the example `response.items`
 ]
 ```
 
-## Information parameters of pagination
-
-- `response.pagination.totalItems` - total number of data items.
-- `response.pagination.currentPage` - current page number (1-based).
-- `response.pagination.totalPages` - total number of pages of
-- `response.pagination.pageSize` - number of data items in each page.
-
 ## `response.result`
+
+Template of the response body. Defaults to the raw items array; combine it with `{{response.pagination}}` to expose the
+pagination metadata. See the worked examples in the [offset](data/offset.md) and [keyset](data/keyset.md) docs.
 
 | Types  | Default                |
 |--------|------------------------|
 | string | `"{{response.items}}"` |
-
-### Examples:
-
-1) Pagination information in the headers
-
-```json
-[
-    {
-        "response": {
-            "type": "data",
-            "headers": {
-                "X-Pagination-Total-Count": "{{response.pagination.totalItems}}",
-                "X-Pagination-Current-Page": "{{response.pagination.currentPage}}",
-                "X-Pagination-Page-Count": "{{response.pagination.totalPages}}",
-                "X-Pagination-Per-Page": "{{response.pagination.pageSize}}"
-            },
-            "file": "/app/mocks/__data/file.json",
-            "result": "{{response.items}}"
-        }
-    }
-]
-```
-
-Response headers:
-
-```
-content-type: application/json
-x-pagination-current-page: 2
-x-pagination-page-count: 16
-x-pagination-per-page: 2
-x-pagination-total-count: 32
-```
-
-Response body:
-
-```json
-[
-    {
-        "id": "27b803dc-ceda-36f7-af87-5fbe2055ec0f",
-        "name": "Danielle Lebsack"
-    },
-    {
-        "id": "ee6e4d31-f6b2-3aad-a636-6e941ffbaa94",
-        "name": "Dr. Verona Satterfield"
-    }
-]
-```
-
-2) Pagination information in the response data
-
-```json
-[
-    {
-        "response": {
-            "type": "data",
-            "file": "/app/mocks/__data/file.json",
-            "result": {
-                "data": "{{response.items}}",
-                "pagination": "{{response.pagination}}"
-            }
-        }
-    }
-]
-```
-
-Response body:
-
-```json
-{
-    "data": [
-        {
-            "id": "27b803dc-ceda-36f7-af87-5fbe2055ec0f",
-            "name": "Danielle Lebsack"
-        },
-        {
-            "id": "ee6e4d31-f6b2-3aad-a636-6e941ffbaa94",
-            "name": "Dr. Verona Satterfield"
-        }
-    ],
-    "pagination": {
-        "totalItems": 32,
-        "currentPage": 2,
-        "totalPages": 16,
-        "pageSize": 2
-    }
-}
-```
-

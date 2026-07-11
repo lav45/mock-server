@@ -146,19 +146,6 @@ final class DataBuilder
         return $url;
     }
 
-    public function createItems(): array
-    {
-        if (isset($this->data['file'])) {
-            $content = \file_get_contents(
-                $this->resolve($this->data['file']),
-            );
-            $items = \json_decode($content, associative: true, flags: JSON_THROW_ON_ERROR);
-        } else {
-            $items = $this->data['items'] ?? [];
-        }
-        return $this->resolve($items);
-    }
-
     public function createMethod(): HttpMethod
     {
         if (isset($this->data['method'])) {

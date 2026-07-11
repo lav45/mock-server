@@ -1,0 +1,83 @@
+[
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/data/keyset"
+        },
+        "response": {
+            "type": "data",
+            "pagination": {
+                "type": "keyset",
+                "primaryKey": "id",
+                "defaultPageSize": 2
+            },
+            "items": [
+                {"id": "e"},
+                {"id": "f"},
+                {"id": "d"},
+                {"id": "b"},
+                {"id": "c"},
+                {"id": "a"}
+            ],
+            "result": {
+                "data": "{{response.items}}",
+                "pagination": "{{response.pagination}}"
+            }
+        }
+    },
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/data/keyset-config"
+        },
+        "response": {
+            "type": "data",
+            "pagination": {
+                "type": "keyset",
+                "primaryKey": "uuid",
+                "afterParam": "cursor",
+                "beforeParam": "back",
+                "limitParam": "size"
+            },
+            "items": [
+                {"uuid": "u2", "name": "Alice"},
+                {"uuid": "u3", "name": "Bob"},
+                {"uuid": "u1", "name": "Charlie"}
+            ],
+            "result": {
+                "data": "{{response.items}}",
+                "pagination": "{{response.pagination}}"
+            }
+        }
+    },
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/data/keyset-headers"
+        },
+        "response": {
+            "type": "data",
+            "headers": {
+                "X-Next-Cursor": "{response.pagination.next}",
+                "X-Prev-Cursor": "{response.pagination.prev}",
+                "X-Has-Next": "{response.pagination.hasNext}",
+                "X-Has-Prev": "{response.pagination.hasPrev}",
+                "X-Page-Size": "{response.pagination.pageSize}"
+            },
+            "pagination": {
+                "type": "keyset",
+                "primaryKey": "id",
+                "defaultPageSize": 2
+            },
+            "items": [
+                {"id": "e"},
+                {"id": "f"},
+                {"id": "d"},
+                {"id": "b"},
+                {"id": "c"},
+                {"id": "a"}
+            ],
+            "result": "{{response.items}}"
+        }
+    }
+]

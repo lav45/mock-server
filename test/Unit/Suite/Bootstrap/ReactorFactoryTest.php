@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ReactorFactoryTest extends TestCase
 {
-    private const string SCHEMA_PATH = __DIR__ . '/../../../../schema/mock.schema.json';
+    private string $schemaPath = __DIR__ . '/../../../../schema/mock.schema.json';
 
     private string $mocksPath;
 
@@ -201,7 +201,7 @@ final class ReactorFactoryTest extends TestCase
     {
         $this->writeMock(['audit' => ['actor' => 'system']]);
 
-        $reactor = $this->createReactor(schema: self::SCHEMA_PATH);
+        $reactor = $this->createReactor(schema: $this->schemaPath);
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
 
         $this->assertSame(404, $response->getStatus());
@@ -209,7 +209,7 @@ final class ReactorFactoryTest extends TestCase
 
     public function testSchemaAcceptsValidMock(): void
     {
-        $reactor = $this->createReactor(schema: self::SCHEMA_PATH);
+        $reactor = $this->createReactor(schema: $this->schemaPath);
         $response = $reactor->handleRequest(new FakeServerRequest('GET', 'https://localhost/ping'));
 
         $this->assertSame(201, $response->getStatus());

@@ -158,43 +158,4 @@ final class DataBuilderTest extends TestCase
         ];
     }
 
-    #[DataProvider('createItemsDataProvider')]
-    public function testCreateItems(array $data, array $expected): void
-    {
-        $items = new DataBuilder()->withData($data)->createItems();
-        $this->assertSame($expected, $items);
-    }
-
-    public static function createItemsDataProvider(): array
-    {
-        return [
-            'default' => [[], []],
-            'data list' => [
-                ['items' => [
-                    ['id' => 1],
-                    ['id' => 2],
-                ]],
-                [
-                    ['id' => 1],
-                    ['id' => 2],
-                ],
-            ],
-        ];
-    }
-
-    public function testCreateItemsFromFile(): void
-    {
-        $items = [['id' => 1], ['id' => 2]];
-        $tempFile = \sys_get_temp_dir() . '/test_items_' . \uniqid('', true) . '.json';
-        \file_put_contents($tempFile, \json_encode($items, JSON_THROW_ON_ERROR));
-
-        try {
-            $result = new DataBuilder()->withData(['file' => $tempFile])->createItems();
-            $this->assertSame($items, $result);
-        } finally {
-            if (\file_exists($tempFile)) {
-                \unlink($tempFile);
-            }
-        }
-    }
 }

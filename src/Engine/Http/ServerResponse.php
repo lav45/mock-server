@@ -6,7 +6,7 @@ use Lav45\MockServer\Domain\ValueObject\Body;
 
 final class ServerResponse
 {
-    private const array REASON_PHRASES = [
+    private array $reasonPhrases = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -52,7 +52,7 @@ final class ServerResponse
         private array $headers = [],
         Body|null     $body = null,
     ) {
-        $this->reason = self::REASON_PHRASES[$status] ?? '';
+        $this->reason = $this->reasonPhrases[$status] ?? '';
         $this->body = $body ?? Body::new('');
     }
 
@@ -64,7 +64,7 @@ final class ServerResponse
     public function setStatus(int $status, string|null $reason = null): void
     {
         $this->status = $status;
-        $this->reason = $reason ?? self::REASON_PHRASES[$status] ?? '';
+        $this->reason = $reason ?? $this->reasonPhrases[$status] ?? '';
     }
 
     public function getReason(): string

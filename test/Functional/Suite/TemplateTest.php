@@ -14,7 +14,7 @@ class TemplateTest extends TestCase
 {
     private const string API_KEY = 'e71ad173-dacf-493c-be55-643074fdf41c';
     private const string CHANNEL = 'c70d6033-7edc-49f8-b609-e361739e994e';
-    private const string UUID_PATTERN = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
+    private string $uuidPattern = '~^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$~';
 
     private HttpClient $HttpClient;
 
@@ -43,7 +43,7 @@ class TemplateTest extends TestCase
         $this->assertSame('application/json', $response->getHeaders()['content-type'][0]);
 
         $body = \json_decode($response->getBody()->stream->read(), true, flags: JSON_THROW_ON_ERROR);
-        $this->assertMatchesRegularExpression(self::UUID_PATTERN, $body['id']);
+        $this->assertMatchesRegularExpression($this->uuidPattern, $body['id']);
         $this->assertIsInt($body['createdAt']);
 
         delay(0.2);

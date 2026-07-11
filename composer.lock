@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1297deec16695530158540a14fa20c14",
+    "content-hash": "8ca83716181d8954b8772e97e3b024a2",
     "packages": [
         {
             "name": "amphp/amp",
@@ -2978,31 +2978,39 @@
         },
         {
             "name": "yiisoft/data",
-            "version": "1.0.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/data.git",
-                "reference": "ac1b7726cdc04164d625e42376551ae31cfd4d61"
+                "reference": "12c4127fa6c2cd2c144212f841e01ab95c5a7796"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/data/zipball/ac1b7726cdc04164d625e42376551ae31cfd4d61",
-                "reference": "ac1b7726cdc04164d625e42376551ae31cfd4d61",
+                "url": "https://api.github.com/repos/yiisoft/data/zipball/12c4127fa6c2cd2c144212f841e01ab95c5a7796",
+                "reference": "12c4127fa6c2cd2c144212f841e01ab95c5a7796",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.0",
+                "ext-mbstring": "*",
+                "php": "8.1 - 8.5",
                 "yiisoft/arrays": "^3.0"
             },
             "require-dev": {
-                "maglnet/composer-require-checker": "^4.2",
-                "phpunit/phpunit": "^9.5",
-                "rector/rector": "^0.15.0",
-                "roave/infection-static-analysis-plugin": "^1.25",
-                "spatie/phpunit-watcher": "^1.23",
-                "vimeo/psalm": "^4.26|^5.4"
+                "bamarni/composer-bin-plugin": "^1.8.3",
+                "friendsofphp/php-cs-fixer": "^3.91.3",
+                "maglnet/composer-require-checker": "^4.7.1",
+                "phpunit/phpunit": "^10.5.60",
+                "rector/rector": "^2.2.14",
+                "spatie/phpunit-watcher": "^1.24"
             },
             "type": "library",
+            "extra": {
+                "bamarni-bin": {
+                    "bin-links": true,
+                    "forward-command": true,
+                    "target-directory": "tools"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Yiisoft\\Data\\": "src"
@@ -3025,7 +3033,7 @@
             "support": {
                 "chat": "https://t.me/yii3en",
                 "forum": "https://www.yiiframework.com/forum/",
-                "irc": "irc://irc.freenode.net/yii",
+                "irc": "ircs://irc.libera.chat:6697/yii",
                 "issues": "https://github.com/yiisoft/data/issues?state=open",
                 "source": "https://github.com/yiisoft/data",
                 "wiki": "https://www.yiiframework.com/wiki/"
@@ -3040,7 +3048,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2023-01-25T17:12:56+00:00"
+            "time": "2025-12-13T15:25:47+00:00"
         },
         {
             "name": "yiisoft/strings",

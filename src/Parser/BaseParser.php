@@ -32,6 +32,16 @@ final readonly class BaseParser
         if ($matches) {
             return $value($matches);
         }
-        return \preg_replace_callback('/({\s*' . $this->pattern . '\s*})/iu', $value, $item);
+        return \preg_replace_callback(
+            '/({\s*' . $this->pattern . '\s*})/iu',
+            static function (array $matches) use ($value): string {
+                $result = $value($matches);
+                if (\is_bool($result)) {
+                    return \var_export($result, true);
+                }
+                return (string)$result;
+            },
+            $item,
+        );
     }
 }
