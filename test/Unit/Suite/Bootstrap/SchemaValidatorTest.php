@@ -91,6 +91,16 @@ final class SchemaValidatorTest extends TestCase
                     ['delay' => 1, 'method' => 'POST', 'url' => 'https://api.site.com/hook', 'headers' => ['X-Api' => 'token'], 'body' => ['ping' => true]],
                 ],
             ]],
+            'webhook with template' => [[
+                'webhooks' => [
+                    ['delay' => 0.1, 'headers' => ['x-request-id' => '{{request.headers.x-request-id}}'], '$template.hook' => ['type' => 'create']],
+                ],
+            ]],
+            'webhook with url and template' => [[
+                'webhooks' => [
+                    ['url' => 'https://api.site.com/hook', '$template.hook' => []],
+                ],
+            ]],
             'conditions comparison' => [[
                 'conditions' => [
                     ['match' => ['>', '{{request.body.amount}}', 1000], 'response' => ['status' => 402, 'body' => ['error' => 'limit']]],
@@ -138,7 +148,9 @@ final class SchemaValidatorTest extends TestCase
             'proxy without url' => [['response' => ['type' => 'proxy']]],
             'proxy with status' => [['response' => ['type' => 'proxy', 'url' => 'http://x', 'status' => 200]]],
             'webhook without url' => [['webhooks' => [['method' => 'POST']]]],
+            'webhook with neither url nor template' => [['webhooks' => [['delay' => 0.1]]]],
             'webhook unknown field' => [['webhooks' => [['url' => 'http://x', 'retries' => 3]]]],
+            'webhook unknown field with template' => [['webhooks' => [['$template.hook' => [], 'retries' => 3]]]],
             'direct without url' => [['direct' => ['headers' => ['X-A' => 'b']]]],
             'condition without response' => [['conditions' => [['match' => ['exists', '{{x}}']]]]],
             'condition without match' => [['conditions' => [['response' => ['body' => 'x']]]]],

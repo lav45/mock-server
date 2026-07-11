@@ -34,6 +34,7 @@ webhooks, and automatic reloading of mock files.
   response
 - [WebHooks](docs/extension/application/webhooks.md)
 - [Direct](docs/extension/application/direct.md) - Delegate response generation to a remote server
+- [Template](docs/extension/application/template.md) - Reusable response/webhook templates referenced via `$template.<name>` (disabled by default)
 - [CORS](docs/extension/system/cors.md) - CORS headers on every response (disabled by default)
 - [TLS/SSL](docs/tls.md) - Serve HTTPS alongside the plain HTTP port (disabled by default)
 - [Custom Extensions](docs/extension.md) - Add your own HTTP middleware to the request/response pipeline

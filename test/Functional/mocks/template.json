@@ -1,0 +1,45 @@
+[
+    {
+        "version": 8,
+        "env": {
+            "data": {
+                "id": "{{faker.uuid}}",
+                "createdAt": "{{date.getTimestamp()}}"
+            }
+        },
+        "request": {
+            "method": "POST",
+            "path": "/v1/order"
+        },
+        "response": {
+            "$template.order_response": {
+                "data": "{{env.data}}"
+            }
+        },
+        "webhooks": [
+            {
+                "headers": {
+                    "x-request-id": "{{request.headers.x-request-id}}"
+                },
+                "$template.order_websocket": {
+                    "type": "create_order",
+                    "data": "{{env.data}}"
+                }
+            }
+        ]
+    },
+    {
+        "request": {
+            "method": "GET",
+            "path": "/v1/status"
+        },
+        "response": {
+            "$template.content_response": {
+                "data": {
+                    "status": "ok",
+                    "code": 200
+                }
+            }
+        }
+    }
+]

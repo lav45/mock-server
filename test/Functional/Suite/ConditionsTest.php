@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
+use Lav45\MockServer\Test\Functional\Components\WebHookStorage;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
@@ -13,9 +14,12 @@ class ConditionsTest extends TestCase
 {
     private HttpClient $HttpClient;
 
+    private WebHookStorage $webHookStorage;
+
     protected function setUp(): void
     {
         $this->HttpClient = new HttpClientFactory()->create();
+        $this->webHookStorage = new WebHookStorage($this->HttpClient);
     }
 
     /**
@@ -170,7 +174,7 @@ class ConditionsTest extends TestCase
 
     public function testWebhookOverride(): void
     {
-        $this->clearStorage();
+        $this->webHookStorage->clear();
 
         $result = $this->postJson(MOCK_SERVER_URL . '/conditions/webhooks/override', ['ping' => true]);
         $this->assertSame(['result' => 'override'], $result['body']);
@@ -181,7 +185,7 @@ class ConditionsTest extends TestCase
 
     public function testWebhookSuppress(): void
     {
-        $this->clearStorage();
+        $this->webHookStorage->clear();
 
         $result = $this->postJson(MOCK_SERVER_URL . '/conditions/webhooks/suppress', ['ping' => true]);
         $this->assertSame(['result' => 'suppress'], $result['body']);
@@ -192,7 +196,7 @@ class ConditionsTest extends TestCase
 
     public function testWebhookFallback(): void
     {
-        $this->clearStorage();
+        $this->webHookStorage->clear();
 
         $result = $this->postJson(MOCK_SERVER_URL . '/conditions/webhooks/other', ['ping' => true]);
         $this->assertSame(['result' => 'fallback'], $result['body']);
@@ -209,44 +213,12 @@ class ConditionsTest extends TestCase
     private function capturedCases(): array
     {
         $cases = [];
-        foreach ($this->getStorageData() as $webhook) {
+        foreach ($this->webHookStorage->getData() as $webhook) {
             $query = Uri::new($webhook['url'])->getQuery();
             if ($query !== null && \str_starts_with($query, 'case=')) {
                 $cases[] = $query;
             }
         }
         return $cases;
-    }
-
-    private function clearStorage(): void
-    {
-        $this->HttpClient->request($this->storageUrl(), 'DELETE');
-    }
-
-    private function getStorageData(): array
-    {
-        $url = $this->storageUrl();
-        $response = $this->HttpClient->request($url);
-        $content = $response->getBody()->stream->read();
-        $this->HttpClient->request($url, 'DELETE');
-
-        $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
-        $items = \array_reverse($items);
-
-        $result = [];
-        foreach ($items as $item) {
-            $request = \base64_decode($item['request_payload_base64'], true);
-            if (\json_validate($request)) {
-                $request = \json_decode($request, true, flags: JSON_THROW_ON_ERROR);
-            }
-            $item['request'] = $request;
-            $result[] = $item;
-        }
-        return $result;
-    }
-
-    private function storageUrl(): string
-    {
-        return \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
     }
 }

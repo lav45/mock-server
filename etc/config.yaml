@@ -39,6 +39,17 @@ extensions:
 #      maxAge: 86400
   - class: Lav45\MockServer\Extension\Condition\ConditionExtension
   - class: Lav45\MockServer\Extension\Direct\DirectExtension
+# Reusable response/webhook templates. A mock references a template via a `$template.<name>` key
+# (at any nesting level); its value is passed as parameters (available in the body as {{template.*}}),
+# sibling keys are merged on top with mock priority. An unknown `$template.<name>` fails the request.
+#  - class: Lav45\MockServer\Extension\Template\TemplateExtension
+#    config:
+#      template:
+#        content_response:
+#          type: "content"
+#          headers:
+#            content-type: "application/json"
+#          body: "{{template.data}}"
   - class: Lav45\MockServer\Extension\WebHook\WebHookExtension
   - class: Lav45\MockServer\Extension\Throttling\ThrottlingExtension
   - class: Lav45\MockServer\Extension\Content\ContentExtension

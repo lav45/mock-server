@@ -5,6 +5,7 @@ namespace Lav45\MockServer\Test\Functional\Suite\Response;
 use Amp\Http\Client\Form;
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
+use Lav45\MockServer\Test\Functional\Components\WebHookStorage;
 use League\Uri\Uri;
 use PHPUnit\Framework\TestCase;
 
@@ -12,9 +13,12 @@ class ProxyTest extends TestCase
 {
     private HttpClient $HttpClient;
 
+    private WebHookStorage $webHookStorage;
+
     protected function setUp(): void
     {
         $this->HttpClient = new HttpClientFactory()->create();
+        $this->webHookStorage = new WebHookStorage($this->HttpClient);
     }
 
     public function testPost(): void
@@ -29,7 +33,7 @@ class ProxyTest extends TestCase
         );
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
@@ -47,7 +51,7 @@ class ProxyTest extends TestCase
         );
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('GET', $content[0]['method']);
         $this->assertEquals('id=100', Uri::new($content[0]['url'])->getQuery());
@@ -55,29 +59,6 @@ class ProxyTest extends TestCase
 
         $this->assertContains(['name' => 'Content-Type', 'value' => 'application/json'], $content[0]['headers']);
         $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
-    }
-
-    private function getStorageData(): array
-    {
-        $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
-        $response = $this->HttpClient->request($url);
-        $this->assertEquals(200, $response->getStatus());
-        $content = $response->getBody()->stream->read();
-        $this->HttpClient->request($url, 'DELETE');
-
-        $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
-        $items = \array_reverse($items);
-
-        $result = [];
-        foreach ($items as $item) {
-            $request = \base64_decode($item['request_payload_base64'], true);
-            if (\json_validate($request)) {
-                $request = \json_decode($request, true, flags: JSON_THROW_ON_ERROR);
-            }
-            $item['request'] = $request;
-            $result[] = $item;
-        }
-        return $result;
     }
 
     public function testArrayContent(): void
@@ -92,7 +73,7 @@ class ProxyTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertEquals('n=1', Uri::new($content[0]['url'])->getQuery());
@@ -119,7 +100,7 @@ class ProxyTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
@@ -142,7 +123,7 @@ class ProxyTest extends TestCase
         $headers = $response->getHeaders();
         $this->assertArrayHasKey('x-wh-request-id', $headers);
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());
@@ -182,7 +163,7 @@ class ProxyTest extends TestCase
         );
         $this->assertEquals(200, $response->getStatus());
 
-        $content = $this->getStorageData();
+        $content = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $content[0]['method']);
         $this->assertNull(Uri::new($content[0]['url'])->getQuery());

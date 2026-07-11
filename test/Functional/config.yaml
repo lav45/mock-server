@@ -17,8 +17,37 @@ extensions:
       maxAge: 86400
   - class: Lav45\MockServer\Extension\Condition\ConditionExtension
   - class: Lav45\MockServer\Extension\Direct\DirectExtension
+  - class: Lav45\MockServer\Extension\Template\TemplateExtension
+    config:
+      template:
+        content_response:
+          type: "content"
+          headers:
+            content-type: "application/json"
+          body: "{{template.data}}"
+        order_response:
+          type: "content"
+          headers:
+            content-type: "application/json"
+          body: "{{template.data}}"
+        order_websocket:
+          url: "{env.WEBHOOK_STORAGE_URL}/centrifugo/api/publish"
+          method: POST
+          headers:
+            X-API-Key: "{env.CENTRIFUGO_API_KEY}"
+            X-Centrifugo-Error-Mode: "transport"
+            content-type: "application/json"
+          body:
+            channel: "{env.CENTRIFUGO_CHANNEL}"
+            data:
+              type: "{template.type}"
+              data: "{{template.data}}"
   - class: Lav45\MockServer\Extension\WebHook\WebHookExtension
   - class: Lav45\MockServer\Extension\Throttling\ThrottlingExtension
   - class: Lav45\MockServer\Extension\Content\ContentExtension
   - class: Lav45\MockServer\Extension\Proxy\ProxyExtension
   - class: Lav45\MockServer\Extension\Collection\CollectionExtension
+
+env:
+  CENTRIFUGO_API_KEY: e71ad173-dacf-493c-be55-643074fdf41c
+  CENTRIFUGO_CHANNEL: c70d6033-7edc-49f8-b609-e361739e994e

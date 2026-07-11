@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Functional\Suite;
 
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
+use Lav45\MockServer\Test\Functional\Components\WebHookStorage;
 use PHPUnit\Framework\TestCase;
 
 use function Amp\delay;
@@ -12,9 +13,12 @@ final class DirectTest extends TestCase
 {
     private HttpClient $HttpClient;
 
+    private WebHookStorage $webHookStorage;
+
     protected function setUp(): void
     {
         $this->HttpClient = new HttpClientFactory()->create();
+        $this->webHookStorage = new WebHookStorage($this->HttpClient);
     }
 
     public function testRequest(): void
@@ -51,7 +55,7 @@ final class DirectTest extends TestCase
 
         delay(0.1);
 
-        $webhooks = $this->getStorageData();
+        $webhooks = $this->webHookStorage->getData();
 
         $this->assertEquals('POST', $webhooks[0]['method']);
         $this->assertEmpty($webhooks[0]['request']);
@@ -61,26 +65,4 @@ final class DirectTest extends TestCase
         $this->assertNotEmpty($webhooks[1]['request']['name']);
     }
 
-    private function getStorageData(): array
-    {
-        $url = \sprintf('%s/api/session/%s/requests', WEBHOOK_CATCHER_URL, WEBHOOK_CATCHER_SESSION_ID);
-        $response = $this->HttpClient->request($url);
-        $this->assertEquals(200, $response->getStatus());
-        $content = $response->getBody()->stream->read();
-        $this->HttpClient->request($url, 'DELETE');
-
-        $items = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
-        $items = \array_reverse($items);
-
-        $result = [];
-        foreach ($items as $item) {
-            $request = \base64_decode($item['request_payload_base64'], true);
-            if (\json_validate($request)) {
-                $request = \json_decode($request, true, flags: JSON_THROW_ON_ERROR);
-            }
-            $item['request'] = $request;
-            $result[] = $item;
-        }
-        return $result;
-    }
 }

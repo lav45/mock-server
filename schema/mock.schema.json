@@ -57,6 +57,7 @@
         "contentResponse": {
             "type": "object",
             "additionalProperties": false,
+            "patternProperties": {"^\\$template\\.": true},
             "properties": {
                 "type": {"const": "content"},
                 "status": {"$ref": "#/$defs/status"},
@@ -68,6 +69,7 @@
         "proxyResponse": {
             "type": "object",
             "additionalProperties": false,
+            "patternProperties": {"^\\$template\\.": true},
             "required": ["url"],
             "properties": {
                 "type": {"const": "proxy"},
@@ -80,6 +82,7 @@
         "dataResponse": {
             "type": "object",
             "additionalProperties": false,
+            "patternProperties": {"^\\$template\\.": true},
             "properties": {
                 "type": {"const": "data"},
                 "status": {"$ref": "#/$defs/status"},
@@ -117,14 +120,18 @@
         "webhook": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["url"],
+            "patternProperties": {"^\\$template\\.": true},
             "properties": {
                 "delay": {"$ref": "#/$defs/delay"},
                 "method": {"type": "string"},
                 "url": {"type": "string"},
                 "headers": {"$ref": "#/$defs/headers"},
                 "body": true
-            }
+            },
+            "anyOf": [
+                {"required": ["url"]},
+                {"not": {"patternProperties": {"^\\$template\\.": false}}}
+            ]
         },
         "condition": {
             "type": "object",
