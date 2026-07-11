@@ -45,6 +45,7 @@ final readonly class ReactorFactory
     {
         $parser = new ParserFactory($this->locale)->create()
             ->withData(['env' => $this->env]);
+
         $dataBuilder = new DataBuilder($this->filterHeaders);
 
         $mocks = new MockStorage($this->mocksPath, $this->logger)->getData();

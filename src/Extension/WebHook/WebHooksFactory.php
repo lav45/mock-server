@@ -16,7 +16,7 @@ final readonly class WebHooksFactory
 
     public function has(array $data): bool
     {
-        return isset($data[self::TYPE]);
+        return isset($data[self::TYPE]) && $data[self::TYPE];
     }
 
     public function create(array $data): WebHooks

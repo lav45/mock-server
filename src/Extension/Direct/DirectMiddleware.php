@@ -22,11 +22,9 @@ final readonly class DirectMiddleware implements Middleware
             return $next->handleRequest($request);
         }
 
-        $dataInjector = $this->handler->request(
+        $data = $this->handler->request(
             $this->factory->create($request, $data),
-        );
-
-        $data = $dataInjector->replace($data);
+        )->replace($data);
 
         /** @var InlineParser $parser */
         $parser = $request->getAttribute('parser');

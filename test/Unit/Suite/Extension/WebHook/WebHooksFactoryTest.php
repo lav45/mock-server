@@ -23,7 +23,12 @@ final class WebHooksFactoryTest extends TestCase
 
     public function testHasMatchesWhenWebhooksKeyPresent(): void
     {
-        $this->assertTrue(new WebHooksFactory(new DataBuilder())->has(['webhooks' => []]));
+        $this->assertTrue(new WebHooksFactory(new DataBuilder())->has(['webhooks' => [['url' => 'https://api.site.com/hook']]]));
+    }
+
+    public function testHasDoesNotMatchWhenWebhooksIsEmpty(): void
+    {
+        $this->assertFalse(new WebHooksFactory(new DataBuilder())->has(['webhooks' => []]));
     }
 
     public function testHasDoesNotMatchWhenWebhooksKeyMissing(): void
