@@ -1,0 +1,51 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/lav45/mock-server/schema/config.schema.json",
+    "title": "Mock Server config",
+    "description": "Schema for the server config file (etc/config.yaml or the file pointed to by CONFIG_PATH).",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "port": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "mocksPath": {"type": "string"},
+        "locale": {"type": "string"},
+        "logLevel": {"$ref": "#/$defs/logLevel"},
+        "filterHeaders": {"$ref": "#/$defs/stringOrList"},
+        "maxBufferSize": {"type": "integer", "minimum": 1},
+        "schema": {"type": "string"},
+        "tls": {"$ref": "#/$defs/tls"},
+        "extensions": {"type": "array", "items": {"$ref": "#/$defs/extension"}}
+    },
+    "$defs": {
+        "stringOrList": {
+            "oneOf": [
+                {"type": "string"},
+                {"type": "array", "items": {"type": "string"}}
+            ]
+        },
+        "logLevel": {
+            "enum": ["debug", "info", "notice", "warning", "error", "critical", "alert", "emergency"]
+        },
+        "tls": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["cert"],
+            "properties": {
+                "port": {"type": "integer", "minimum": 0, "maximum": 65535},
+                "cert": {"type": "string"},
+                "key": {"type": "string"},
+                "passphrase": {"type": ["string", "null"]}
+            }
+        },
+        "extension": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["class"],
+            "properties": {
+                "class": {"type": "string"},
+                "schema": {"type": "string"},
+                "config": {"type": "object"}
+            }
+        }
+    }
+}

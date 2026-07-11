@@ -4,6 +4,8 @@ namespace Lav45\MockServer\Driver;
 
 use Lav45\MockServer\Extension\Extension;
 use Monolog\Level;
+use Opis\JsonSchema\Errors\ErrorFormatter;
+use Opis\JsonSchema\Validator;
 use Symfony\Component\Yaml\Yaml;
 
 final class Config
@@ -49,6 +51,8 @@ final class Config
             throw new \InvalidArgumentException('Invalid config file');
         }
 
+        self::validateSchema($data);
+
         return $config
             ->port($data['port'] ?? false)
             ->mocks($data['mocksPath'] ?? false)
@@ -59,6 +63,34 @@ final class Config
             ->maxBufferSize($data['maxBufferSize'] ?? false)
             ->tls($data['tls'] ?? false)
             ->extensions($data['extensions'] ?? []);
+    }
+
+    private static function validateSchema(array $data): void
+    {
+        $schema = \json_decode(
+            \file_get_contents(__DIR__ . '/../../schema/config.schema.json'),
+            associative: false,
+            flags: JSON_THROW_ON_ERROR,
+        );
+
+        $payload = $data === []
+            ? new \stdClass()
+            : \json_decode(
+                \json_encode($data, JSON_THROW_ON_ERROR),
+                associative: false,
+                flags: JSON_THROW_ON_ERROR,
+            );
+
+        $result = new Validator()->validate($payload, $schema);
+        if ($result->isValid()) {
+            return;
+        }
+
+        $errors = new ErrorFormatter()->formatKeyed($result->error());
+        throw new \InvalidArgumentException(
+            "Config does not match schema:\n"
+            . \json_encode($errors, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+        );
     }
 
     public function port(string|int|false $port): self

@@ -266,6 +266,48 @@ final class ConfigTest extends TestCase
         }
     }
 
+    public function testFromFileAcceptsEmptyFile(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, '');
+
+        try {
+            $config = Config::fromFile($path);
+            $this->assertSame(8080, $config->getPort());
+            $this->assertSame([], $config->getExtensions());
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testFromFileThrowsForUnknownKey(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "port: 8080\nunknownKey: 1\n");
+
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessageIsOrContains('Config does not match schema');
+            Config::fromFile($path);
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    public function testFromFileThrowsForInvalidType(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "port: not-a-number\n");
+
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessageIsOrContains('Config does not match schema');
+            Config::fromFile($path);
+        } finally {
+            \unlink($path);
+        }
+    }
+
     public function testExtensionsThrowsWhenClassMissing(): void
     {
         $this->expectException(\InvalidArgumentException::class);
