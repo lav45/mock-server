@@ -86,6 +86,26 @@ final class DataBuilderTest extends TestCase
         $this->assertSame(['x-public' => 'visible'], $headers->toArray());
     }
 
+    public function testCreateHeadersWithJsonAddsContentType(): void
+    {
+        $headers = new DataBuilder()->createHeaders(withJson: true);
+        $this->assertSame(['content-type' => 'application/json'], $headers->toArray());
+    }
+
+    public function testCreateHeadersWithJsonKeepsExistingContentType(): void
+    {
+        $headers = new DataBuilder()->withData([
+            'headers' => ['content-type' => 'text/plain'],
+        ])->createHeaders(withJson: true);
+        $this->assertSame(['content-type' => 'text/plain'], $headers->toArray());
+    }
+
+    public function testCreateHeadersWithoutJsonDoesNotAddContentType(): void
+    {
+        $headers = new DataBuilder()->createHeaders(withJson: false);
+        $this->assertSame([], $headers->toArray());
+    }
+
     public function testCreateBodyContentDefaultsToEmpty(): void
     {
         $body = new DataBuilder()->createBodyContent();

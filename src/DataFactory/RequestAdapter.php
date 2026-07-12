@@ -24,14 +24,9 @@ final readonly class RequestAdapter
         );
     }
 
-    public function getBody(): string
-    {
-        return $this->request->getBody();
-    }
-
     public function getData(): array
     {
-        $body = $this->getBody();
+        $body = $this->request->getBody();
         if (empty($body)) {
             return [];
         }

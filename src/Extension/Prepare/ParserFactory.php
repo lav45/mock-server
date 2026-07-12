@@ -24,7 +24,7 @@ final readonly class ParserFactory
                 'params' => $request->getAttribute('params'),
                 'query' => static fn() => $requestAdapter->getQuery(),
                 'body' => static fn() => $requestAdapter->getData(),
-                'rawBody' => static fn() => $requestAdapter->getBody(),
+                'rawBody' => static fn() => $request->getBody(),
             ],
             'env' => $this->parser->replace($env),
         ]);

@@ -7,7 +7,7 @@ final readonly class OffsetPagination
     public function __construct(
         public string $pageParam,
         public string $pageSizeParam,
-        public int    $defaultPageSize,
+        public int $defaultPageSize,
     ) {}
 
     public static function fromArray(array $data): self

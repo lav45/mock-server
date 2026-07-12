@@ -53,7 +53,7 @@ final readonly class CollectionFactory
         ]);
 
         $factory = $factory->withParser($parser);
-        $headers = $factory->createHeaders(['content-type' => 'application/json']);
+        $headers = $factory->createHeaders(withJson: true);
 
         $result = $data['result'] ?? '{{response.items}}';
         $result = $parser->replace($result);

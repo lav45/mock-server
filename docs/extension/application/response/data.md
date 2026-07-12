@@ -43,6 +43,8 @@ Response HTTP headers
 ]
 ```
 
+> **Note:** The response body is always JSON, so `content-type: application/json` is added automatically unless already set.
+
 ## `response.pagination.type`
 
 Pagination strategy. Each strategy has its own parameters, information fields and examples:

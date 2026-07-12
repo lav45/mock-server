@@ -24,6 +24,8 @@ Response HTTP headers
 ]
 ```
 
+> **Note:** When the response body is JSON, `content-type: application/json` is added automatically unless already set.
+
 ## `response.status`
 
 Response HTTP status code

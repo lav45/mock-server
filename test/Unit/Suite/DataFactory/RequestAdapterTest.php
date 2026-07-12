@@ -48,18 +48,6 @@ final class RequestAdapterTest extends TestCase
         $this->assertSame(['text/html', 'application/json'], $adapter->getHeaders()['accept']);
     }
 
-    public function testGetBodyReturnsEmptyByDefault(): void
-    {
-        $adapter = new RequestAdapter($this->createRequest());
-        $this->assertSame('', $adapter->getBody());
-    }
-
-    public function testGetBodyReturnsRequestBody(): void
-    {
-        $adapter = new RequestAdapter($this->createRequest(body: 'raw body content'));
-        $this->assertSame('raw body content', $adapter->getBody());
-    }
-
     public function testGetDataReturnsEmptyForEmptyBody(): void
     {
         $adapter = new RequestAdapter($this->createRequest());

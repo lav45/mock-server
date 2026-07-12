@@ -90,6 +90,8 @@ URL to a remote server
 ]
 ```
 
+> **Note:** When the webhook body is JSON, `content-type: application/json` is added automatically unless already set.
+
 ## `webhooks[0].body`
 
 Request body — plain text string or JSON object/array.
