@@ -64,16 +64,19 @@ RUN composer install --prefer-dist --no-progress --no-dev --ansi
 FROM base AS base-server
 
 RUN <<CMD
-  set -eux
-  echo 'opcache.enable_cli=on' >> /etc/php85/conf.d/00_opcache.ini
-  echo 'opcache.jit=tracing' >> /etc/php85/conf.d/00_opcache.ini
+    set -eux
+    echo 'opcache.enable_cli=on' >> /etc/php85/conf.d/00_opcache.ini
+    echo 'opcache.jit=tracing' >> /etc/php85/conf.d/00_opcache.ini
+
+    mkdir /run/webhook
+    chown 82:82 /run/webhook
 CMD
 
 USER www-data
 
 ENV LOG_LEVEL=info
 
-CMD [ "sh", "-c", "vendor/bin/cluster --pid-file /tmp/cluster.pid --log ${LOG_LEVEL} bin/start" ]
+CMD [ "sh", "-c", "vendor/bin/cluster --pid-file /run/webhook/cluster.pid --log ${LOG_LEVEL} bin/start" ]
 
 FROM base-server AS server
 
