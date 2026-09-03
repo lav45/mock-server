@@ -25,7 +25,7 @@ getIp() {
 }
 
 DOCKER_ARG='-i'
-if [ -z "$GITHUB_ACTIONS" ]; then
+if [ -t 0 ] && [ -t 1 ]; then
   DOCKER_ARG='-it'
 fi
 

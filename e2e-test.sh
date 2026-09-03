@@ -54,7 +54,7 @@ MOCK_SERVER_TLS_URL=https://$(getIp "test_mock_server")
 while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do sleep 1; done
 
 DOCKER_ARG='-i'
-if [ -z "$GITHUB_ACTIONS" ]; then
+if [ -t 0 ] && [ -t 1 ]; then
   DOCKER_ARG='-it'
 fi
 
