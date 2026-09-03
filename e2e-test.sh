@@ -66,7 +66,7 @@ docker run --rm --init $DOCKER_ARG \
   -e WEBHOOK_CATCHER_SESSION_ID="$WEBHOOK_CATCHER_SESSION_ID" \
   --entrypoint composer \
   --name test_runner \
-  mock-server:tool phpunit -- --do-not-cache-result "${1:-test/Functional}" || true
+  mock-server:tool phpunit -- --do-not-record-test-run-history "${1:-test/Functional}" || true
 
 docker stop test_mock_server > /dev/null
 docker stop test_webhook_catcher > /dev/null
