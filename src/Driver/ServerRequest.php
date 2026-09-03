@@ -62,6 +62,14 @@ final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
         return $this->body;
     }
 
+    public function drainBody(): void
+    {
+        if ($this->body !== null) {
+            return;
+        }
+        $this->request->getBody()->close();
+    }
+
     public function setAttribute(string $name, mixed $value): void
     {
         $this->request->setAttribute($name, $value);

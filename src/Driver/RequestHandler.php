@@ -14,7 +14,9 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 
     public function handleRequest(AmpRequest $request): AmpResponse
     {
-        $response = $this->handler->handleRequest(new ServerRequest($request));
+        $serverRequest = new ServerRequest($request);
+
+        $response = $this->handler->handleRequest($serverRequest);
 
         $bodyStream = $response->getBody()->stream;
         $body = $bodyStream instanceof AmpStream
@@ -26,6 +28,8 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
             body: $body,
         );
         $ampResponse->setStatus($response->getStatus(), $response->getReason());
+
+        $serverRequest->drainBody();
 
         return $ampResponse;
     }
