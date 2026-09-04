@@ -3,6 +3,7 @@
 namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
 use Amp\ByteStream\ReadableBuffer;
+use Amp\ByteStream\ReadableIterableStream;
 use Amp\Http\Server\Request as AmpRequest;
 use Amp\Http\Server\RequestBody;
 use Lav45\MockServer\Domain\ValueObject\Body;
@@ -19,9 +20,64 @@ use function Amp\ByteStream\buffer;
 
 final class RequestHandlerTest extends TestCase
 {
-    private function createAmpRequest(string $method = 'GET', string $url = 'https://localhost/'): AmpRequest
+    private function createAmpRequest(
+        string $method = 'GET',
+        string $url = 'https://localhost/',
+        array  $headers = [],
+        string $body = '',
+    ): AmpRequest {
+        $requestBody = new RequestBody(new ReadableIterableStream(\str_split($body, 2)));
+        return new AmpRequest(new FakeHttpDriverClient(), $method, Http::new($url), $headers, $requestBody);
+    }
+
+    public function testHandleRequestRejectsBodyLargerThanTheLimitByContentLength(): void
     {
-        return new AmpRequest(new FakeHttpDriverClient(), $method, Http::new($url), [], new RequestBody(''));
+        $handler = new class implements EngineRequestHandler {
+            public bool $called = false;
+
+            public function handleRequest(ServerRequest $request): ServerResponse
+            {
+                $this->called = true;
+                return new ServerResponse();
+            }
+        };
+
+        $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', ['content-length' => ['1024']]);
+        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 512)->handleRequest($ampRequest);
+
+        $this->assertSame(413, $ampResponse->getStatus());
+        $this->assertFalse($handler->called);
+    }
+
+    public function testHandleRequestRejectsBodyLargerThanTheLimitWithoutContentLength(): void
+    {
+        $handler = new class implements EngineRequestHandler {
+            public function handleRequest(ServerRequest $request): ServerResponse
+            {
+                return new ServerResponse(200, [], Body::new($request->getBody()));
+            }
+        };
+
+        $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', body: 'payload');
+        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 4)->handleRequest($ampRequest);
+
+        $this->assertSame(413, $ampResponse->getStatus());
+    }
+
+    public function testHandleRequestPassesBodyWithinTheLimitToHandler(): void
+    {
+        $handler = new class implements EngineRequestHandler {
+            public function handleRequest(ServerRequest $request): ServerResponse
+            {
+                return new ServerResponse(200, [], Body::new($request->getBody()));
+            }
+        };
+
+        $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', ['content-length' => ['7']], 'payload');
+        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 7)->handleRequest($ampRequest);
+
+        $this->assertSame(200, $ampResponse->getStatus());
+        $this->assertSame('payload', buffer($ampResponse->getBody()));
     }
 
     public function testHandleRequestConvertsEngineResponseToAmpResponse(): void

@@ -2,8 +2,10 @@
 
 namespace Lav45\MockServer\Test\Unit\Suite\Driver;
 
+use Amp\ByteStream\ReadableIterableStream;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestBody;
+use Lav45\MockServer\Driver\RequestBodyTooLargeException;
 use Lav45\MockServer\Driver\ServerRequest;
 use Lav45\MockServer\Test\Unit\Components\FakeHttpDriverClient;
 use League\Uri\Http;
@@ -16,9 +18,32 @@ final class ServerRequestTest extends TestCase
         string $url = 'https://localhost/',
         array  $headers = [],
         string $body = '',
+        int    $maxRequestBodySize = \PHP_INT_MAX,
     ): ServerRequest {
         $request = new Request(new FakeHttpDriverClient(), $method, Http::new($url), $headers, new RequestBody($body));
-        return new ServerRequest($request);
+        return new ServerRequest($request, $maxRequestBodySize);
+    }
+
+    private function createStreamedRequest(string $body, int $maxRequestBodySize): ServerRequest
+    {
+        $requestBody = new RequestBody(new ReadableIterableStream(\str_split($body, 2)));
+        $request = new Request(new FakeHttpDriverClient(), 'POST', Http::new('https://localhost/'), [], $requestBody);
+        return new ServerRequest($request, $maxRequestBodySize);
+    }
+
+    public function testGetBodyThrowsWhenBodyExceedsMaxRequestBodySize(): void
+    {
+        $request = $this->createStreamedRequest('payload', maxRequestBodySize: 4);
+
+        $this->expectException(RequestBodyTooLargeException::class);
+        $request->getBody();
+    }
+
+    public function testGetBodyReturnsBodyOfMaxRequestBodySize(): void
+    {
+        $request = $this->createStreamedRequest('payload', maxRequestBodySize: 7);
+
+        $this->assertSame('payload', $request->getBody());
     }
 
     public function testGetMethod(): void

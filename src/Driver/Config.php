@@ -33,6 +33,8 @@ final class Config
 
     private int $maxBufferSize = 33_554_432;
 
+    private int $maxRequestBodySize = 33_554_432;
+
     private array $env = [];
 
     private Tls|null $tls = null;
@@ -63,6 +65,7 @@ final class Config
             ->filterHeaders($data['filterHeaders'] ?? false)
             ->schema($data['schema'] ?? false)
             ->maxBufferSize($data['maxBufferSize'] ?? false)
+            ->maxRequestBodySize($data['maxRequestBodySize'] ?? false)
             ->env($data['env'] ?? false)
             ->tls($data['tls'] ?? false)
             ->extensions($data['extensions'] ?? []);
@@ -223,6 +226,19 @@ final class Config
     public function getMaxBufferSize(): int
     {
         return $this->maxBufferSize;
+    }
+
+    public function maxRequestBodySize(string|int|false $maxRequestBodySize): self
+    {
+        if (\is_numeric($maxRequestBodySize)) {
+            $this->maxRequestBodySize = (int)$maxRequestBodySize * 1024 * 1024;
+        }
+        return $this;
+    }
+
+    public function getMaxRequestBodySize(): int
+    {
+        return $this->maxRequestBodySize;
     }
 
     public function env(array|false $env): self

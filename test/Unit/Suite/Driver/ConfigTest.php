@@ -35,6 +35,7 @@ final class ConfigTest extends TestCase
             $this->config->getFilterHeaders(),
         );
         $this->assertSame(33_554_432, $this->config->getMaxBufferSize());
+        $this->assertSame(33_554_432, $this->config->getMaxRequestBodySize());
         $this->assertSame([], $this->config->getEnv());
     }
 
@@ -394,6 +395,32 @@ final class ConfigTest extends TestCase
 
         try {
             $this->assertSame(8 * 1024 * 1024, Config::fromFile($path)->getMaxBufferSize());
+        } finally {
+            \unlink($path);
+        }
+    }
+
+    #[DataProvider('maxBufferSizeProvider')]
+    public function testMaxRequestBodySizeConvertsMegabytesToBytes(string|int $megabytes, int $expectedBytes): void
+    {
+        $this->config->maxRequestBodySize($megabytes);
+        $this->assertSame($expectedBytes, $this->config->getMaxRequestBodySize());
+    }
+
+    #[DataProvider('nonNumericMaxBufferSizeProvider')]
+    public function testMaxRequestBodySizeWithNonNumericKeepsDefault(string|false $value): void
+    {
+        $this->config->maxRequestBodySize($value);
+        $this->assertSame(33_554_432, $this->config->getMaxRequestBodySize());
+    }
+
+    public function testFromFileParsesMaxRequestBodySize(): void
+    {
+        $path = \sys_get_temp_dir() . '/config_' . \uniqid('', true) . '.yaml';
+        \file_put_contents($path, "maxRequestBodySize: 4\n");
+
+        try {
+            $this->assertSame(4 * 1024 * 1024, Config::fromFile($path)->getMaxRequestBodySize());
         } finally {
             \unlink($path);
         }

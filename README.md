@@ -93,14 +93,15 @@ docker run --rm -it -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock
 
 ## Environment Variables
 
-| Variable          | Default                                                       | Description                                                                                                               |
-|-------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `PORT`            | `8080`                                                        | Port the server will listen on.                                                                                           |
-| `MOCKS_PATH`      | `/app/mocks`                                                  | Path to the directory containing mock JSON files.                                                                         |
-| `LOCALE`          | `en_US`                                                       | Locale used for Faker data generation.                                                                                    |
-| `LOG_LEVEL`       | `info`                                                        | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`].                          |
-| `FILTER_HEADERS`  | `host,content-length,connection,keep-alive,transfer-encoding` | Comma-separated list of request headers to strip when forwarding the request to a remote server.                          |
-| `MAX_BUFFER_SIZE` | `32`                                                          | Maximum size (in MB) of a proxied/direct response body buffered into memory; a larger body aborts with a BufferException. |
+| Variable                | Default                                                       | Description                                                                                                               |
+|-------------------------|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `PORT`                  | `8080`                                                        | Port the server will listen on.                                                                                           |
+| `MOCKS_PATH`            | `/app/mocks`                                                  | Path to the directory containing mock JSON files.                                                                         |
+| `LOCALE`                | `en_US`                                                       | Locale used for Faker data generation.                                                                                    |
+| `LOG_LEVEL`             | `info`                                                        | Logging level [`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`].                          |
+| `FILTER_HEADERS`        | `host,content-length,connection,keep-alive,transfer-encoding` | Comma-separated list of request headers to strip when forwarding the request to a remote server.                          |
+| `MAX_BUFFER_SIZE`       | `32`                                                          | Maximum size (in MB) of a proxied/direct response body buffered into memory; a larger body aborts with a BufferException. |
+| `MAX_REQUEST_BODY_SIZE` | `32`                                                          | Maximum size (in MB) of an incoming request body; a larger body is rejected with `413 Payload Too Large`.                 |
 
 ## Development
 

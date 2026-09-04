@@ -1,5 +1,7 @@
 schema: /app/schema/mock.schema.json
 
+maxRequestBodySize: 1
+
 tls:
   port: 443
   cert: /app/test/Functional/ssl/cert.pem

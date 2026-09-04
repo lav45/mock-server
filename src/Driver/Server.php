@@ -3,6 +3,7 @@
 namespace Lav45\MockServer\Driver;
 
 use Amp\Cluster\Cluster;
+use Amp\Http\Server\Driver\DefaultHttpDriverFactory;
 use Amp\Http\Server\Driver\SocketClientFactory;
 use Amp\Http\Server\SocketHttpServer;
 use Amp\Socket;
@@ -17,6 +18,7 @@ final class Server
 
     public function __construct(
         private readonly LoggerInterface $logger,
+        private readonly int             $maxRequestBodySize = 33_554_432,
         private readonly ErrorHandler    $errorHandler = new ErrorHandler(),
     ) {}
 
@@ -36,10 +38,16 @@ final class Server
     /** @codeCoverageIgnore */
     public function run(RequestHandler $handler): void
     {
-        $requestHandler = new AmpRequestHandler($handler);
+        $requestHandler = new AmpRequestHandler($handler, $this->maxRequestBodySize, $this->errorHandler);
         $serverSocketFactory = Cluster::getServerSocketFactory();
         $clientFactory = new SocketClientFactory($this->logger);
-        $server = new SocketHttpServer($this->logger, $serverSocketFactory, $clientFactory);
+        $httpDriverFactory = new DefaultHttpDriverFactory($this->logger, bodySizeLimit: \PHP_INT_MAX);
+        $server = new SocketHttpServer(
+            $this->logger,
+            $serverSocketFactory,
+            $clientFactory,
+            httpDriverFactory: $httpDriverFactory,
+        );
         foreach ($this->addresses as [$address, $bindContext]) {
             $server->expose($address, $bindContext);
         }

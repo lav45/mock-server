@@ -2,6 +2,7 @@
 
 namespace Lav45\MockServer\Driver;
 
+use Amp\ByteStream\BufferException;
 use Amp\Http\Server\FormParser;
 use Amp\Http\Server\Request;
 
@@ -11,6 +12,7 @@ final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
 
     public function __construct(
         private readonly Request $request,
+        private readonly int     $maxRequestBodySize = \PHP_INT_MAX,
     ) {}
 
     public function getMethod(): string
@@ -57,7 +59,14 @@ final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
     public function getBody(): string
     {
         if ($this->body === null) {
-            $this->body = $this->request->getBody()->buffer();
+            try {
+                $this->body = $this->request->getBody()->buffer(limit: $this->maxRequestBodySize);
+            } catch (BufferException $exception) {
+                throw new RequestBodyTooLargeException(
+                    "Request body exceeds the limit of {$this->maxRequestBodySize} bytes",
+                    previous: $exception,
+                );
+            }
         }
         return $this->body;
     }
