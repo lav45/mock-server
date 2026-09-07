@@ -11,13 +11,13 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
 {
     public function __construct(
         private EngineRequestHandler $handler,
-        private int                  $maxRequestBodySize = \PHP_INT_MAX,
+        private int                  $maxBufferSize = \PHP_INT_MAX,
         private ErrorHandler         $errorHandler = new ErrorHandler(),
     ) {}
 
     public function handleRequest(AmpRequest $request): AmpResponse
     {
-        $serverRequest = new ServerRequest($request, $this->maxRequestBodySize);
+        $serverRequest = new ServerRequest($request, $this->maxBufferSize);
 
         try {
             $this->assertBodySizeWithinLimit($request);
@@ -46,9 +46,9 @@ final readonly class RequestHandler implements \Amp\Http\Server\RequestHandler
     private function assertBodySizeWithinLimit(AmpRequest $request): void
     {
         $contentLength = $request->getHeader('content-length');
-        if ($contentLength !== null && (int)$contentLength > $this->maxRequestBodySize) {
+        if ($contentLength !== null && (int)$contentLength > $this->maxBufferSize) {
             throw new RequestBodyTooLargeException(
-                "Request body exceeds the limit of {$this->maxRequestBodySize} bytes",
+                "Request body exceeds the limit of {$this->maxBufferSize} bytes",
             );
         }
     }

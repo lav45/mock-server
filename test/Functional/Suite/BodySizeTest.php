@@ -12,7 +12,7 @@ use function Amp\async;
 
 class BodySizeTest extends TestCase
 {
-    private int $maxRequestBodySize = 1024 * 1024;
+    private int $maxBufferSize = 1024 * 1024;
 
     private HttpClient $httpClient;
 
@@ -23,7 +23,7 @@ class BodySizeTest extends TestCase
 
     public function testBodyWithinTheLimitReachesTheMock(): void
     {
-        $name = \str_repeat('a', $this->maxRequestBodySize - 1024);
+        $name = \str_repeat('a', $this->maxBufferSize - 1024);
         $body = \json_encode(['name' => $name], JSON_THROW_ON_ERROR);
 
         $response = $this->request('/body-size/reads-body', $body);
@@ -34,7 +34,7 @@ class BodySizeTest extends TestCase
 
     public function testBodyOverTheLimitIsRejectedWithPayloadTooLarge(): void
     {
-        $name = \str_repeat('a', $this->maxRequestBodySize * 2);
+        $name = \str_repeat('a', $this->maxBufferSize * 2);
         $body = \json_encode(['name' => $name], JSON_THROW_ON_ERROR);
 
         $response = $this->request('/body-size/reads-body', $body);
@@ -44,7 +44,7 @@ class BodySizeTest extends TestCase
 
     public function testBodyOverTheLimitIsRejectedWhenTheMockIgnoresTheBody(): void
     {
-        $body = \str_repeat('a', $this->maxRequestBodySize * 2);
+        $body = \str_repeat('a', $this->maxBufferSize * 2);
 
         $response = $this->request('/body-size/ignores-body', $body);
 

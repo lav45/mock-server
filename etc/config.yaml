@@ -10,13 +10,10 @@ filterHeaders: [host, content-length, connection, keep-alive, transfer-encoding]
 #  DOMAIN: api.server.com
 #  version: 1
 
-# Maximum size (in MB) of a proxied/direct response body buffered into memory.
-# A larger body aborts the request with a BufferException.
+# Maximum size (in MB) of a request/response body buffered into memory.
+# A larger incoming request body is rejected with 413 Payload Too Large;
+# a larger proxied/direct response body aborts the request with a BufferException.
 maxBufferSize: 32
-
-# Maximum size (in MB) of an incoming request body.
-# A larger body is rejected with 413 Payload Too Large.
-maxRequestBodySize: 32
 
 # Path to the JSON Schema used to validate mock files.
 # Comment out to disable validation, or point to your own schema to allow custom keys.

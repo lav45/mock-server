@@ -43,7 +43,7 @@ final class RequestHandlerTest extends TestCase
         };
 
         $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', ['content-length' => ['1024']]);
-        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 512)->handleRequest($ampRequest);
+        $ampResponse = new RequestHandler($handler, maxBufferSize: 512)->handleRequest($ampRequest);
 
         $this->assertSame(413, $ampResponse->getStatus());
         $this->assertFalse($handler->called);
@@ -59,7 +59,7 @@ final class RequestHandlerTest extends TestCase
         };
 
         $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', body: 'payload');
-        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 4)->handleRequest($ampRequest);
+        $ampResponse = new RequestHandler($handler, maxBufferSize: 4)->handleRequest($ampRequest);
 
         $this->assertSame(413, $ampResponse->getStatus());
     }
@@ -74,7 +74,7 @@ final class RequestHandlerTest extends TestCase
         };
 
         $ampRequest = $this->createAmpRequest('POST', 'https://localhost/', ['content-length' => ['7']], 'payload');
-        $ampResponse = new RequestHandler($handler, maxRequestBodySize: 7)->handleRequest($ampRequest);
+        $ampResponse = new RequestHandler($handler, maxBufferSize: 7)->handleRequest($ampRequest);
 
         $this->assertSame(200, $ampResponse->getStatus());
         $this->assertSame('payload', buffer($ampResponse->getBody()));

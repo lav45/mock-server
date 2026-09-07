@@ -18,7 +18,7 @@ final class Server
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly int             $maxRequestBodySize = 33_554_432,
+        private readonly int             $maxBufferSize = 33_554_432,
         private readonly ErrorHandler    $errorHandler = new ErrorHandler(),
     ) {}
 
@@ -38,7 +38,7 @@ final class Server
     /** @codeCoverageIgnore */
     public function run(RequestHandler $handler): void
     {
-        $requestHandler = new AmpRequestHandler($handler, $this->maxRequestBodySize, $this->errorHandler);
+        $requestHandler = new AmpRequestHandler($handler, $this->maxBufferSize, $this->errorHandler);
         $serverSocketFactory = Cluster::getServerSocketFactory();
         $clientFactory = new SocketClientFactory($this->logger);
         $httpDriverFactory = new DefaultHttpDriverFactory($this->logger, bodySizeLimit: \PHP_INT_MAX);

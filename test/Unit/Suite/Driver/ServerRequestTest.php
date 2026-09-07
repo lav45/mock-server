@@ -18,30 +18,30 @@ final class ServerRequestTest extends TestCase
         string $url = 'https://localhost/',
         array  $headers = [],
         string $body = '',
-        int    $maxRequestBodySize = \PHP_INT_MAX,
+        int    $maxBufferSize = \PHP_INT_MAX,
     ): ServerRequest {
         $request = new Request(new FakeHttpDriverClient(), $method, Http::new($url), $headers, new RequestBody($body));
-        return new ServerRequest($request, $maxRequestBodySize);
+        return new ServerRequest($request, $maxBufferSize);
     }
 
-    private function createStreamedRequest(string $body, int $maxRequestBodySize): ServerRequest
+    private function createStreamedRequest(string $body, int $maxBufferSize): ServerRequest
     {
         $requestBody = new RequestBody(new ReadableIterableStream(\str_split($body, 2)));
         $request = new Request(new FakeHttpDriverClient(), 'POST', Http::new('https://localhost/'), [], $requestBody);
-        return new ServerRequest($request, $maxRequestBodySize);
+        return new ServerRequest($request, $maxBufferSize);
     }
 
-    public function testGetBodyThrowsWhenBodyExceedsMaxRequestBodySize(): void
+    public function testGetBodyThrowsWhenBodyExceedsMaxBufferSize(): void
     {
-        $request = $this->createStreamedRequest('payload', maxRequestBodySize: 4);
+        $request = $this->createStreamedRequest('payload', maxBufferSize: 4);
 
         $this->expectException(RequestBodyTooLargeException::class);
         $request->getBody();
     }
 
-    public function testGetBodyReturnsBodyOfMaxRequestBodySize(): void
+    public function testGetBodyReturnsBodyOfMaxBufferSize(): void
     {
-        $request = $this->createStreamedRequest('payload', maxRequestBodySize: 7);
+        $request = $this->createStreamedRequest('payload', maxBufferSize: 7);
 
         $this->assertSame('payload', $request->getBody());
     }

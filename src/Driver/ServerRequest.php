@@ -12,7 +12,7 @@ final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
 
     public function __construct(
         private readonly Request $request,
-        private readonly int     $maxRequestBodySize = \PHP_INT_MAX,
+        private readonly int     $maxBufferSize = \PHP_INT_MAX,
     ) {}
 
     public function getMethod(): string
@@ -60,10 +60,10 @@ final class ServerRequest implements \Lav45\MockServer\Engine\Http\ServerRequest
     {
         if ($this->body === null) {
             try {
-                $this->body = $this->request->getBody()->buffer(limit: $this->maxRequestBodySize);
+                $this->body = $this->request->getBody()->buffer(limit: $this->maxBufferSize);
             } catch (BufferException $exception) {
                 throw new RequestBodyTooLargeException(
-                    "Request body exceeds the limit of {$this->maxRequestBodySize} bytes",
+                    "Request body exceeds the limit of {$this->maxBufferSize} bytes",
                     previous: $exception,
                 );
             }

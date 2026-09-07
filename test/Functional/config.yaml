@@ -1,6 +1,6 @@
 schema: /app/schema/mock.schema.json
 
-maxRequestBodySize: 1
+maxBufferSize: 1
 
 tls:
   port: 443
