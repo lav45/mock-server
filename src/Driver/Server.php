@@ -24,14 +24,17 @@ final class Server
 
     public function expose(string $host, int $port): void
     {
-        $this->addresses[] = [new Socket\InternetAddress($host, $port), null];
+        $bindContext = new Socket\BindContext()->withTcpNoDelay();
+        $this->addresses[] = [new Socket\InternetAddress($host, $port), $bindContext];
     }
 
     public function exposeTls(string $host, Tls $tls): void
     {
         $certificate = new Socket\Certificate($tls->cert, $tls->key, $tls->passphrase);
         $tlsContext = new Socket\ServerTlsContext()->withDefaultCertificate($certificate);
-        $bindContext = new Socket\BindContext()->withTlsContext($tlsContext);
+        $bindContext = new Socket\BindContext()
+            ->withTlsContext($tlsContext)
+            ->withTcpNoDelay();
         $this->addresses[] = [new Socket\InternetAddress($host, $tls->port), $bindContext];
     }
 
