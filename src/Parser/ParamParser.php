@@ -25,8 +25,14 @@ final class ParamParser implements VariableParser
 
     public function replace(mixed $data): mixed
     {
+        if (\is_array($data)) {
+            return ArrayHelper::map($data, $this->replace(...));
+        }
+
+        $data = $this->inlineParser->replace($data);
+
         return $this->parser->replace(
-            $this->inlineParser->replace($data),
+            $data,
             fn(array $matches) => $this->getValue($matches),
         );
     }

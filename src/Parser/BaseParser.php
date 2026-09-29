@@ -6,9 +6,15 @@ use Lav45\MockServer\Helper\ArrayHelper;
 
 final readonly class BaseParser
 {
-    public function __construct(
-        private string $pattern,
-    ) {}
+    private string $valuePattern;
+
+    private string $inlinePattern;
+
+    public function __construct(string $pattern)
+    {
+        $this->valuePattern = '/({{\s*' . $pattern . '\s*}})/iu';
+        $this->inlinePattern = '/({\s*' . $pattern . '\s*})/iu';
+    }
 
     public function replace(mixed $data, \Closure $value): mixed
     {
@@ -28,12 +34,16 @@ final readonly class BaseParser
 
     private function replaceAttribute(string $item, \Closure $value): mixed
     {
-        \preg_match('/({{\s*' . $this->pattern . '\s*}})/iu', $item, $matches);
+        if (\str_contains($item, '{') === false) {
+            return $item;
+        }
+
+        \preg_match($this->valuePattern, $item, $matches);
         if ($matches) {
             return $value($matches);
         }
         return \preg_replace_callback(
-            '/({\s*' . $this->pattern . '\s*})/iu',
+            $this->inlinePattern,
             static function (array $matches) use ($value): string {
                 $result = $value($matches);
                 if (\is_bool($result)) {
