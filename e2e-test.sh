@@ -59,6 +59,7 @@ if [ -t 0 ] && [ -t 1 ]; then
 fi
 
 docker run --rm --init $DOCKER_ARG \
+  -u "$(id -u):$(id -g)" \
   -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e MOCK_SERVER_TLS_URL="$MOCK_SERVER_TLS_URL" \
