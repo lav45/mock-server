@@ -18,8 +18,8 @@ use Lav45\MockServer\Extension\Pipeline;
 use Lav45\MockServer\Extension\Prepare\PrepareExtension;
 use Lav45\MockServer\Extension\Routing\RoutingExtension;
 use Lav45\MockServer\Helper\Pipeline as MockPipeline;
-use Lav45\MockServer\Parser\ParserFactory;
 use Lav45\MockServer\Parser\VariableParser;
+use Lav45\MockServer\Parser\VariableParserFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -43,7 +43,7 @@ final readonly class ReactorFactory
 
     public function create(): RequestHandler
     {
-        $parser = new ParserFactory($this->locale)->create()
+        $parser = new VariableParserFactory($this->locale)->create()
             ->withData(['env' => $this->env]);
 
         $dataBuilder = new DataBuilder($this->filterHeaders);

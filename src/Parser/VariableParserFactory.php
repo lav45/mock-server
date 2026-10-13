@@ -4,7 +4,7 @@ namespace Lav45\MockServer\Parser;
 
 use Faker\Factory as FakerFactory;
 
-final readonly class ParserFactory
+final readonly class VariableParserFactory
 {
     public function __construct(
         private string $locale,
