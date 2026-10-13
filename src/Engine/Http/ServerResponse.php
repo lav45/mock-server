@@ -53,7 +53,7 @@ final class ServerResponse
         Body|null     $body = null,
     ) {
         $this->reason = $this->reasonPhrases[$status] ?? '';
-        $this->body = $body ?? Body::new('');
+        $this->body = $body ?? Body::new();
     }
 
     public function getStatus(): int

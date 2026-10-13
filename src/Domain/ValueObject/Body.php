@@ -9,7 +9,7 @@ final readonly class Body
         public bool   $isJson,
     ) {}
 
-    public static function new(string|array|Stream $data): self
+    public static function new(string|array|Stream $data = ''): self
     {
         if ($isJson = \is_array($data)) {
             $data = \json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
