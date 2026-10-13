@@ -51,6 +51,8 @@ $config = new Config('mock-server')
             'import_functions' => false,
             'import_constants' => false,
         ],
+        'binary_operator_spaces' => false,
+        'operator_linebreak' => false,
     ]);
 
 /** @var Finder $finder */
