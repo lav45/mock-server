@@ -3,19 +3,25 @@
 set -e
 
 RUNNING_PROCESS=$(
-  docker ps --filter name='(test_webhook_catcher|test_mock_server|test_runner)' --format "{{.Names}}"
+  docker ps -a --filter name='(test_webhook_catcher|test_mock_server|test_runner)' --format "{{.Names}}"
 )
 
 if [ "$RUNNING_PROCESS" ] ; then
   for PROCESS in $RUNNING_PROCESS ; do
-    docker kill "$PROCESS" > /dev/null 2>&1
-    docker rm "$PROCESS" > /dev/null 2>&1
+    docker kill "$PROCESS" > /dev/null 2>&1 || true
+    docker rm "$PROCESS" > /dev/null 2>&1 || true
   done
 fi
 
 getIp() {
   docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$1"
 }
+
+cleanup() {
+  docker stop test_mock_server > /dev/null 2>&1 || true
+  docker stop test_webhook_catcher > /dev/null 2>&1 || true
+}
+trap cleanup EXIT
 
 docker run --rm -d \
   -e HTTP_PORT=80 \
@@ -51,13 +57,22 @@ docker logs -f test_mock_server &
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
 MOCK_SERVER_TLS_URL=https://$(getIp "test_mock_server")
 
-while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do sleep 1; done
+ATTEMPTS=0
+while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do
+  ATTEMPTS=$((ATTEMPTS + 1))
+  if [ "$ATTEMPTS" -ge 30 ]; then
+    echo "Mock server did not become ready in time" >&2
+    exit 1
+  fi
+  sleep 1
+done
 
 DOCKER_ARG='-i'
 if [ -t 0 ] && [ -t 1 ]; then
   DOCKER_ARG='-it'
 fi
 
+EXIT_CODE=0
 docker run --rm --init $DOCKER_ARG \
   -u "$(id -u):$(id -g)" \
   -v "$(pwd)":/app:ro \
@@ -67,7 +82,6 @@ docker run --rm --init $DOCKER_ARG \
   -e WEBHOOK_CATCHER_SESSION_ID="$WEBHOOK_CATCHER_SESSION_ID" \
   --entrypoint composer \
   --name test_runner \
-  mock-server:tool phpunit -- --do-not-record-test-run-history "${1:-test/Functional}" || true
+  mock-server:tool phpunit -- --do-not-record-test-run-history "${1:-test/Functional}" || EXIT_CODE=$?
 
-docker stop test_mock_server > /dev/null
-docker stop test_webhook_catcher > /dev/null
+exit $EXIT_CODE
