@@ -1,0 +1,17 @@
+[
+    {
+        "version": 8,
+        "request": {
+            "path": "/response/content/query"
+        },
+        "response": {
+            "type": "content",
+            "body": {
+                "query": "{{request.query}}"
+            },
+            "headers": {
+                "content-type": "application/json"
+            }
+        }
+    }
+]

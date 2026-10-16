@@ -12,9 +12,23 @@ final readonly class RequestAdapter
 
     public function getQuery(): array
     {
-        return $this->normalizeValues(
-            $this->request->getQueryParameters(),
-        );
+        $result = [];
+        $bracketPairs = [];
+        foreach ($this->request->getQueryParameters() as $key => $values) {
+            if (\str_contains($key, '[') === false) {
+                $result[$key] = $this->normalizeValue($values);
+                continue;
+            }
+            $encodedKey = \rawurlencode($key);
+            \parse_str($encodedKey, $slot);
+            $result += $slot;
+            foreach ($values as $value) {
+                $bracketPairs[] = $encodedKey . '=' . \rawurlencode($value);
+            }
+        }
+        $bracketQuery = \implode('&', $bracketPairs);
+        \parse_str($bracketQuery, $bracketValues);
+        return \array_replace($result, $bracketValues);
     }
 
     public function getHeaders(): array
@@ -45,12 +59,20 @@ final readonly class RequestAdapter
     {
         $result = [];
         foreach ($values as $key => $value) {
-            if (isset($value[1])) {
-                $result[$key] = $value;
-            } else {
-                $result[$key] = $value[0];
-            }
+            $result[$key] = $this->normalizeValue($value);
         }
         return $result;
+    }
+
+    /**
+     * @param list<string> $values
+     * @return string|list<string>
+     */
+    private function normalizeValue(array $values): string|array
+    {
+        if (isset($values[1])) {
+            return $values;
+        }
+        return $values[0];
     }
 }

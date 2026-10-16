@@ -61,6 +61,20 @@ class ProxyTest extends TestCase
         $this->assertContains(['name' => 'Authorization', 'value' => 'Bearer eyJhbGciOiJSUzI1NiJ9'], $content[0]['headers']);
     }
 
+    public function testGetListQuery(): void
+    {
+        $response = $this->HttpClient->request(
+            uri: MOCK_SERVER_URL . '/response/proxy/storage?id=100&events[]=a&events[]=b',
+        );
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $this->webHookStorage->getData();
+
+        $query = Uri::new($content[0]['url'])->getQuery();
+        \parse_str($query, $get);
+        $this->assertSame(['id' => '100', 'events' => ['a', 'b']], $get);
+    }
+
     public function testArrayContent(): void
     {
         $response = $this->HttpClient->request(

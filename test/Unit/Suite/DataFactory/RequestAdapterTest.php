@@ -36,6 +36,35 @@ final class RequestAdapterTest extends TestCase
         $this->assertSame(['id' => ['1', '2']], $adapter->getQuery());
     }
 
+    public function testGetQueryParsesBracketList(): void
+    {
+        $adapter = new RequestAdapter($this->createRequest(url: 'https://localhost/?events[]=a&events[]=b&id=5'));
+        $this->assertSame(['events' => ['a', 'b'], 'id' => '5'], $adapter->getQuery());
+    }
+
+    public function testGetQueryParsesEncodedBracketList(): void
+    {
+        $adapter = new RequestAdapter($this->createRequest(url: 'https://localhost/?events%5B%5D=a'));
+        $this->assertSame(['events' => ['a']], $adapter->getQuery());
+    }
+
+    public function testGetQueryParsesBracketMap(): void
+    {
+        $adapter = new RequestAdapter($this->createRequest(url: 'https://localhost/?filter[status]=new&filter[type]=card'));
+        $this->assertSame(['filter' => ['status' => 'new', 'type' => 'card']], $adapter->getQuery());
+    }
+
+    public function testGetQueryKeepsKeyOrder(): void
+    {
+        $adapter = new RequestAdapter($this->createRequest(url: 'https://localhost/?id=5&filter[status]=new&page=2&filter[type]=card'));
+        $expected = [
+            'id' => '5',
+            'filter' => ['status' => 'new', 'type' => 'card'],
+            'page' => '2',
+        ];
+        $this->assertSame($expected, $adapter->getQuery());
+    }
+
     public function testGetHeadersReturnsSingleValue(): void
     {
         $adapter = new RequestAdapter($this->createRequest(headers: ['x-custom' => ['myvalue']]));

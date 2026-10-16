@@ -4,6 +4,7 @@ namespace Lav45\MockServer\Test\Functional\Suite\Response;
 
 use Lav45\MockServer\Driver\HttpClientFactory;
 use Lav45\MockServer\Engine\HttpClient;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ContentTest extends TestCase
@@ -85,5 +86,28 @@ class ContentTest extends TestCase
         $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/status');
         $this->assertEquals(401, $response->getStatus());
         $this->assertEquals('Unauthorized', $response->getBody()->stream->read());
+    }
+
+    public static function queryDataProvider(): array
+    {
+        return [
+            'single' => ['id=5', ['id' => '5']],
+            'repeated' => ['id=1&id=2', ['id' => ['1', '2']]],
+            'list' => ['events[]=a&events[]=b', ['events' => ['a', 'b']]],
+            'list encoded' => ['events%5B%5D=a&events%5B%5D=b', ['events' => ['a', 'b']]],
+            'map' => ['filter[status]=new&filter[type]=card', ['filter' => ['status' => 'new', 'type' => 'card']]],
+            'mixed' => ['id=5&events[]=a', ['id' => '5', 'events' => ['a']]],
+        ];
+    }
+
+    #[DataProvider('queryDataProvider')]
+    public function testQuery(string $query, array $expected): void
+    {
+        $response = $this->HttpClient->request(MOCK_SERVER_URL . '/response/content/query?' . $query);
+        $this->assertEquals(200, $response->getStatus());
+
+        $content = $response->getBody()->stream->read();
+        $content = \json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame(['query' => $expected], $content);
     }
 }
