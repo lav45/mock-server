@@ -18,6 +18,12 @@
             "email": "lav451@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/lav45/http-client"
+        }
+    ],
     "require": {
         "php": ">=8.5",
         "ext-intl": "*",
@@ -26,13 +32,14 @@
         "amphp/log": "v2.0.*",
         "amphp/sync": "v2.3.*",
         "amphp/http": "v2.1.*",
-        "amphp/http-client": "v5.3.*",
-        "amphp/http-server": "dev-master as 3.4.99",
+        "amphp/http-client": "dev-master as 5.3.7",
+        "amphp/http-server": "v3.4.*",
         "amphp/http-server-form-parser": "v2.0.*",
         "amphp/byte-stream": "v2.1.*",
-        "amphp/socket": "v2.4.*",
-        "amphp/file": "v3.2.*",
-        "amphp/cluster": "v2.0.*",
+        "amphp/socket": "2.x-dev as 2.4.1",
+        "amphp/file": "v4.0.*",
+        "amphp/cluster": "2.x-dev as 2.0.1",
+        "revolt/event-loop": "dev-main as 1.0.9",
         "nikic/fast-route": "v1.3.*",
         "monolog/monolog": "3.12.*",
         "fakerphp/faker": "v1.24.*",
@@ -88,11 +95,5 @@
         ]
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/lav45/http-server.git"
-        }
-    ]
+    "prefer-stable": true
 }
