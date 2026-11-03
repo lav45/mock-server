@@ -5,8 +5,14 @@ if [ -t 0 ] && [ -t 1 ]; then
   DOCKER_ARG='-it'
 fi
 
+# Rootless Docker maps container root to the host user; any other uid lands on a subuid.
+USER_ARG="$(id -u):$(id -g)"
+if docker info --format '{{.SecurityOptions}}' | grep -q rootless; then
+  USER_ARG='0:0'
+fi
+
 docker run --rm --init $DOCKER_ARG \
-  -u "$(id -u):$(id -g)" \
+  -u "$USER_ARG" \
   -v "$(pwd):/app" \
   -w /app \
   --entrypoint composer \

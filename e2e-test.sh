@@ -2,19 +2,30 @@
 
 set -e
 
+# `docker rm -f` kills and removes in one synchronous call: after `docker kill` a `--rm` container
+# is already being removed, so a separate `docker rm` fails and its name stays taken for a moment.
 RUNNING_PROCESS=$(
   docker ps -a --filter name='(test_webhook_catcher|test_mock_server|test_runner)' --format "{{.Names}}"
 )
 
-if [ "$RUNNING_PROCESS" ] ; then
-  for PROCESS in $RUNNING_PROCESS ; do
-    docker kill "$PROCESS" > /dev/null 2>&1 || true
-    docker rm "$PROCESS" > /dev/null 2>&1 || true
-  done
-fi
+for PROCESS in $RUNNING_PROCESS ; do
+  docker rm -f "$PROCESS" > /dev/null
+done
 
 getIp() {
   docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$1"
+}
+
+# Container IPs are not reachable from the host under rootless Docker,
+# so every HTTP call to the test containers runs inside a container.
+waitHttp() {
+  docker run --rm mock-server:tool sh -c '
+    for ATTEMPT in $(seq 30); do
+      wget -q -S -O /dev/null "$1" 2>&1 | grep -q "HTTP/" && exit 0
+      sleep 1
+    done
+    exit 1
+  ' sh "$1"
 }
 
 cleanup() {
@@ -33,11 +44,16 @@ docker run --rm -d \
 
 WEBHOOK_CATCHER_URL=http://$(getIp "test_webhook_catcher")
 
-while ! curl -s "$WEBHOOK_CATCHER_URL/ready" > /dev/null; do sleep 1; done
+if ! waitHttp "$WEBHOOK_CATCHER_URL/ready"; then
+  echo "Webhook catcher did not become ready in time" >&2
+  exit 1
+fi
 
 WEBHOOK_CATCHER_SESSION_ID=$(
-  curl -s -H "Content-Type: application/json" -X POST -d '{"status_code": 200}' "$WEBHOOK_CATCHER_URL/api/session" | \
-    docker run --rm -i mock-server:tool php -r "echo json_decode(file_get_contents('php://stdin'), true)['uuid'];"
+  docker run --rm mock-server:tool sh -c '
+    wget -q -O - --header "Content-Type: application/json" --post-data "{\"status_code\": 200}" "$1/api/session" | \
+      php -r "echo json_decode(file_get_contents(\"php://stdin\"), true, 512, JSON_THROW_ON_ERROR)[\"uuid\"];"
+  ' sh "$WEBHOOK_CATCHER_URL"
 )
 
 docker run --rm -d \
@@ -57,24 +73,25 @@ docker logs -f test_mock_server &
 MOCK_SERVER_URL=http://$(getIp "test_mock_server")
 MOCK_SERVER_TLS_URL=https://$(getIp "test_mock_server")
 
-ATTEMPTS=0
-while ! curl -s "$MOCK_SERVER_URL" > /dev/null; do
-  ATTEMPTS=$((ATTEMPTS + 1))
-  if [ "$ATTEMPTS" -ge 30 ]; then
-    echo "Mock server did not become ready in time" >&2
-    exit 1
-  fi
-  sleep 1
-done
+if ! waitHttp "$MOCK_SERVER_URL"; then
+  echo "Mock server did not become ready in time" >&2
+  exit 1
+fi
 
 DOCKER_ARG='-i'
 if [ -t 0 ] && [ -t 1 ]; then
   DOCKER_ARG='-it'
 fi
 
+# Rootless Docker maps container root to the host user; any other uid lands on a subuid.
+USER_ARG="$(id -u):$(id -g)"
+if docker info --format '{{.SecurityOptions}}' | grep -q rootless; then
+  USER_ARG='0:0'
+fi
+
 EXIT_CODE=0
 docker run --rm --init $DOCKER_ARG \
-  -u "$(id -u):$(id -g)" \
+  -u "$USER_ARG" \
   -v "$(pwd)":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e MOCK_SERVER_TLS_URL="$MOCK_SERVER_TLS_URL" \
