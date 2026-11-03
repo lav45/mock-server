@@ -5,7 +5,7 @@ RUN <<CMD
     apk add --no-cache php85-dev php85-pear php85-openssl musl-dev autoconf make gcc libuv-dev
 
     pecl85 channel-update pecl.php.net
-    CFLAGS="-Wno-attributes -Wno-format" pecl85 install uv-0.3.0
+    pecl85 install uv-0.3.1
 CMD
 
 FROM alpine:3.24 AS base
@@ -15,7 +15,19 @@ COPY --from=pecl /usr/lib/php85/modules/uv.so /usr/lib/php85/modules/
 RUN <<CMD
     set -eux
     apk upgrade --no-cache --available
-    apk add --no-cache libuv watchexec php85 php85-openssl php85-intl php85-fileinfo php85-ctype php85-mbstring php85-gmp php85-pcntl php85-sockets php85-posix
+    apk add --no-cache \
+        libuv \
+        watchexec \
+        php85 \
+        php85-openssl \
+        php85-intl \
+        php85-fileinfo \
+        php85-ctype \
+        php85-mbstring \
+        php85-gmp \
+        php85-pcntl \
+        php85-sockets \
+        php85-posix
 
     ln -s /usr/bin/php85 /bin/php
 
