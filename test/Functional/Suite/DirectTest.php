@@ -55,7 +55,10 @@ final class DirectTest extends TestCase
 
         delay(0.1);
 
-        $webhooks = $this->webHookStorage->getData();
+        $webhooks = $this->webHookStorage->getDataInOrder(
+            static fn(array $webhook): bool => $webhook['method'] === 'POST',
+            static fn(array $webhook): bool => $webhook['method'] === 'PUT',
+        );
 
         $this->assertEquals('POST', $webhooks[0]['method']);
         $this->assertEmpty($webhooks[0]['request']);

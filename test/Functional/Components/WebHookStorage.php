@@ -3,6 +3,7 @@
 namespace Lav45\MockServer\Test\Functional\Components;
 
 use Lav45\MockServer\Engine\HttpClient;
+use PHPUnit\Framework\Assert;
 
 final readonly class WebHookStorage
 {
@@ -25,6 +26,31 @@ final readonly class WebHookStorage
                 $request = \json_decode($request, true, flags: JSON_THROW_ON_ERROR);
             }
             $item['request'] = $request;
+            $result[] = $item;
+        }
+        return $result;
+    }
+
+    /**
+     * @param \Closure(array): bool ...$matchers
+     * @return list<array>
+     */
+    public function getDataInOrder(\Closure ...$matchers): array
+    {
+        $items = $this->getData();
+        Assert::assertCount(\count($matchers), $items);
+
+        $result = [];
+        $capturedAt = 0;
+        foreach ($matchers as $position => $matcher) {
+            $found = \array_values(
+                \array_filter($items, $matcher),
+            );
+            Assert::assertCount(1, $found, "Webhook #{$position}");
+
+            $item = $found[0];
+            Assert::assertGreaterThanOrEqual($capturedAt, $item['captured_at_unix_milli'], "Webhook #{$position}");
+            $capturedAt = $item['captured_at_unix_milli'];
             $result[] = $item;
         }
         return $result;

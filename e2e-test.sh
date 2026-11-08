@@ -29,8 +29,7 @@ waitHttp() {
 }
 
 cleanup() {
-  docker stop test_mock_server > /dev/null 2>&1 || true
-  docker stop test_webhook_catcher > /dev/null 2>&1 || true
+  docker rm -f test_mock_server test_webhook_catcher > /dev/null 2>&1 || true
 }
 trap cleanup EXIT
 

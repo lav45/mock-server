@@ -44,13 +44,29 @@ class WebHookTest extends TestCase
 
         delay(1);
 
-        $webhooks = $this->webHookStorage->getData();
+        $hasHeader = static fn(array $webhook, string $name, string $value): bool => \in_array(
+            ['name' => $name, 'value' => $value],
+            $webhook['headers'],
+            true,
+        );
+        $webhooks = $this->webHookStorage->getDataInOrder(
+            static fn(array $webhook): bool => $webhook['method'] === 'POST' && $webhook['request'] === '',
+            static fn(array $webhook): bool => $webhook['request'] === ['text' => 'Hello world'],
+            static fn(array $webhook): bool => Uri::new($webhook['url'])->getQuery() === 'id=300',
+            static fn(array $webhook): bool => $webhook['method'] === 'PUT',
+            static fn(array $webhook): bool => $webhook['method'] === 'GET',
+            static fn(array $webhook): bool => $webhook['method'] === 'DELETE',
+            static fn(array $webhook): bool => $hasHeader($webhook, 'Content-Type', 'application/x-www-form-urlencoded'),
+            static fn(array $webhook): bool => $hasHeader($webhook, 'Content-Type', 'multipart/form-data; boundary=FB'),
+            static fn(array $webhook): bool => ($webhook['request']['correlationId'] ?? null) !== null,
+            static fn(array $webhook): bool => $webhook['request'] === ['text' => 'OK'],
+        );
 
         $this->assertEquals('POST', $webhooks[0]['method']);
         $this->assertNull(Uri::new($webhooks[0]['url'])->getQuery());
         $this->assertEmpty($webhooks[0]['request']);
 
-        $delay = $webhooks[1]['captured_at_unix_milli'] - $webhooks[0]['captured_at_unix_milli'] / 1000;
+        $delay = ($webhooks[1]['captured_at_unix_milli'] - $webhooks[0]['captured_at_unix_milli']) / 1000;
         $delay = \round($delay, 2);
         $this->assertTrue($delay >= 0.5, \var_export($delay, true));
 
