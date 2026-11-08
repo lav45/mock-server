@@ -92,6 +92,11 @@ docker run --rm \
   --pid container:test_mock_server \
   mock-server:tool \
   sh -c '
+    # taskset prints a CPU list in its own form (0-1 as "0,1"), so the expected list is taken
+    # from this shell, pinned first.
+    taskset -p -c "$1" $$ > /dev/null
+    EXPECTED=$(taskset -c -p $$)
+    EXPECTED=${EXPECTED##*: }
     # A PID may be gone by the time it is pinned (the `ls` and `grep` of this loop), so a single
     # failure is skipped, and the result is checked on every process still alive afterwards.
     for PID in $(ls /proc | grep -E "^[0-9]+$"); do
@@ -99,7 +104,7 @@ docker run --rm \
     done
     for PID in $(ls /proc | grep -E "^[0-9]+$"); do
       AFFINITY=$(taskset -c -p "$PID" 2>/dev/null) || continue
-      if [ "${AFFINITY##*: }" != "$1" ] && [ "$PID" != "$$" ]; then
+      if [ "${AFFINITY##*: }" != "$EXPECTED" ]; then
         echo "Server process $PID is not pinned: $AFFINITY" >&2
         exit 1
       fi
