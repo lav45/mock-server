@@ -4,7 +4,8 @@ HTTP mocking application for testing and fast prototyping.
 
 [![Version](https://img.shields.io/docker/v/lav45/mock-server/latest?sort=semver)](https://hub.docker.com/r/lav45/mock-server)
 [![Docker Pulls](https://img.shields.io/docker/pulls/lav45/mock-server.svg)](https://hub.docker.com/r/lav45/mock-server)
-[![Docker Image Size](https://img.shields.io/docker/image-size/lav45/mock-server)](https://hub.docker.com/r/lav45/mock-server)
+[![Docker Image
+Size](https://img.shields.io/docker/image-size/lav45/mock-server)](https://hub.docker.com/r/lav45/mock-server)
 [![Codecov](https://codecov.io/gh/lav45/mock-server/branch/master/graph/badge.svg)](https://codecov.io/gh/lav45/mock-server)
 
 [Docker image](https://hub.docker.com/r/lav45/mock-server)
@@ -34,7 +35,8 @@ webhooks, and automatic reloading of mock files.
   response
 - [WebHooks](docs/extension/application/webhooks.md)
 - [Direct](docs/extension/application/direct.md) - Delegate response generation to a remote server
-- [Template](docs/extension/application/template.md) - Reusable response/webhook templates referenced via `$template.<name>` (disabled by default)
+- [Template](docs/extension/application/template.md) - Reusable response/webhook templates referenced via
+  `$template.<name>` (disabled by default)
 - [CORS](docs/extension/system/cors.md) - CORS headers on every response (disabled by default)
 - [TLS/SSL](docs/tls.md) - Serve HTTPS alongside the plain HTTP port (disabled by default)
 - [Custom Extensions](docs/extension.md) - Add your own HTTP middleware to the request/response pipeline
@@ -107,7 +109,8 @@ docker run --rm -it -u "$(id -u):$(id -g)" -v $(pwd)/mocks:/app/mocks lav45/mock
 ### Build docker images
 
 ```shell
-./build.sh
+./build.sh             # with the docker cache
+./build.sh --no-cache  # without the cache: after a failed build or to pick up fresh base image packages
 ```
 
 ### Install require dependency
