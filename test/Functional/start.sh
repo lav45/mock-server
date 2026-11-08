@@ -2,6 +2,9 @@
 
 set -e
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+ROOT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
+
 # `docker rm -f` kills and removes in one synchronous call: after `docker kill` a `--rm` container
 # is already being removed, so a separate `docker rm` fails and its name stays taken for a moment.
 RUNNING_PROCESS=$(
@@ -56,8 +59,8 @@ WEBHOOK_CATCHER_SESSION_ID=$(
 )
 
 docker run --rm -d \
-  -v "$(pwd)":/app:ro \
-  -v "$(pwd)"/test/Functional/mocks:/app/mocks:ro \
+  -v "$ROOT_DIR":/app:ro \
+  -v "$SCRIPT_DIR/mocks":/app/mocks:ro \
   -e PORT=80 \
   -e LOG_LEVEL="${LOG_LEVEL:-error}" \
   -e MOCKS_PATH=/app/mocks \
@@ -91,7 +94,7 @@ fi
 EXIT_CODE=0
 docker run --rm --init $DOCKER_ARG \
   -u "$USER_ARG" \
-  -v "$(pwd)":/app:ro \
+  -v "$ROOT_DIR":/app:ro \
   -e MOCK_SERVER_URL="$MOCK_SERVER_URL" \
   -e MOCK_SERVER_TLS_URL="$MOCK_SERVER_TLS_URL" \
   -e WEBHOOK_CATCHER_URL="$WEBHOOK_CATCHER_URL" \

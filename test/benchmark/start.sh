@@ -7,10 +7,13 @@
 # core. One core is not enough for `wrk`: the kernel TCP work of the client runs on its cores too,
 # and with a single core the client saturates while the server still has 30% of its CPU idle.
 #
-#   ./benchmark.sh                     # mock-server:server
-#   ./benchmark.sh lav45/mock-server:4.8
+#   test/benchmark/start.sh                     # mock-server:server
+#   test/benchmark/start.sh lav45/mock-server:4.8
 
 set -e
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+ROOT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 
 IMAGE=${1:-mock-server:server}
 
@@ -51,8 +54,8 @@ trap cleanup EXIT
 # `amphp/cluster` counts workers by `getconf _NPROCESSORS_ONLN`, which ignores CPU affinity,
 # so the worker count is passed explicitly.
 docker run -d --rm \
-  -v "$(pwd)":/app:ro \
-  -v "$(pwd)"/test/benchmark:/app/mocks:ro \
+  -v "$ROOT_DIR":/app:ro \
+  -v "$SCRIPT_DIR":/app/mocks:ro \
   -e CONFIG_PATH=/app/mocks/config.yaml \
   --ulimit nofile=65536 \
   --name test_mock_server \

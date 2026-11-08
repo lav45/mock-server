@@ -136,12 +136,12 @@ docker run --rm -it --init -v $(pwd):/app:ro -p 8080:8080 mock-server:server bin
 ### Running Unit Tests
 
 ```shell
-./unit-test.sh
-./unit-test.sh coverage:html # Generate coverage report in ./coverage/
+test/Unit/start.sh
+test/Unit/start.sh coverage:html # Generate coverage report in ./coverage/
 ```
 
 ### Running E2E Functional Tests
 
 ```shell
-./e2e-test.sh
+test/Functional/start.sh
 ```

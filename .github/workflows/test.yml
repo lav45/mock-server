@@ -14,9 +14,6 @@ on:
       - deptrac.yaml
       - phpunit.xml.dist
       - Dockerfile
-      - e2e-test.sh
-      - unit-test.sh
-      - benchmark.sh
   pull_request:
     paths:
       - .github/workflows/test.yml
@@ -28,9 +25,6 @@ on:
       - deptrac.yaml
       - phpunit.xml.dist
       - Dockerfile
-      - e2e-test.sh
-      - unit-test.sh
-      - benchmark.sh
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -64,13 +58,13 @@ jobs:
       - run: ./composer unused
 
       - name: Running functional tests
-        run: ./e2e-test.sh
+        run: test/Functional/start.sh
 
       - name: Running phpunit tests with code coverage
-        run: ./unit-test.sh coverage:xml
+        run: test/Unit/start.sh coverage:xml
 
       - name: Running benchmark tests
-        run: ./benchmark.sh
+        run: test/benchmark/start.sh
 
       - name: Upload coverage reports to Codecov
         if: github.ref == 'refs/heads/master'
