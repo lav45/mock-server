@@ -25,6 +25,7 @@ on:
       - deptrac.yaml
       - phpunit.xml.dist
       - Dockerfile
+  workflow_call:
 jobs:
   test:
     runs-on: ubuntu-latest
